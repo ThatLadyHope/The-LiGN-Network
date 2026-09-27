@@ -1834,3 +1834,292 @@ Everything else—matching, profiles, activities, groups, listening, scheduling,
 **Safer. Easier. More human. More voluntary.**
 
 That is the implementation boundary for LiGN.
+
+---
+
+# Appendix - Implementation Plan (plain text)
+
+```text
+# LiGN Network — Implementation Plan
+Source: `The_LiGN_Network_Updated_Implementation_Ready_PRD.md` (only source of truth)
+
+Canonical loop: **Need → Human → Conversation → Mutual Connection → Relationship** (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1828`).
+Journey: **Need → Find → Connect → Evolve** (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:77`).
+MVP boundary: only §66 items (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1390`). Exclusions in §66 (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1464`) must not be built.
+Builder rules: simplest compliant implementation, no invented feeds/likes/streaks/dating/AI-humans/large communities (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1713`).
+
+---
+
+## Phase 0 — Foundation, States, Data, Privacy
+**Objective:** Lock the state machines, data model, and permission order so later phases cannot diverge.
+
+**PRD:** §62 entities (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1222`), §63 states (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1267`), §64 transitions (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1312`), §65 privacy + precedence (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1352`), §4 MVP boundary (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:110`).
+
+**Tasks:**
+1. Scaffold monorepo: `api/`, `web/`, `db/migrations/`, `docs/`.
+2. Implement centralized enums: Account `ACTIVE/PAUSED/DELETED`, Discovery `DISCOVERABLE/NOT_DISCOVERABLE`, Connection `STRANGER/CONVERSATION/MUTUAL_CONNECTION/ACTIVE/PAUSED/ARCHIVED/ENDED`, Safety `NORMAL/FLAGGED/RESTRICTED/SUSPENDED/REMOVED`. Enforce independence (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1304`).
+3. Implement transition guards: `STRANGER→CONVERSATION`, `CONVERSATION→MUTUAL_CONNECTION→ACTIVE`, `ACTIVE→PAUSED→ACTIVE`, `ACTIVE→PAUSED→ARCHIVED`, `ACTIVE→ENDED`, `ARCHIVED/ENDED→new mutual→ACTIVE`. Enforce never-auto-reopen (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1348`).
+4. Create tables: User, Availability, Connection, ConnectionRequest, Conversation, Message, TemporarySpace (+participants), Report, Block. Add SharedMemory/JournalEntry/TrustedPerson/Schedule tables as minimal stubs only (deferred features, no logic).
+5. Implement permission layers: public / discovery-visible / connection-visible / private / verification / journal / shared-memory / safety (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1352`). Enforce precedence Safety > Privacy > Blocking/boundaries > Account > Connection > Matching > Convenience (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1374`).
+6. Add auth skeleton (session/JWT), request user context middleware, audit log for safety actions.
+
+**Outputs:**
+- `db/migrations/0001_foundation.sql`, `api/src/states/*`, `api/src/privacy/*`
+- State-transition unit tests
+- `docs/privacy-matrix.md`
+
+**Tests:** Enum independence test; illegal transition rejected; privacy layer leak test.
+**Gate to next:** All transition guards + precedence checks pass. No feature code yet.
+
+---
+
+## Phase 1 — Auth, Account Lifecycle, Minimal Progressive Profile
+**Objective:** User can join safely with minimal setup and leave safely.
+
+**PRD:** §5 identity (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:127`), §6 profile (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:144`), §7 photos (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:169`), §8 age/verification (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:186`), §9 location (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:203`), §17–18 states/pause (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:380`), §61 deletion (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1201`), §75 onboarding (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1771`), MVP Account/Profile (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1394`).
+
+**Tasks:**
+1. Register/login, one identity per account, nickname/pseudonym. No multi-persona.
+2. Onboarding: collect only nickname + age-safety + current need + language. Defer rest progressively.
+3. Profile CRUD: bio, age range, country/region, interests, personality Qs, needs, pace/depth/style, availability summary, discussion + romantic boundaries, language. No photo requirement; avatar allowed; no ratings/likes/leaderboards.
+4. Age-safety: store minimum enforcement data; verification fields private; safety overrides matching.
+5. Location: Anywhere/My country/Nearby only; never store exact location; optional local-time display.
+6. Pause: remove from discovery, block new requests, preserve connections/data, optional return period + auto-restore.
+7. Delete: pre-confirm consequences screen (account, profile, connections, messages, journal, memories, media, verification), cooling-off period, disclose legal/safety retention, never bypass active safety retention.
+
+**Outputs:**
+- `api/src/auth/*`, `api/src/users/*`, `web/src/onboarding/*`, `web/src/profile/*`
+- `docs/deletion-retention.md`
+
+**Tests:** One-identity enforced; minor safety blocks; pause removes from discovery but keeps connections; delete flow + retention disclosure; no appearance-based sorting exists.
+**Gate:** Definition of Done 1,2,4,12 (`The_LiGN_Network_Updated_Implementation_Ready trang PRD.md:1805` → lines 1809,1810,1812,1820) demonstrable. Depends on Phase 0.
+
+---
+
+## Phase 2 — Availability, Discovery, Matching (Need-First)
+**Objective:** User states a need and sees eligible humans, honestly handling no-match.
+
+**PRD:** §10 intentions (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:226`), §11 duration (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:246`), §12 matching (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:261`), §13 eligibility (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:308`), §14 discovery (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:321`), §15–16 availability (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:341`), MVP Matching/Availability (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1411`).
+
+**Tasks:**
+1. Availability per type (casual, vent/listen, deep, pen pal, check-ins, quiet companionship) + windows + temp states (need space/low energy/just listening/back later, auto-expire). Temp state never ends connections. Exact online status never broadcast.
+2. Discovery frequency Daily/Weekly/Paused; paused affects only discovery.
+3. Eligibility as hard filters before scoring: block either direction, age-safety, safety restriction, NOT_DISCOVERABLE, user restrictions.
+4. Compatibility scoring with priority: need > availability > depth > style > personality > interests > life experience > language > timezone > location. Need is strongest signal. No popularity/appearance/follower signals. Never expose sensitive signals. Never re-surface rejected/blocked/prohibited users. Never fabricate a match.
+5. No-match screen: broaden / try later / listener queue / temp space / shared activity / reflection prompt. AI may assist navigation only.
+
+**Outputs:**
+- `api/src/availability/*`, `api/src/matching/*`, `web/src/discover/*`
+- `docs/matching-priority.md`
+
+**Tests:** Blocked/ineligible never suggested; need outranks interests; unavailable not shown as available; no-match shows honest fallback, no fake human. Edge cases §69 Matching (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1582`).
+**Gate:** Acceptance Matching (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1515`) green. Depends on Phase 1.
+
+---
+
+## Phase 3 — Connection Lifecycle + 1-on-1 Messaging (Core)
+**Objective:** Deliver the heart: 1-on-1 platonic connection (§2 `The_LiGN_Network_Updated_Implementation_Ready_PRD.md:68`).
+
+**PRD:** §19–21 preferences/starters (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:419`), §22 requests (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:478`), §23–25 lifecycle/accept (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:496`), §26–27 silence/one-sided (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:565`), §28–30 ending/reconnection (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:593`), MVP Connections/Messaging (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1419`).
+
+**Tasks:**
+1. Requests with sender context + reason + optional note; Accept/Decline/Ignore; mutual interest required; repeated unwanted requests flagged as safety signal.
+2. Lifecycle transitions per Phase 0; actions Continue/Pause/Archive/End (+Schedule hooks as no-op stubs — scheduling is excluded from MVP). No forced “friendship” label.
+3. Accepted screen: Chat now / Send message / Save for later / Schedule (stub). Nothing automatic.
+4. 1-on-1 text only (voice/video excluded). Optional starters/suggested replies/fresh starters/“not sure what to say”. Reply expectations (no rush/same day/may take days/active). Never imply silence = rejection; gentle prompt only after meaningful inactivity with frequency cap; auto-pause after prolonged inactivity allowed.
+5. One-sided: offer Pause/Need space/End/Reconnect later, no blame.
+6. End without explanation; optional reason + closing message. Reconnection mutual-only; ender controls allow/temp-block/permanent-block; blocked party not notified; private future-reminder (later/this week/date/custom) with no auto-notify.
+
+**Outputs:**
+- `api/src/connections/*`, `api/src/messages/*`, `web/src/chat/*`
+- `docs/reconnection-rules.md`
+
+**Tests:** Mutual required; ended never auto-reopens; reconnection allow/temp/permanent; simultaneous end; pause preserves history; §69 Connections (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1590`).
+**Gate:** Acceptance Connection (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1523`) + DoD 5–9 (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1805`). Depends on Phase 2.
+
+---
+
+## Phase 4 — Listening, Immediate Need, Temporary Spaces (Small-Group Only)
+**Objective:** Support urgent/support needs and small temporary groups without building communities.
+
+**PRD:** §32–34 listening/need-someone (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:658`), §37–38 spaces (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:753`), §39–40 groups (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:798`), MVP Listening/Spaces (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1438`). Note: quiet companionship, shared activities, connection board beyond minimal are excluded or minimal — activities secondary (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:728`).
+
+**Tasks:**
+1. Vent modes: Just Listen / Advice Welcome / Don’t Know; changeable mid-chat; peer ≠ professional care disclaimer.
+2. Listener Mode: voluntary opt-in/out, anonymous “need someone” requests, time-limited sessions, listener never responsible for safety.
+3. “I Need Someone” routing: 1-on-1 → listener queue → small Need-Someone room → Trusted shortcut (Trusted Person itself is deferred — use saved-connection shortcut stub). Honest empty state; never present AI as human.
+4. Spaces: 3–8 only, purpose + duration (15m/30m/1h/2h + custom within limits), auto-close, creator early-end, free leave, never permanent by default. Define join/leave/creator-leave/early-close/expire/report-after-closure behaviors (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:776`). Cap enforcement.
+5. Post-space: private “talk again” → new connection only on mutual; unilateral hidden.
+6. Groups/board: minimal only — small-group opportunities list, no algorithmic global feed, no hosting obligations.
+
+**Outputs:**
+- `api/src/listeners/*`, `api/src/spaces/*`, `web/src/spaces/*`, `web/src/need-someone/*`
+
+**Tests:** Capacity enforced; expiry closes; post-expiry participation blocked; creator-leave behavior; report during + after closure; no-human fallback honest (§69 Spaces + No-match: `The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1600`). Acceptance Spaces (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1555`).
+**Gate:** Listener + spaces demoable without breaking 1-on-1 core. Depends on Phase 3.
+
+---
+
+## Phase 5 — Boundaries, Trust (Private-Only), Safety Controls, Moderation, Emergency
+**Objective:** Enforce agency and safety before public launch.
+
+**PRD:** §41–43 privacy/boundaries (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:832`), §44–46 trust/conflict/apology (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:889`), §47 Trusted Person minimal (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:952`) — full enhancements excluded, §48 emergency (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:971`), §51–55 controls/moderation (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1025`), §49–50 voice/video/recording (text-only MVP + stubs) (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:989`), MVP Safety (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1451`).
+
+**Tasks:**
+1. Boundaries per-connection + global: comfortable/sensitive/off-limits + presets (no number, no socials, no romantic/sexual, no unsolicited advice, short-only, respect privacy). Repeated post-refusal requests → boundary-violation signal.
+2. Progressive disclosure Nickname→Basic→Familiar→Trusted (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:834`); contact share voluntary + privacy reminder; no external contact required.
+3. Trust: private feedback only (respectful/listener/friendly/boundaries/uncomfortable); no public scores/ratings/leaderboards/followers. Conflict “Something feels off” → Clarify/Boundary/Pause/Leave/Report; repair optional. Apology structured, no forgiveness demand, never erases safety record.
+4. Trusted Person MVP: private label only, no authority/access/disclosure; not an emergency contact. (Enhancements deferred.)
+5. Safety controls always reachable with minimal effort: Leave/Mute/Block/Report (including during spaces). Block: immediate stop, no messages/requests/discovery/bypass across all surfaces; minimal info to blocked party; retain anti-abuse data internally.
+6. Moderation: `Report→Protect→Review→Action→Appeal` (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1065`); categories minimum 8 (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1099`); auto-detect flags only, no permanent severe auto-penalty in ordinary cases; immediate protection for serious threats; human review queue + evidence handling + false-positive review + appeal.
+7. Emergency: visible Get Help Now → emergency/crisis/trusted-real-world/professional resources; listeners never responders; no internal emergency contacts.
+8. Recording/voice: text-only MVP; add permission/consent scaffolding only.
+
+**Outputs:**
+- `api/src/safety/*` (blocks, reports, reviews, appeals), `web/src/safety/*`, `web/src/boundaries/*`
+- `docs/safety-categories.md`, `docs/moderation-flow.md`
+
+**Tests:** Acceptance Blocking/Reporting/Privacy (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1529`); §69 Safety (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1609`): mutual reports, post-block report, appeal, repeat violations, serious threat.
+**Gate:** Safety walkthrough passes; no bypass found. Depends on Phases 3–4.
+
+---
+
+## Phase 6 — Notifications, Search (Private), MVP Polish
+**Objective:** Notify without manipulation; private memory only.
+
+**PRD:** §57 notifications (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1130`), §59 search (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1167`), §56 language stub (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1115`), MVP Notifications (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1459`). Journal/memories/translation deferred.
+
+**Tasks:**
+1. Notifications for requests, accepts, messages, schedules (stub), safety events only. Category toggles + quiet hours + global pause. Ban streak/guilt/urgency prompts.
+2. Private search of own history (name/interests/topics); no public directory.
+3. Language: store preference/comfort only; no translation engine in MVP.
+4. Final Product Test checklist per feature (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1787`).
+
+**Outputs:**
+- `api/src/notifications/*`, `web/src/settings/notifications/*`
+
+**Tests:** Quiet hours suppress; pause stops all non-safety; no guilt copy in any template.
+**Gate:** DoD 10,11,13,14 (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1805`). Depends on Phase 5.
+
+---
+
+## Phase 7 — MVP Acceptance + Release Readiness (No New Features)
+**Objective:** Prove the 14-point Definition of Done.
+
+**PRD:** §68 acceptance (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1511`), §69 edge cases (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1571`), §77 DoD (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1805`), §70–71 metrics (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1625`).
+
+**Tasks:**
+1. Run full matrix: matching, connection, blocking, reporting, pause, deletion, spaces, privacy.
+2. Run §69 edge matrix (account/matching/connections/spaces/safety/no-human).
+3. Instrument North Star only: meaningful mutual connections (voluntary + actual interaction + not immediately ended + still voluntary) (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1661`). No engagement incentives.
+4. Write `docs/data-retention.md`, `docs/safety-response-slas.md` (SLAs are product input — mark as assumption if absent), accessibility + copy review (no guilt language).
+
+**Outputs:**
+- `docs/release-checklist.md`, `QA-MATRIX.md`, metrics dashboard stub
+- Signed DoD 1–14
+
+**Gate to launch:** All §68 + §69 pass. Depends on Phase 6. Later releases (§67: `The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1484`) explicitly out of scope.
+
+---
+
+## Dependency Overview
+- 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 (strictly sequential for MVP)
+- 0 blocks everything (states/privacy).
+- 2 needs 1 (identity + age-safety before matching).
+- 3 needs 2 (eligible candidates before conversation).
+- 4 needs 3 (spaces reconnect into connection lifecycle).
+- 5 needs 3+4 (controls must cover 1-on-1 and spaces).
+- 6 needs 5 (notifications must respect blocks/safety).
+- 7 needs all.
+
+## Recommended Order
+Execute Phases 0–7 in order. Do not parallelize safety (Phase 5) before lifecycle (Phase 3) is stable. Do not start Phase 2+ deferred features (voice, scheduling, journal, memories, trusted enhancements, translation, communities, advanced matching).
+
+## Unresolved / Underspecified (Do Not Invent — Needs Product Decision)
+1. Age thresholds & jurisdiction rules — PRD requires “enough age info” (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:188`) but gives no ages/regions. Assumption: 18+ default, minor handling TBD. Blocks Phase 1 matching filters.
+2. Verification provider/method — “where necessary” undefined (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:190`). Assumption: self-attestation + stub. Blocks trust-sensitive features.
+3. “Meaningful period” for inactivity prompts + frequency caps (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:575`) — no numbers. Assumption: 7 days, max 1 nudge/14 days. Needs product approval.
+4. “Configured platform limits” for custom space duration (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:768`) — no max. Assumption: max 4h. Needs approval.
+5. Creator-leaves-space behavior required (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:776`) but unspecified — transfer, auto-close, or continue? Open question; propose auto-assign oldest member or auto-close at expiry, needs approval.
+6. Report-after-closure retention window (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:776`) — unspecified. Assumption: 30-day evidence hold. Needs legal approval.
+7. Cooling-off period length (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1214`) — unspecified. Assumption: 14 days. Needs approval.
+8. Legal/safety retention inventory (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1216`) — unspecified. Open legal question.
+9. “Relevant life experience/situation” matching signal (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:265`) — sensitive; collection method undefined. Assumption: opt-in tags only, never inferred. Needs approval.
+10. Personality compatibility algorithm (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:265`) — unspecified. Assumption: simple tag overlap for MVP. Must not become opaque scoring.
+11. Safety SLA/response times (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:1650`) — no targets. Open question.
+12. Availability-window semantics vs. scheduling (excluded) — overlap unclear since §24/§31 mention scheduling but §66 excludes it. Assumption: windows are free-text/declarative only in MVP, no calendar logic.
+13. Trusted Person shortcut in “I Need Someone” routing (`The_LiGN_Network_Updated_Implementation_Ready_PRD.md:692`) while Trusted enhancements deferred — contradiction. Assumption: MVP uses saved-connection shortcut only.
+14. Connection board scope (§39) vs. “no feed” rule — boundary of “limited board” undefined. Assumption: chronological small-group list only, no ranking.
+15. Language support depth in MVP — §56 promises multi-language but §66 excludes translation. Assumption: UI locale + preference storage only.
+```
+
+---
+
+# Appendix A - Technology Stack (plain text)
+
+```text
+# Appendix A - Technology Stack (Local-First, Free Tools Only)
+
+Based on the PRD (1-on-1 text-only MVP, small groups 3-8, no voice/video/scheduling/journal in MVP) and IMPLEMENTATION_PLAN.md Phases 0-7. Stack is chosen for: free, local-first, single language, easy for an AI agent to scaffold.
+
+## Local Development Architecture
+
+How the app runs locally:
+Single process on the developer machine. One framework (Next.js) serves both the web UI and the JSON API via Route Handlers. No separate backend server to manage, no Docker, no cloud.
+
+How the database runs locally:
+SQLite file database, no server process. File lives at db/dev.db (created on first migrate). Zero install beyond the npm package better-sqlite3.
+
+How the application connects to the database:
+Prisma ORM reads DATABASE_URL from .env:
+  DATABASE_URL="file:./db/dev.db"
+Prisma Client is the only DB access path. Migrations in db/migrations/ (matches Phase 0 output).
+
+Where uploaded files are stored locally:
+Local folder uploads/ in the project root (avatars/illustrations only - photos optional per PRD section 7). Served by the app in dev only. Git-ignored except .gitkeep.
+Production later: S3-compatible object storage (not used in local dev).
+
+How authentication works locally:
+Local email + password (bcrypt hash) with DB-backed sessions (JWT). No third-party login provider needed locally.
+Production later: add email verification / OAuth provider and verified age-check vendor. PRD verification method is unspecified, so local keeps a stub field.
+
+Required environment variables (.env, never committed):
+  DATABASE_URL="file:./db/dev.db"
+  AUTH_SECRET="dev-only-random-string"
+  UPLOADS_DIR="./uploads"
+
+Required local dependencies/services:
+- Node.js 20 LTS + npm (only install required)
+- No database server, no Redis, no Docker, no paid services
+
+Commands to start dev:
+  npm install
+  npx prisma migrate dev
+  npm run dev
+App at http://localhost:3000, API at http://localhost:3000/api/*.
+
+## Technology Stack
+
+Area | Technology | Purpose
+Framework | Next.js 14 (App Router, React, TypeScript) | One codebase for UI + API routes; keeps 1-on-1 chat, discovery, spaces UI and backend together
+Backend runtime | Node.js 20 LTS (inside Next.js) | Single runtime, no separate server process
+Database | SQLite via better-sqlite3 | Local file DB; matches PRD entities without running Postgres
+ORM | Prisma 5 | Typed access, migrations for User/Connection/Message/Report/Block etc.
+Authentication | Local credentials: bcrypt + JWT sessions in DB | Dev-friendly, no external provider; production swaps to verified provider later
+File Storage | Local filesystem uploads/ | Avatars/illustrations; production later S3-compatible
+API layer | REST JSON via Next.js Route Handlers | Simple CRUD for profiles, requests, messages, spaces, reports; no GraphQL
+Testing | Vitest (+ Testing Library for UI) | Unit + API route tests per phase; state-guard, eligibility, block, reconnection tests
+Validation | Zod | Enforce transition guards and input shapes server-side
+
+Why this fits LiGN: MVP is text-only 1-on-1 + small spaces - no realtime engine, no media pipeline, no feed ranking. SQLite handles MVP scale locally; Prisma models the section 62 entities directly; REST keeps the AI agent's work small and reviewable. Nothing here permits likes/followers/streaks (PRD section 74 bans them).
+
+## Decisions and Assumptions
+1. PRD specifies no stack. Chose TypeScript throughout to minimize context switching for the AI agent.
+2. Chose SQLite over Postgres: PRD has no scale requirement; local-file DB removes the biggest beginner blocker (running a DB server). Production can migrate to Postgres later via Prisma with no model changes.
+3. Chose Next.js monolith over separate api/ + web/ servers: fewer processes to run/debug on Windows, still produces the Phase 0 outputs (routes map 1:1 to planned modules).
+4. Chose local password auth, not OAuth/SMS: PRD age/verification provider is unspecified; local stub unblocks Phase 1 without a paid vendor.
+5. Chose local disk over S3: PRD photos are optional; no media processing in MVP.
+6. Chose REST over tRPC/GraphQL: simplest contract for an AI agent to implement and test.
+7. Realtime: PRD MVP needs only 1-on-1 text - polling/refresh is sufficient. No WebSocket server introduced (avoids over-engineering; can add later for live spaces if needed).
+8. Background jobs (expiry of temp states, space auto-close, pause auto-restore, inactivity nudges): Node timers + on-request sweeps locally. No Redis/queue in MVP.
+```
