@@ -21,7 +21,9 @@
   .wordmark .lign { font-style: italic; }
   h1 { font-family: Georgia, serif; font-size: 34px; line-height: 1.2; margin: 16px 0 8px; }
   .sub { color: var(--muted); margin-bottom: 24px; }
-  .needs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .needs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  .group-title { font-size: 15px; font-weight: 700; margin: 20px 0 10px; color: var(--ink); }
+  .group-title small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 2px; }
   .need { background: var(--card); border: 2px solid var(--line); border-radius: 14px;
           padding: 16px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; color: var(--ink); }
   .need small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 4px; }
@@ -47,17 +49,26 @@
   <h1>What kind of connection do you need right now?</h1>
   <p class="sub">Pick one. No account, no pressure — this is just the first screen.</p>
 
+  <h2 class="group-title">1. Emotional Support<small>When you need care right now</small></h2>
   <div class="needs" id="needs">
-    <button class="need">Casual chat<small>Easy, everyday talk</small></button>
     <button class="need">Vent<small>Get it out, no fixing</small></button>
     <button class="need">Listening<small>Just listen to me</small></button>
-    <button class="need">Deep conversation<small>Go beneath the surface</small></button>
+    <button class="need">I need someone<small>Right now</small></button>
     <button class="need">Check-in<small>Someone to check in with</small></button>
+  </div>
+
+  <h2 class="group-title">2. Conversation &amp; Connection<small>Talk and grow a connection</small></h2>
+  <div class="needs">
+    <button class="need">Casual chat<small>Easy, everyday talk</small></button>
+    <button class="need">Deep conversation<small>Go beneath the surface</small></button>
     <button class="need">Friendship<small>Start something ongoing</small></button>
     <button class="need">Pen pal<small>Slow, thoughtful letters</small></button>
+  </div>
+
+  <h2 class="group-title">3. Companionship &amp; Shared time<small>Be together, do things together</small></h2>
+  <div class="needs">
     <button class="need">Quiet companionship<small>Be together, quietly</small></button>
     <button class="need">Shared activity<small>Do something together</small></button>
-    <button class="need">I need someone<small>Right now</small></button>
   </div>
 
   <button class="btn" id="go" disabled>Continue</button>
