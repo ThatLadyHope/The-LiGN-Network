@@ -28,12 +28,12 @@
   .subgroups li { font-size: 14px; padding: 6px 8px; border-top: 1px solid var(--line); color: var(--ink); }
   .subgroups li:first-child { border-top: none; }
   .subgroups li span { color: var(--muted); }
-  .need { background: transparent; border: 2px solid transparent; border-radius: 10px;
-          padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; color: var(--ink); width: 100%; }
-  .need small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 4px; }
-  .need:hover { border-color: var(--clay); }
+  .need { background: var(--clay); border: 2px solid var(--clay); border-radius: 10px;
+          padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; color: #fff; width: 100%; }
+  .need small { display: block; font-weight: 400; color: #fff; opacity: .9; font-size: 13px; margin-top: 4px; }
+  .need:hover { background: var(--clay-dark); border-color: var(--clay-dark); }
   .group.selected-group { border-color: var(--clay); background: var(--sand); }
-  .group.selected-group .need { border-color: transparent; }
+  .group.selected-group .need { background: var(--clay-dark); border-color: var(--clay-dark); }
   .btn { display: inline-block; border: none; cursor: pointer; font-size: 16px; font-weight: 600;
          padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; width: 100%; }
   .btn:hover { background: var(--clay-dark); }
