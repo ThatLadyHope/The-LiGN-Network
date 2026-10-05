@@ -21,14 +21,19 @@
   .wordmark .lign { font-style: italic; }
   h1 { font-family: Georgia, serif; font-size: 34px; line-height: 1.2; margin: 16px 0 8px; }
   .sub { color: var(--muted); margin-bottom: 24px; }
-  .needs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
-  .group-title { font-size: 15px; font-weight: 700; margin: 20px 0 10px; color: var(--ink); }
-  .group-title small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 2px; }
-  .need { background: var(--card); border: 2px solid var(--line); border-radius: 14px;
-          padding: 16px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; color: var(--ink); }
+  .needs { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+  .group { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px 8px 12px; }
+  .group.selected-group { border-color: var(--clay); background: var(--sand); }
+  .subgroups { list-style: none; margin: 4px 8px 4px; padding: 0; }
+  .subgroups li { font-size: 14px; padding: 6px 8px; border-top: 1px solid var(--line); color: var(--ink); }
+  .subgroups li:first-child { border-top: none; }
+  .subgroups li span { color: var(--muted); }
+  .need { background: transparent; border: 2px solid transparent; border-radius: 10px;
+          padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; color: var(--ink); width: 100%; }
   .need small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 4px; }
   .need:hover { border-color: var(--clay); }
-  .need.selected { border-color: var(--clay); background: var(--sand); }
+  .group.selected-group { border-color: var(--clay); background: var(--sand); }
+  .group.selected-group .need { border-color: transparent; }
   .btn { display: inline-block; border: none; cursor: pointer; font-size: 16px; font-weight: 600;
          padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; width: 100%; }
   .btn:hover { background: var(--clay-dark); }
@@ -49,26 +54,34 @@
   <h1>What kind of connection do you need right now?</h1>
   <p class="sub">Pick one. No account, no pressure — this is just the first screen.</p>
 
-  <h2 class="group-title">1. Emotional Support<small>When you need care right now</small></h2>
   <div class="needs" id="needs">
-    <button class="need">Vent<small>Get it out, no fixing</small></button>
-    <button class="need">Listening<small>Just listen to me</small></button>
-    <button class="need">I need someone<small>Right now</small></button>
-    <button class="need">Check-in<small>Someone to check in with</small></button>
-  </div>
+    <div class="group">
+      <button class="need">Emotional Support<small>When you need care right now</small></button>
+      <ul class="subgroups">
+        <li>Vent <span>— Get it out, no fixing</span></li>
+        <li>Listening <span>— Just listen to me</span></li>
+        <li>I need someone <span>— Right now</span></li>
+        <li>Check-in <span>— Someone to check in with</span></li>
+      </ul>
+    </div>
 
-  <h2 class="group-title">2. Conversation &amp; Connection<small>Talk and grow a connection</small></h2>
-  <div class="needs">
-    <button class="need">Casual chat<small>Easy, everyday talk</small></button>
-    <button class="need">Deep conversation<small>Go beneath the surface</small></button>
-    <button class="need">Friendship<small>Start something ongoing</small></button>
-    <button class="need">Pen pal<small>Slow, thoughtful letters</small></button>
-  </div>
+    <div class="group">
+      <button class="need">Conversation &amp; Connection<small>Talk and grow a connection</small></button>
+      <ul class="subgroups">
+        <li>Casual chat <span>— Easy, everyday talk</span></li>
+        <li>Deep conversation <span>— Go beneath the surface</span></li>
+        <li>Friendship <span>— Start something ongoing</span></li>
+        <li>Pen pal <span>— Slow, thoughtful letters</span></li>
+      </ul>
+    </div>
 
-  <h2 class="group-title">3. Companionship &amp; Shared time<small>Be together, do things together</small></h2>
-  <div class="needs">
-    <button class="need">Quiet companionship<small>Be together, quietly</small></button>
-    <button class="need">Shared activity<small>Do something together</small></button>
+    <div class="group">
+      <button class="need">Companionship &amp; Shared time<small>Be together, do things together</small></button>
+      <ul class="subgroups">
+        <li>Quiet companionship <span>— Be together, quietly</span></li>
+        <li>Shared activity <span>— Do something together</span></li>
+      </ul>
+    </div>
   </div>
 
   <button class="btn" id="go" disabled>Continue</button>
@@ -82,8 +95,8 @@
   var result = document.getElementById('result');
   btns.forEach(function (b) {
     b.addEventListener('click', function () {
-      btns.forEach(function (x) { x.classList.remove('selected'); });
-      b.classList.add('selected');
+      document.querySelectorAll('.group').forEach(function (g) { g.classList.remove('selected-group'); });
+      b.closest('.group').classList.add('selected-group');
       picked = b.firstChild.textContent.trim();
       go.disabled = false;
     });
