@@ -17,7 +17,7 @@ Where uploaded files are stored:
 Cloudflare R2 (S3-compatible) in all envs, including local dev. No local-disk branch.
 
 How authentication works locally:
-Better Auth 1.x with email + password, DB-backed sessions in Postgres. Email sending via ZeptoMail (assumed "zetomail" = ZeptoMail by Zoho); without a key, verification links log to console in dev only.
+Better Auth 1.x with email + password, DB-backed sessions in Postgres. Email sending via ZeptoMail; without a key, verification links log to console in dev only.
 
 Required environment variables (.env, never committed):
 DATABASE_URL="postgresql://postgres:dev@localhost:5432/lign"
@@ -58,7 +58,7 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
 1. Postgres everywhere (dev via Docker) replaces SQLite: chosen for full-vision concurrency; one DB from MVP to vision, no migration rewrite.
 2. Better Auth replaces custom bcrypt/JWT: less custom security code for the AI agent; sessions stay in Postgres.
 3. R2 in all envs: no local-disk divergence; needs a Cloudflare R2 free-tier account even for dev.
-4. "zetomail" interpreted as ZeptoMail (Zoho transactional email). Correct me if you meant another provider.
+4. Email confirmed as ZeptoMail.
 5. Paystack gated to Phase 10+: §72 core connection stays free; no paywall on finding someone to talk to.
 6. Realtime in MVP via self-hosted Socket.io: no paid vendor, no Supabase per instruction; polling kept only as fallback.
 7. Hosting is local device for now: no deploy platform configured; production host undecided.

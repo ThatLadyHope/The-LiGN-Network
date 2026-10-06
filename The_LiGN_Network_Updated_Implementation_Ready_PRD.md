@@ -2058,70 +2058,70 @@ Execute 1→12 in order. Say `go phase N` to execute one phase only.
 # Appendix A - Technology Stack (plain text)
 
 ```text
-# Appendix A - Technology Stack (Local-First, Free Tools Only)
-
-Based on the PRD (1-on-1 text-only MVP, small groups 3-8, no voice/video/scheduling/journal in MVP) and IMPLEMENTATION_PLAN.md Phases 0-7. Stack is chosen for: free, local-first, single language, easy for an AI agent to scaffold.
+# LiGN — Technology Stack
+Source: PRD §§1-78 and `docs/IMPLEMENTATION_PLAN_FULL.md` Phases 1-12.
 
 ## Local Development Architecture
 
 How the app runs locally:
-Single process on the developer machine. One framework (Next.js) serves both the web UI and the JSON API via Route Handlers. No separate backend server to manage, no Docker, no cloud.
+Next.js 14 App Router (TypeScript) on Node.js 20 LTS. UI + REST API via Route Handlers + realtime gateway in the same process. No separate backend server, no Supabase.
 
 How the database runs locally:
-SQLite file database, no server process. File lives at db/dev.db (created on first migrate). Zero install beyond the npm package better-sqlite3.
+Postgres 16 in Docker. No hosted database needed.
+docker compose up -d db
 
 How the application connects to the database:
-Prisma ORM reads DATABASE_URL from .env:
-  DATABASE_URL="file:./db/dev.db"
-Prisma Client is the only DB access path. Migrations in db/migrations/ (matches Phase 0 output).
+Prisma 5. DATABASE_URL="postgresql://postgres:dev@localhost:5432/lign"
 
-Where uploaded files are stored locally:
-Local folder uploads/ in the project root (avatars/illustrations only - photos optional per PRD section 7). Served by the app in dev only. Git-ignored except .gitkeep.
-Production later: S3-compatible object storage (not used in local dev).
+Where uploaded files are stored:
+Cloudflare R2 (S3-compatible) in all envs, including local dev. No local-disk branch.
 
 How authentication works locally:
-Local email + password (bcrypt hash) with DB-backed sessions (JWT). No third-party login provider needed locally.
-Production later: add email verification / OAuth provider and verified age-check vendor. PRD verification method is unspecified, so local keeps a stub field.
+Better Auth 1.x with email + password, DB-backed sessions in Postgres. Email sending via ZeptoMail; without a key, verification links log to console in dev only.
 
 Required environment variables (.env, never committed):
-  DATABASE_URL="file:./db/dev.db"
-  AUTH_SECRET="dev-only-random-string"
-  UPLOADS_DIR="./uploads"
+DATABASE_URL="postgresql://postgres:dev@localhost:5432/lign"
+BETTER_AUTH_SECRET="dev-only-random-string"
+R2_ACCOUNT_ID="" R2_ACCESS_KEY_ID="" R2_SECRET_ACCESS_KEY="" R2_BUCKET="lign-dev" R2_PUBLIC_URL=""
+PAYSTACK_SECRET_KEY="" PAYSTACK_PUBLIC_KEY=""
+EMAIL_FROM="" ZEPTOMAIL_TOKEN=""
 
 Required local dependencies/services:
-- Node.js 20 LTS + npm (only install required)
-- No database server, no Redis, no Docker, no paid services
+Node.js 20 LTS + npm, Docker (for Postgres only). No Supabase, no paid services required to start.
 
-Commands to start dev:
-  npm install
-  npx prisma migrate dev
-  npm run dev
-App at http://localhost:3000, API at http://localhost:3000/api/*.
+Commands:
+npm install
+docker compose up -d db
+npx prisma migrate dev
+npm run dev
+App http://localhost:3000, API http://localhost:3000/api/*, realtime on same origin.
 
 ## Technology Stack
 
-Area | Technology | Purpose
-Framework | Next.js 14 (App Router, React, TypeScript) | One codebase for UI + API routes; keeps 1-on-1 chat, discovery, spaces UI and backend together
-Backend runtime | Node.js 20 LTS (inside Next.js) | Single runtime, no separate server process
-Database | SQLite via better-sqlite3 | Local file DB; matches PRD entities without running Postgres
-ORM | Prisma 5 | Typed access, migrations for User/Connection/Message/Report/Block etc.
-Authentication | Local credentials: bcrypt + JWT sessions in DB | Dev-friendly, no external provider; production swaps to verified provider later
-File Storage | Local filesystem uploads/ | Avatars/illustrations; production later S3-compatible
-API layer | REST JSON via Next.js Route Handlers | Simple CRUD for profiles, requests, messages, spaces, reports; no GraphQL
-Testing | Vitest (+ Testing Library for UI) | Unit + API route tests per phase; state-guard, eligibility, block, reconnection tests
-Validation | Zod | Enforce transition guards and input shapes server-side
-
-Why this fits LiGN: MVP is text-only 1-on-1 + small spaces - no realtime engine, no media pipeline, no feed ranking. SQLite handles MVP scale locally; Prisma models the section 62 entities directly; REST keeps the AI agent's work small and reviewable. Nothing here permits likes/followers/streaks (PRD section 74 bans them).
+| Area | Technology | Purpose |
+|---|---|---|
+| Framework | Next.js 14 (App Router, React, TypeScript) | Web UI + API + realtime gateway in one codebase |
+| Backend runtime | Node.js 20 LTS (inside Next.js) | Single runtime |
+| Database | Postgres 16 (Docker locally) | All entities, concurrent chat/spaces/reports, full-text private search |
+| ORM | Prisma 5 | Typed access, migrations |
+| Authentication | Better Auth 1.x (email + password, DB sessions) | Registration/login, one identity, pause/delete hooks |
+| File Storage | Cloudflare R2 (S3-compatible) | Avatars/illustrations, later journal/memory media |
+| API layer | REST JSON via Route Handlers | Profiles, requests, messages, spaces, reports |
+| Realtime | Socket.io 4 self-hosted (same Node process) | MVP 1-on-1 chat, spaces, listener queue, notifications; no Supabase |
+| Email | ZeptoMail API (console fallback in dev) | Verification, safety events, notifications |
+| Payments | Paystack API (Phase 10+ only) | Optional subscriptions/premium; MVP core stays free per §72 |
+| Testing | Vitest + Testing Library | Unit + route + realtime tests |
+| Validation | Zod | Transition guards, input shapes |
 
 ## Decisions and Assumptions
-1. PRD specifies no stack. Chose TypeScript throughout to minimize context switching for the AI agent.
-2. Chose SQLite over Postgres: PRD has no scale requirement; local-file DB removes the biggest beginner blocker (running a DB server). Production can migrate to Postgres later via Prisma with no model changes.
-3. Chose Next.js monolith over separate api/ + web/ servers: fewer processes to run/debug on Windows, still produces the Phase 0 outputs (routes map 1:1 to planned modules).
-4. Chose local password auth, not OAuth/SMS: PRD age/verification provider is unspecified; local stub unblocks Phase 1 without a paid vendor.
-5. Chose local disk over S3: PRD photos are optional; no media processing in MVP.
-6. Chose REST over tRPC/GraphQL: simplest contract for an AI agent to implement and test.
-7. Realtime: PRD MVP needs only 1-on-1 text - polling/refresh is sufficient. No WebSocket server introduced (avoids over-engineering; can add later for live spaces if needed).
-8. Background jobs (expiry of temp states, space auto-close, pause auto-restore, inactivity nudges): Node timers + on-request sweeps locally. No Redis/queue in MVP.
+
+1. Postgres everywhere (dev via Docker) replaces SQLite: chosen for full-vision concurrency; one DB from MVP to vision, no migration rewrite.
+2. Better Auth replaces custom bcrypt/JWT: less custom security code for the AI agent; sessions stay in Postgres.
+3. R2 in all envs: no local-disk divergence; needs a Cloudflare R2 free-tier account even for dev.
+4. Email confirmed as ZeptoMail.
+5. Paystack gated to Phase 10+: §72 core connection stays free; no paywall on finding someone to talk to.
+6. Realtime in MVP via self-hosted Socket.io: no paid vendor, no Supabase per instruction; polling kept only as fallback.
+7. Hosting is local device for now: no deploy platform configured; production host undecided.
 ```
 
 ---
