@@ -1,0 +1,167 @@
+// LiGN Phase 2 — §62 entities. Postgres. Stubs (Schedule/JournalEntry/SharedMemory/TrustedPerson) carry no logic in MVP.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountState {
+  ACTIVE
+  PAUSED
+  DELETED
+}
+
+enum DiscoveryState {
+  DISCOVERABLE
+  NOT_DISCOVERABLE
+}
+
+enum ConnectionState {
+  STRANGER
+  CONVERSATION
+  MUTUAL_CONNECTION
+  ACTIVE
+  PAUSED
+  ARCHIVED
+  ENDED
+}
+
+enum SafetyState {
+  NORMAL
+  FLAGGED
+  RESTRICTED
+  SUSPENDED
+  REMOVED
+}
+
+model User {
+  id               String         @id @default(cuid())
+  nickname         String
+  email            String         @unique
+  ageRange         String?
+  country          String?
+  bio              String?
+  interests        String[]
+  accountState     AccountState   @default(ACTIVE)
+  discoveryState   DiscoveryState @default(DISCOVERABLE)
+  safetyState      SafetyState    @default(NORMAL)
+  verificationData String?
+  createdAt        DateTime       @default(now())
+  availability     Availability?
+}
+
+model Availability {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  types          String[]
+  windows        String?
+  tempState      String?
+  tempStateUntil DateTime?
+}
+
+model Connection {
+  id          String          @id @default(cuid())
+  userAId     String
+  userBId     String
+  state       ConnectionState @default(STRANGER)
+  duration    String?
+  pausedAt    DateTime?
+  archivedAt  DateTime?
+  endedAt     DateTime?
+  enderId     String?
+  reconnectRule String? // allow | temp-block | permanent-block (ender-controlled)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model ConnectionRequest {
+  id          String   @id @default(cuid())
+  senderId    String
+  recipientId String
+  note        String?
+  state       String   @default("pending") // pending | accepted | declined | ignored
+  createdAt   DateTime @default(now())
+}
+
+model Conversation {
+  id           String   @id @default(cuid())
+  connectionId String
+  type         String   @default("one-on-one")
+  retention    String?
+  createdAt    DateTime @default(now())
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  moderation     String   @default("clear")
+  deleted        Boolean  @default(false)
+  createdAt      DateTime @default(now())
+}
+
+model TemporarySpace {
+  id         String   @id @default(cuid())
+  creatorId  String
+  purpose    String
+  durationMin Int
+  capacity   Int      @default(8)
+  state      String   @default("open") // open | closed | expired
+  createdAt  DateTime @default(now())
+  closesAt   DateTime
+  participants SpaceParticipant[]
+}
+
+model SpaceParticipant {
+  id      String @id @default(cuid())
+  spaceId String
+  space   TemporarySpace @relation(fields: [spaceId], references: [id])
+  userId  String
+  joinedAt DateTime @default(now())
+}
+
+model Report {
+  id        String   @id @default(cuid())
+  reporterId String
+  targetId  String
+  category  String
+  evidence  String?
+  review    String   @default("pending")
+  action    String?
+  appeal    String?
+  createdAt DateTime @default(now())
+}
+
+model Block {
+  id        String    @id @default(cuid())
+  blockerId String
+  blockedId String
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+// MVP stubs — no logic until Phase 10/11
+model Schedule {
+  id     String @id @default(cuid())
+  data   String?
+}
+
+model JournalEntry {
+  id     String @id @default(cuid())
+  data   String?
+}
+
+model SharedMemory {
+  id     String @id @default(cuid())
+  data   String?
+}
+
+model TrustedPerson {
+  id     String @id @default(cuid())
+  data   String?
+}
