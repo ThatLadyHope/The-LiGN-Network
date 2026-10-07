@@ -8,6 +8,7 @@
   :root {
     --cream: #FAF7F2; --sand: #EFE7DA; --ink: #2E2A26; --muted: #6F655C;
     --clay: #C96F4A; --clay-dark: #A95836; --clay-light: #D6835C; --sage: #7D8C6F; --line: #E2D8C9; --card: #FFFFFF;
+    --g1: #356B68; --g1-dark: #2A5654; --g2: #59627F; --g2-dark: #474E66; --g3: #76566D; --g3-dark: #5E4557;
   }
   [data-theme="dark"] {
     --cream: #1C1917; --sand: #292524; --ink: #F5EFE6; --muted: #A8A29E;
@@ -28,12 +29,22 @@
   .subgroups li { font-size: 14px; padding: 6px 8px; border-top: 1px solid var(--line); color: var(--ink); }
   .subgroups li:first-child { border-top: none; }
   .subgroups li span { color: var(--muted); }
-  .need { background: var(--clay-light); border: 2px solid var(--clay-light); border-radius: 10px;
+  .need { border: 2px solid transparent; border-radius: 10px;
           padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; color: #fff; width: 100%; }
-  .need small { display: block; font-weight: 400; color: #fff; opacity: .95; font-size: 13px; margin-top: 4px; }
-  .need:hover { background: var(--clay); border-color: var(--clay); }
-  .group.selected-group { border-color: var(--clay); background: var(--sand); }
-  .group.selected-group .need { background: var(--clay-dark); border-color: var(--clay-dark); }
+  .need small { display: block; font-weight: 400; color: #fff; opacity: .9; font-size: 13px; margin-top: 4px; }
+  .need.g1 { background: var(--g1); border-color: var(--g1); }
+  .need.g1:hover { background: var(--g1-dark); border-color: var(--g1-dark); }
+  .need.g2 { background: var(--g2); border-color: var(--g2); }
+  .need.g2:hover { background: var(--g2-dark); border-color: var(--g2-dark); }
+  .need.g3 { background: var(--g3); border-color: var(--g3); }
+  .need.g3:hover { background: var(--g3-dark); border-color: var(--g3-dark); }
+  .group.selected-group { background: var(--sand); }
+  .group.g1.selected-group { border-color: var(--g1); }
+  .group.g1.selected-group .need { background: var(--g1-dark); border-color: var(--g1-dark); }
+  .group.g2.selected-group { border-color: var(--g2); }
+  .group.g2.selected-group .need { background: var(--g2-dark); border-color: var(--g2-dark); }
+  .group.g3.selected-group { border-color: var(--g3); }
+  .group.g3.selected-group .need { background: var(--g3-dark); border-color: var(--g3-dark); }
   .btn { display: inline-block; border: none; cursor: pointer; font-size: 16px; font-weight: 600;
          padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; width: 100%; }
   .btn:hover { background: var(--clay-dark); }
@@ -55,8 +66,8 @@
   <p class="sub">Pick one. No account, no pressure — this is just the first screen.</p>
 
   <div class="needs" id="needs">
-    <div class="group">
-      <button class="need">Emotional Support<small>When you need care right now</small></button>
+    <div class="group g1">
+      <button class="need g1">Emotional Support<small>When you need care right now</small></button>
       <ul class="subgroups">
         <li>Vent <span>— Get it out, no fixing</span></li>
         <li>Listening <span>— Just listen to me</span></li>
@@ -65,8 +76,8 @@
       </ul>
     </div>
 
-    <div class="group">
-      <button class="need">Conversation &amp; Connection<small>Talk and grow a connection</small></button>
+    <div class="group g2">
+      <button class="need g2">Conversation &amp; Connection<small>Talk and grow a connection</small></button>
       <ul class="subgroups">
         <li>Casual chat <span>— Easy, everyday talk</span></li>
         <li>Deep conversation <span>— Go beneath the surface</span></li>
@@ -75,8 +86,8 @@
       </ul>
     </div>
 
-    <div class="group">
-      <button class="need">Companionship &amp; Shared time<small>Be together, do things together</small></button>
+    <div class="group g3">
+      <button class="need g3">Companionship &amp; Shared time<small>Be together, do things together</small></button>
       <ul class="subgroups">
         <li>Quiet companionship <span>— Be together, quietly</span></li>
         <li>Shared activity <span>— Do something together</span></li>
