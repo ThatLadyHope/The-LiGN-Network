@@ -53,10 +53,17 @@ export function shouldSend(
 
 // PRD §57 bans: streak reminders, guilt messages, manipulative urgency,
 // artificial engagement prompts. Any template containing these fails review.
+// Ban manipulative usage (streak pressure, guilt, urgency, engagement bait),
+// not mere mention ("No streaks here" is allowed copy).
 const BANNED_PATTERNS: RegExp[] = [
-  /streak/i,
+  /day streak/i,
+  /your streak/i,
+  /keep the streak/i,
+  /streak (alive|going)/i,
   /you'll lose/i,
-  /\bguilt\b/i,
+  /guilt-trip/i,
+  /feel guilty/i,
+  /should feel bad/i,
   /don't ignore/i,
   /last chance/i,
   /hurry/i,
