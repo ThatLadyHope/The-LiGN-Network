@@ -186,7 +186,7 @@ export default function DiscoverPage() {
           <div className="dc-space">
             <h3>Reflection prompt</h3>
             <p>{REFLECTIONS[promptIdx % REFLECTIONS.length]}</p>
-            <button className="dc-act outline-sage" onClick={() => setPromptIdx((i) => i + 1)}>
+            <button className="dc-act outline" onClick={() => setPromptIdx((i) => i + 1)}>
               Another prompt
             </button>
           </div>
