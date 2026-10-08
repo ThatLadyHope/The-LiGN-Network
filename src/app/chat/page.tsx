@@ -33,7 +33,10 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [typingName, setTypingName] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const lastTypeEmit = useRef<number>(0);
+  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadMessages = useCallback(async (id: string) => {
     const res = await fetch(`/api/conversations/${id}/messages`);
@@ -69,13 +72,21 @@ export default function ChatPage() {
     socketRef.current = s;
     s.emit("join", activeId);
     s.on("message", () => loadMessages(activeId));
+    const otherName = conversations.find((c) => c.id === activeId)?.other?.nickname ?? "Someone";
+    s.on("typing", () => {
+      setTypingName(otherName);
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+      typingTimer.current = setTimeout(() => setTypingName(null), 3000);
+    });
     return () => {
       clearInterval(t);
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+      setTypingName(null);
       s.emit("leave", activeId);
       s.disconnect();
       socketRef.current = null;
     };
-  }, [activeId, loadMessages]);
+  }, [activeId, loadMessages, conversations]);
 
   async function respond(id: string, action: "accept" | "decline") {
     const res = await fetch(`/api/requests/${id}/respond`, {
@@ -85,6 +96,16 @@ export default function ChatPage() {
     });
     if (res.ok) loadAll();
     else setStatus("Could not respond to that request.");
+  }
+
+  function onDraftChange(v: string) {
+    setDraft(v);
+    // Throttled presence only: at most one "typing" event per 3 seconds.
+    const now = Date.now();
+    if (v.trim() && activeId && now - lastTypeEmit.current > 3000) {
+      lastTypeEmit.current = now;
+      socketRef.current?.emit("typing", { room: activeId });
+    }
   }
 
   async function send() {
@@ -155,7 +176,7 @@ export default function ChatPage() {
                 <input
                   value={draft}
                   maxLength={2000}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={(e) => onDraftChange(e.target.value)}
                   placeholder="Write something honest…"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") send();
@@ -165,7 +186,9 @@ export default function ChatPage() {
                   Send
                 </button>
               </div>
-              <p className="ob-hint">No rush — reply whenever feels right.</p>
+              <p className="ob-hint">
+                {typingName ? `${typingName} is typing…` : "No rush — reply whenever feels right."}
+              </p>
             </>
           )}
         </section>

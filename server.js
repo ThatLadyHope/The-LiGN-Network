@@ -29,6 +29,11 @@ app.prepare().then(() => {
           socket.to(payload.room).emit("message", payload);
         }
       });
+      socket.on("typing", (payload) => {
+        if (payload && typeof payload.room === "string" && payload.room.length <= 100) {
+          socket.to(payload.room).emit("typing", payload);
+        }
+      });
     });
   }
   server.listen(3000, () => console.log("LiGN ready on http://localhost:3000"));
