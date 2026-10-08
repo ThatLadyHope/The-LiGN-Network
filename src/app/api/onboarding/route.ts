@@ -11,7 +11,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
   }
   const body = await req.json().catch(() => null);
-  const parsed = OnboardingMinimal.safeParse(body);
+  // Nickname comes from the signup step (Better Auth name); the needs page
+  // sends only ageRange + currentNeeds + language.
+  const parsed = OnboardingMinimal.safeParse({
+    nickname: body?.nickname ?? session.user.name ?? "",
+    ageRange: body?.ageRange,
+    currentNeeds: body?.currentNeeds,
+    language: body?.language,
+  });
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid-profile", issues: parsed.error.issues }, { status: 400 });
   }
