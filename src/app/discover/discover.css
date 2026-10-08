@@ -7,10 +7,18 @@
 .dc-chip.need { background: #7D8C6F; color: #fff; font-weight: 600; }
 .dc-go { border: 2px solid #C96F4A; background: transparent; color: #C96F4A; border-radius: 999px; padding: 10px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .dc-go:disabled { opacity: .5; cursor: default; border-color: #E2D8C9; color: #6F655C; }
-.dc-empty { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 22px; }
-.dc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-.dc-act { border: 2px solid #7D8C6F; background: transparent; color: #2E2A26; border-radius: 999px; padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.dc-space { border-top: 1px solid #E2D8C9; margin-top: 14px; padding-top: 14px; }
+.dc-empty { background: #EFE7DA; border: 1px solid #E2D8C9; border-radius: 16px; padding: 28px; text-align: center; }
+.dc-empty .eyebrow { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #C96F4A; font-weight: 700; }
+.dc-empty h2 { font-family: Georgia, serif; font-size: 24px; margin: 4px 0 6px; }
+.dc-empty > p { color: #6F655C; }
+.dc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; justify-content: center; }
+.dc-act { border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.dc-act.outline { border: 2px solid #C96F4A; background: transparent; color: #C96F4A; }
+.dc-act.quiet { border: none; background: transparent; color: #6F655C; text-decoration: underline; }
+.dc-act.solid-sage { border: 2px solid #7D8C6F; background: #7D8C6F; color: #fff; }
+.dc-act.solid-clay { border: 2px solid #C96F4A; background: #C96F4A; color: #fff; }
+.dc-act.outline-sage { border: 2px solid #7D8C6F; background: transparent; color: #2E2A26; }
+.dc-space { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; margin-top: 14px; padding: 18px; text-align: left; }
 .dc-space h3 { font-size: 15px; margin: 0 0 8px; }
-.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; border: 2px solid #E2D8C9; border-radius: 10px; margin: 0 8px 8px 0; }
+.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; border: 2px solid #E2D8C9; border-radius: 10px; margin: 0 8px 8px 0; background: #FAF7F2; }
 .dc-open { font-size: 14px; color: #59627F; font-weight: 600; }

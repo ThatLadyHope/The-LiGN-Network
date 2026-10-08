@@ -146,16 +146,17 @@ export default function DiscoverPage() {
 
       {candidates.length === 0 && fallback && (
         <section className="dc-empty">
+          <div className="eyebrow">While you wait</div>
           <h2>No suitable person right now — honestly.</h2>
           <p>No AI will pretend to be your match. While you wait:</p>
           <div className="dc-actions">
-            <button className="dc-act" onClick={() => router.push("/onboarding/needs")}>
+            <button className="dc-act outline" onClick={() => router.push("/onboarding/needs")}>
               Adjust your needs
             </button>
-            <button className="dc-act" onClick={load}>
+            <button className="dc-act quiet" onClick={load}>
               Try again
             </button>
-            <button className="dc-act" onClick={joinQueue}>
+            <button className="dc-act solid-sage" onClick={joinQueue}>
               {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
             </button>
           </div>
@@ -173,7 +174,7 @@ export default function DiscoverPage() {
               <option value="60">1 hour</option>
               <option value="120">2 hours</option>
             </select>
-            <button className="dc-act" onClick={openSpace}>
+            <button className="dc-act solid-clay" onClick={openSpace}>
               Open space
             </button>
             {mySpaces.map((s) => (
@@ -185,7 +186,7 @@ export default function DiscoverPage() {
           <div className="dc-space">
             <h3>Reflection prompt</h3>
             <p>{REFLECTIONS[promptIdx % REFLECTIONS.length]}</p>
-            <button className="dc-act" onClick={() => setPromptIdx((i) => i + 1)}>
+            <button className="dc-act outline-sage" onClick={() => setPromptIdx((i) => i + 1)}>
               Another prompt
             </button>
           </div>
