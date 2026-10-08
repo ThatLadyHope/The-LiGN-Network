@@ -186,9 +186,7 @@ export default function ChatPage() {
                   Send
                 </button>
               </div>
-              <p className="ob-hint">
-                {typingName ? `${typingName} is typing…` : "No rush — reply whenever feels right."}
-              </p>
+              {typingName && <p className="ch-typing">{typingName} is typing…</p>}
             </>
           )}
         </section>

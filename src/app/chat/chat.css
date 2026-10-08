@@ -5,9 +5,14 @@
 .ch-req { border-top: 1px solid #E2D8C9; padding: 10px 0; }
 .ch-req button { margin-right: 8px; border-radius: 999px; padding: 8px 20px; font-weight: 600; cursor: pointer; }
 .ch-cols { display: grid; grid-template-columns: 240px 1fr; gap: 14px; }
-.ch-list button { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #E2D8C9; border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
-.ch-list button.on { border-color: #C96F4A; background: #EFE7DA; }
+.ch-list button { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #E2D8C9; border-left: 6px solid #EFE7DA; border-radius: 12px; padding: 12px 12px 12px 14px; margin-bottom: 8px; cursor: pointer; }
+.ch-list button:hover { border-color: #7D8C6F; }
+.ch-list button.on { background: #7D8C6F; border-color: #7D8C6F; color: #fff; }
+.ch-list button.on small { color: rgba(255,255,255,.85); }
 .ch-list small { display: block; color: #6F655C; font-size: 13px; }
+.ch-typing { font-size: 13px; color: #59627F; font-style: italic; margin: 8px 0 0; animation: ch-pulse 1.6s ease-in-out infinite; }
+@keyframes ch-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ch-typing { animation: none; } }
 .ch-thread { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 16px; min-height: 320px; display: flex; flex-direction: column; }
 .ch-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .ch-msg { background: #EFE7DA; border-radius: 4px 16px 16px 16px; padding: 10px 14px; max-width: 85%; font-size: 15px; }
