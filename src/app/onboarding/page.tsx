@@ -38,21 +38,6 @@ export default function SignupPage() {
     ["am", "Amharic"],
     ["zu", "Zulu"],
   ] as const;
-  const LANGUAGES = [
-    { code: "en", label: "English" },
-    { code: "ha", label: "Hausa" },
-    { code: "yo", label: "Yoruba" },
-    { code: "ig", label: "Igbo" },
-    { code: "fr", label: "French" },
-    { code: "es", label: "Spanish" },
-    { code: "pt", label: "Portuguese" },
-    { code: "de", label: "German" },
-    { code: "it", label: "Italian" },
-    { code: "nl", label: "Dutch" },
-    { code: "ar", label: "Arabic" },
-    { code: "hi", label: "Hindi" },
-    { code: "zh", label: "Chinese" },
-  ];
 
   const valid =
     nickname.trim().length > 0 &&
