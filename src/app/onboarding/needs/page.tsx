@@ -106,7 +106,11 @@ export default function NeedsPage() {
       <button className="ob-go" disabled={picked.length === 0 || busy} onClick={submit}>
         {busy ? "Saving…" : "Continue"}
       </button>
-      {status && <p className="ob-status">{status}</p>}
+      {status && (
+        <p className="ob-status" role="status" aria-live="polite">
+          {status}
+        </p>
+      )}
       <p className="ob-hint">Silence is normal here. You can pause or leave anytime.</p>
     </main>
   );

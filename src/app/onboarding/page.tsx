@@ -16,6 +16,43 @@ export default function SignupPage() {
   const [busy, setBusy] = useState(false);
 
   const AGES = ["18-24", "25-34", "35-44", "45-54", "55-plus"];
+  const LANGUAGES = [
+    ["en", "English"],
+    ["fr", "French"],
+    ["es", "Spanish"],
+    ["pt", "Portuguese"],
+    ["de", "German"],
+    ["it", "Italian"],
+    ["nl", "Dutch"],
+    ["ru", "Russian"],
+    ["ar", "Arabic"],
+    ["hi", "Hindi"],
+    ["zh", "Mandarin"],
+    ["yue", "Cantonese"],
+    ["ja", "Japanese"],
+    ["ko", "Korean"],
+    ["sw", "Swahili"],
+    ["yo", "Yoruba"],
+    ["ig", "Igbo"],
+    ["ha", "Hausa"],
+    ["am", "Amharic"],
+    ["zu", "Zulu"],
+  ] as const;
+  const LANGUAGES = [
+    { code: "en", label: "English" },
+    { code: "ha", label: "Hausa" },
+    { code: "yo", label: "Yoruba" },
+    { code: "ig", label: "Igbo" },
+    { code: "fr", label: "French" },
+    { code: "es", label: "Spanish" },
+    { code: "pt", label: "Portuguese" },
+    { code: "de", label: "German" },
+    { code: "it", label: "Italian" },
+    { code: "nl", label: "Dutch" },
+    { code: "ar", label: "Arabic" },
+    { code: "hi", label: "Hindi" },
+    { code: "zh", label: "Chinese" },
+  ];
 
   const valid =
     nickname.trim().length > 0 &&
@@ -79,14 +116,24 @@ export default function SignupPage() {
         </label>
         <label className="ob-label">
           Language
-          <input value={language} maxLength={10} onChange={(e) => setLanguage(e.target.value)} placeholder="en" />
+          <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+            {LANGUAGES.map(([code, name]) => (
+              <option key={code} value={code}>
+                {name}
+              </option>
+            ))}
+          </select>
         </label>
       </div>
 
       <button className="ob-go" disabled={!valid || busy} onClick={submit}>
         {busy ? "Joining…" : "Join LiGN"}
       </button>
-      {status && <p className="ob-status">{status}</p>}
+      {status && (
+        <p className="ob-status" role="status" aria-live="polite">
+          {status}
+        </p>
+      )}
       <p className="ob-hint">Silence is normal here. You can pause or leave anytime.</p>
     </main>
   );

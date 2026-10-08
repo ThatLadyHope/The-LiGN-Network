@@ -21,5 +21,7 @@
 .ob-group.g3 .ob-needs button.picked { background: #fff; border-color: #fff; color: #76566D; }
 .ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: #C96F4A; color: #fff; }
 .ob-go:disabled { opacity: .45; cursor: default; }
+.ob-needs button:focus-visible, .ob-go:focus-visible, .ob-label input:focus-visible, .ob-label select:focus-visible { outline: 3px solid #2E2A26; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .ob-needs button, .ob-go { transition: none; } }
 .ob-status { background: #fff; border: 1px solid #E2D8C9; border-radius: 12px; padding: 14px; margin-top: 16px; }
 .ob-hint { font-size: 13px; color: #6F655C; text-align: center; }
