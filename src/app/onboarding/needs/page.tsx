@@ -38,12 +38,8 @@ const GROUPS: { id: string; title: string; hint: string; needs: { value: string;
   },
 ];
 
-const AGES = ["18-24", "25-34", "35-44", "45-54", "55-plus"];
-
 export default function NeedsPage() {
   const router = useRouter();
-  const [ageRange, setAgeRange] = useState("25-34");
-  const [language, setLanguage] = useState("en");
   const [picked, setPicked] = useState<string[]>(["listening"]);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -59,7 +55,7 @@ export default function NeedsPage() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ageRange, currentNeeds: picked, language }),
+        body: JSON.stringify({ currentNeeds: picked }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -84,23 +80,6 @@ export default function NeedsPage() {
       </div>
       <h1>What kind of connection do you need right now?</h1>
       <p className="ob-sub">Pick your needs. You can change them anytime.</p>
-
-      <div className="ob-row">
-        <label className="ob-label">
-          Age range
-          <select value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
-            {AGES.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="ob-label">
-          Language
-          <input value={language} maxLength={10} onChange={(e) => setLanguage(e.target.value)} placeholder="en" />
-        </label>
-      </div>
 
       <div className="ob-groups">
         {GROUPS.map((g) => (

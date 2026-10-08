@@ -10,14 +10,19 @@ export default function SignupPage() {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [ageRange, setAgeRange] = useState("25-34");
+  const [language, setLanguage] = useState("en");
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const AGES = ["18-24", "25-34", "35-44", "45-54", "55-plus"];
 
   const valid =
     nickname.trim().length > 0 &&
     nickname.length <= 30 &&
     /.+@.+\..+/.test(email) &&
-    password.length >= 10;
+    password.length >= 10 &&
+    language.trim().length >= 2;
 
   async function submit() {
     setBusy(true);
@@ -25,6 +30,13 @@ export default function SignupPage() {
     try {
       const signup = await authClient.signUp.email({ email, password, name: nickname.trim() });
       if (signup.error) throw new Error(signup.error.message ?? "signup-failed");
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ageRange, language: language.trim() }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error ?? "profile-failed");
       router.push("/onboarding/needs");
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "something-went-wrong");
@@ -53,6 +65,23 @@ export default function SignupPage() {
         Password (10+ chars)
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </label>
+
+      <div className="ob-row">
+        <label className="ob-label">
+          Age range
+          <select value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
+            {AGES.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="ob-label">
+          Language
+          <input value={language} maxLength={10} onChange={(e) => setLanguage(e.target.value)} placeholder="en" />
+        </label>
+      </div>
 
       <button className="ob-go" disabled={!valid || busy} onClick={submit}>
         {busy ? "Joining…" : "Join LiGN"}
