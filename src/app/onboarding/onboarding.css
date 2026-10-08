@@ -21,6 +21,11 @@
 .ob-group.g3 .ob-needs button.picked { background: #fff; border-color: #fff; color: #76566D; }
 .ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: #C96F4A; color: #fff; }
 .ob-go:disabled { opacity: .45; cursor: default; }
+.ob-password { display: flex; gap: 8px; align-items: stretch; }
+.ob-password input { flex: 1; }
+.ob-show { border: 2px solid #E2D8C9; background: #fff; border-radius: 12px; padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; color: #2E2A26; white-space: nowrap; }
+.ob-alt { font-size: 14px; text-align: center; margin-top: 10px; }
+.ob-alt a { color: #C96F4A; font-weight: 600; }
 .ob-needs button:focus-visible, .ob-go:focus-visible, .ob-label input:focus-visible, .ob-label select:focus-visible { outline: 3px solid #2E2A26; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ob-needs button, .ob-go { transition: none; } }
 .ob-status { background: #fff; border: 1px solid #E2D8C9; border-radius: 12px; padding: 14px; margin-top: 16px; }

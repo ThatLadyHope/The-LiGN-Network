@@ -10,6 +10,8 @@ export default function SignupPage() {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [ageRange, setAgeRange] = useState("25-34");
   const [language, setLanguage] = useState("en");
   const [status, setStatus] = useState<string | null>(null);
@@ -85,7 +87,16 @@ export default function SignupPage() {
       </label>
       <label className="ob-label">
         Password (10+ chars)
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <span className="ob-password">
+          <input
+            type={show ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="button" className="ob-show" onClick={() => setShow((s) => !s)} aria-pressed={show}>
+            {show ? "Hide" : "Show"}
+          </button>
+        </span>
       </label>
 
       <div className="ob-row">
