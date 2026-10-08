@@ -48,12 +48,12 @@ model User {
   emailVerified    Boolean        @default(false)
   image            String?
   updatedAt        DateTime       @updatedAt
-  sessions         AuthSession[]
-  accounts         AuthAccount[]
+  sessions         Session[]
+  accounts         Account[]
   ageRange         String?
   country          String?
   bio              String?
-  interests        String[]
+  interests        String[]       @default([])
   accountState     AccountState   @default(ACTIVE)
   discoveryState   DiscoveryState @default(DISCOVERABLE)
   safetyState      SafetyState    @default(NORMAL)
@@ -155,7 +155,7 @@ model Block {
 }
 
 // Better Auth adapter tables (managed by Better Auth; never edited by hand).
-model AuthSession {
+model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
   token     String   @unique
@@ -169,7 +169,7 @@ model AuthSession {
   @@map("session")
 }
 
-model AuthAccount {
+model Account {
   id                    String    @id @default(cuid())
   accountId             String
   providerId            String
@@ -188,7 +188,7 @@ model AuthAccount {
   @@map("account")
 }
 
-model AuthVerification {
+model Verification {
   id         String    @id @default(cuid())
   identifier String
   value      String

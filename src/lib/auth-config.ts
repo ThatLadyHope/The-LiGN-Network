@@ -12,6 +12,9 @@ export interface AuthDatabase {
 export function createAuth(db: AuthDatabase) {
   return betterAuth({
     database: prismaAdapter(db, { provider: "postgresql" }),
+    // LiGN identity is the nickname: better-auth's `name` writes straight
+    // into our `nickname` column, so one signup creates one identity.
+    user: { fields: { name: "nickname" } },
     emailAndPassword: { enabled: true, minPasswordLength: 10 },
     session: { expiresIn: 60 * 60 * 24 * 30 }, // 30 days
   });
