@@ -153,7 +153,7 @@ export default function DiscoverPage() {
             <button className="dc-act solid-sage" onClick={load}>
               Retry connection
             </button>
-            <button className="dc-act outline" onClick={() => router.push("/onboarding/needs")}>
+            <button className="dc-act quiet" onClick={() => router.push("/onboarding/needs")}>
               Adjust your needs
             </button>
             <button className="dc-act solid-sage" onClick={joinQueue}>
