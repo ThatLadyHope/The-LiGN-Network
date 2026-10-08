@@ -200,6 +200,13 @@ model Verification {
 }
 
 // MVP stubs — no logic until Phase 10/11
+model ListenerQueueEntry {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  need      String
+  createdAt DateTime @default(now())
+}
+
 model Schedule {
   id     String @id @default(cuid())
   data   String?

@@ -8,4 +8,9 @@
 .dc-go { border: 2px solid #C96F4A; background: transparent; color: #C96F4A; border-radius: 999px; padding: 10px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .dc-go:disabled { opacity: .5; cursor: default; border-color: #E2D8C9; color: #6F655C; }
 .dc-empty { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 22px; }
-.dc-empty ul { margin: 10px 0 0 20px; }
+.dc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.dc-act { border: 2px solid #7D8C6F; background: transparent; color: #2E2A26; border-radius: 999px; padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.dc-space { border-top: 1px solid #E2D8C9; margin-top: 14px; padding-top: 14px; }
+.dc-space h3 { font-size: 15px; margin: 0 0 8px; }
+.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; border: 2px solid #E2D8C9; border-radius: 10px; margin: 0 8px 8px 0; }
+.dc-open { font-size: 14px; color: #59627F; font-weight: 600; }
