@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The LiGN Network — Find connection</title>
+<style>
+  :root {
+    --cream: #FAF7F2; --sand: #EFE7DA; --ink: #2E2A26; --muted: #6F655C;
+    --clay: #C96F4A; --clay-dark: #A95836; --clay-light: #D6835C; --sage: #7D8C6F; --line: #E2D8C9; --card: #FFFFFF;
+    --g1: #687765; --g1-dark: #535F51; --g2: #59627F; --g2-dark: #474E66; --g3: #76566D; --g3-dark: #5E4557;
+  }
+  [data-theme="dark"] {
+    --cream: #1C1917; --sand: #292524; --ink: #F5EFE6; --muted: #A8A29E;
+    --clay: #D98A5F; --clay-dark: #E59A70; --clay-light: #E5A07C; --sage: #8FA382; --line: #44403C; --card: #292524;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+         background: var(--cream); color: var(--ink); line-height: 1.6; padding: 40px 24px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  .wordmark { font-family: Georgia, serif; font-size: 26px; letter-spacing: 5px; color: var(--clay); }
+  .wordmark .lign { font-style: italic; }
+  h1 { font-family: Georgia, serif; font-size: 34px; line-height: 1.2; margin: 16px 0 8px; }
+  .sub { color: var(--muted); margin-bottom: 24px; }
+  .needs { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
+  .group { border: 1px solid var(--line); border-radius: 14px; padding: 8px 8px 12px; color: #fff; }
+  .group.g1 { background: var(--g1); border-color: var(--g1); }
+  .group.g2 { background: var(--g2); border-color: var(--g2); }
+  .group.g3 { background: var(--g3); border-color: var(--g3); }
+  .group.g1.selected-group { background: var(--g1-dark); border-color: var(--g1-dark); }
+  .group.g2.selected-group { background: var(--g2-dark); border-color: var(--g2-dark); }
+  .group.g3.selected-group { background: var(--g3-dark); border-color: var(--g3-dark); }
+  .subgroups { list-style: none; margin: 4px 8px 4px; padding: 0; }
+  .subgroups li { font-size: 14px; padding: 6px 8px; border-top: 1px solid rgba(255,255,255,.25); color: #fff; }
+  .subgroups li:first-child { border-top: none; }
+  .subgroups li span { color: rgba(255,255,255,.85); }
+  .need { background: transparent; border: 2px solid rgba(255,255,255,.45); border-radius: 10px;
+          padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; color: #fff; width: 100%; }
+  .need small { display: block; font-weight: 400; color: rgba(255,255,255,.9); font-size: 13px; margin-top: 4px; }
+  .need:hover { border-color: #fff; background: rgba(0,0,0,.12); }
+  .btn { display: inline-block; border: none; cursor: pointer; font-size: 16px; font-weight: 600;
+         padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; width: 100%; }
+  .btn:hover { background: var(--clay-dark); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .result { display: none; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+            padding: 20px; margin-top: 20px; }
+  .result.show { display: block; }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 12px; text-align: center; }
+  .theme-row { display: flex; justify-content: flex-end; }
+  .theme-toggle { background: transparent; border: 2px solid var(--line); color: var(--ink);
+                  border-radius: 999px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="theme-row"><button class="theme-toggle" onclick="toggleTheme()">Dark mode</button></div>
+  <div class="wordmark">The <span class="lign">LiGN</span> Network</div>
+  <h1>What kind of connection do you need right now?</h1>
+  <p class="sub">Pick one. No account, no pressure — this is just the first screen.</p>
+
+  <div class="needs" id="needs">
+    <div class="group g1">
+      <button class="need g1">Emotional Support<small>When you need care right now</small></button>
+      <ul class="subgroups">
+        <li>Vent <span>— Get it out, no fixing</span></li>
+        <li>Listening <span>— Just listen to me</span></li>
+        <li>I need someone <span>— Right now</span></li>
+        <li>Check-in <span>— Someone to check in with</span></li>
+      </ul>
+    </div>
+
+    <div class="group g2">
+      <button class="need g2">Conversation &amp; Connection<small>Talk and grow a connection</small></button>
+      <ul class="subgroups">
+        <li>Casual chat <span>— Easy, everyday talk</span></li>
+        <li>Deep conversation <span>— Go beneath the surface</span></li>
+        <li>Friendship <span>— Start something ongoing</span></li>
+        <li>Pen pal <span>— Slow, thoughtful letters</span></li>
+      </ul>
+    </div>
+
+    <div class="group g3">
+      <button class="need g3">Companionship &amp; Shared time<small>Be together, do things together</small></button>
+      <ul class="subgroups">
+        <li>Quiet companionship <span>— Be together, quietly</span></li>
+        <li>Shared activity <span>— Do something together</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <button class="btn" id="go" disabled>Continue</button>
+  <div class="result" id="result"></div>
+  <p class="hint">Matching, accounts and chat come later. Silence is normal here.</p>
+</div>
+<script>
+  var picked = null;
+  var btns = document.querySelectorAll('.need');
+  var go = document.getElementById('go');
+  var result = document.getElementById('result');
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.group').forEach(function (g) { g.classList.remove('selected-group'); });
+      b.closest('.group').classList.add('selected-group');
+      picked = b.firstChild.textContent.trim();
+      go.disabled = false;
+    });
+  });
+  go.addEventListener('click', function () {
+    result.innerHTML = '<b>You picked: ' + picked + '.</b><br>Next step (not built yet): we would look for a real person who wants the same. No AI will pretend to be that person.';
+    result.classList.add('show');
+  });
+  function toggleTheme() {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? '' : 'dark');
+    document.querySelector('.theme-toggle').textContent = dark ? 'Dark mode' : 'Light mode';
+  }
+</script>
+</body>
+</html>

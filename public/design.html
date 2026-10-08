@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LiGN Network — Visual Preview</title>
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --sand: #EFE7DA;
+    --ink: #2E2A26;
+    --muted: #6F655C;
+    --clay: #C96F4A;
+    --clay-dark: #A95836;
+    --sage: #7D8C6F;
+    --line: #E2D8C9;
+    --card: #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  .eyebrow { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--clay); font-weight: 700; }
+  .wordmark { font-family: Georgia, "Times New Roman", serif; font-size: 30px; letter-spacing: 6px;
+              margin: 4px 0 2px; font-weight: 400; color: var(--clay); }
+  .wordmark .lign { font-style: italic; }
+  .wordmark-rule { width: 56px; height: 2px; background: var(--clay); margin: 10px 0 0; border: none; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 40px; line-height: 1.15; margin: 8px 0 8px; }
+  .sub { color: var(--muted); font-size: 18px; margin-bottom: 32px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 28px; margin-bottom: 24px; }
+  section h2 { font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+  .swatch { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .swatch .c { height: 72px; }
+  .swatch .n { padding: 8px 10px; font-size: 13px; }
+  .swatch .n b { display: block; font-size: 13px; }
+  .swatch .n span { color: var(--muted); font-size: 12px; }
+  .type-h1 { font-family: Georgia, serif; font-size: 32px; }
+  .type-body { font-size: 16px; margin-top: 8px; }
+  .type-small { font-size: 14px; color: var(--muted); margin-top: 8px; }
+  .btn { display: inline-block; border: none; cursor: pointer; font-size: 16px; font-weight: 600;
+         padding: 14px 28px; border-radius: 999px; margin-right: 12px; margin-top: 4px; }
+  .btn-primary { background: var(--clay); color: #fff; }
+  .btn-primary:hover { background: var(--clay-dark); }
+  .btn-secondary { background: transparent; color: var(--ink); border: 2px solid var(--line); }
+  .btn-secondary:hover { border-color: var(--ink); }
+  label { display: block; font-weight: 600; margin-bottom: 8px; }
+  input[type=text] { width: 100%; padding: 14px 16px; font-size: 16px; border: 2px solid var(--line);
+                     border-radius: 12px; background: var(--cream); color: var(--ink); }
+  input[type=text]:focus { outline: none; border-color: var(--clay); background: #fff; }
+  .hint { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .chat { background: var(--sand); border-radius: 12px; padding: 16px; margin-top: 16px; }
+  .bubble { background: #fff; border: 1px solid var(--line); border-radius: 4px 16px 16px 16px;
+            padding: 12px 16px; max-width: 85%; font-size: 15px; }
+  .tag { display: inline-block; background: var(--sage); color: #fff; font-size: 12px; font-weight: 700;
+         padding: 4px 12px; border-radius: 999px; margin-bottom: 10px; letter-spacing: .5px; }
+  /* Dark mode */
+  [data-theme="dark"] {
+    --cream: #1C1917;
+    --sand: #292524;
+    --ink: #F5EFE6;
+    --muted: #A8A29E;
+    --clay: #D98A5F;
+    --clay-dark: #E59A70;
+    --sage: #8FA382;
+    --line: #44403C;
+    --card: #292524;
+  }
+  [data-theme="dark"] .bubble { background: #1C1917; }
+  [data-theme="dark"] input[type=text] { background: #1C1917; }
+  [data-theme="dark"] input[type=text]:focus { background: #000; }
+  .theme-row { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .theme-toggle { background: transparent; border: 2px solid var(--line); color: var(--ink);
+                  border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .theme-toggle:hover { border-color: var(--clay); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="theme-row"><button class="theme-toggle" onclick="toggleTheme()">Dark mode</button></div>
+  <div class="wordmark">The LiGN Network</div>
+  <hr class="wordmark-rule">
+  <div class="eyebrow" style="margin-top:14px">Visual style preview</div>
+  <h1>What kind of connection do you need right now?</h1>
+  <p class="sub">Visual style preview — warm, calm, human. No streaks, no counts, no pressure.</p>
+
+  <section>
+    <h2>Colors</h2>
+    <div class="swatches">
+      <div class="swatch"><div class="c" style="background:#FAF7F2"></div><div class="n"><b>Cream</b><span>#FAF7F2 · background</span></div></div>
+      <div class="swatch"><div class="c" style="background:#EFE7DA"></div><div class="n"><b>Sand</b><span>#EFE7DA · surfaces</span></div></div>
+      <div class="swatch"><div class="c" style="background:#2E2A26"></div><div class="n"><b>Ink</b><span>#2E2A26 · text</span></div></div>
+      <div class="swatch"><div class="c" style="background:#C96F4A"></div><div class="n"><b>Clay</b><span>#C96F4A · primary action</span></div></div>
+      <div class="swatch"><div class="c" style="background:#7D8C6F"></div><div class="n"><b>Sage</b><span>#7D8C6F · calm accents</span></div></div>
+      <div class="swatch"><div class="c" style="background:#687765"></div><div class="n"><b>Cool sage</b><span>#687765 · group 1</span></div></div>
+      <div class="swatch"><div class="c" style="background:#59627F"></div><div class="n"><b>Muted indigo</b><span>#59627F · group 2</span></div></div>
+      <div class="swatch"><div class="c" style="background:#76566D"></div><div class="n"><b>Smoky plum</b><span>#76566D · group 3</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Typography</h2>
+    <div class="type-h1">Warm serif for moments that matter</div>
+    <div class="type-body">Clean sans for everything else. Body text stays at 16px, generous line height, never shouty. Silence is normal here — the interface should feel like a quiet room, not a feed.</div>
+    <div class="type-small">Small / muted — used for gentle hints, never guilt ("No rush — reply whenever feels right.")</div>
+  </section>
+
+  <section>
+    <h2>Buttons</h2>
+    <button class="btn btn-primary">Find connection</button>
+    <button class="btn btn-secondary">Pause</button>
+    <p class="hint">Primary is clay, pill-shaped, single clear action. Secondary is quiet — leaving or pausing must always feel allowed.</p>
+    <div class="chat">
+      <span class="tag">JUST LISTENING</span>
+      <div class="bubble">Hey, no rush at all. I'm here to listen whenever you're ready.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sample input</h2>
+    <label for="need">What kind of connection do you need right now?</label>
+    <input type="text" id="need" placeholder="e.g. Someone to vent to, no advice needed…">
+    <p class="hint">Placeholder suggests an honest need. No character counters, no pressure.</p>
+  </section>
+</div>
+<script>
+  function toggleTheme() {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? '' : 'dark');
+    document.querySelector('.theme-toggle').textContent = dark ? 'Dark mode' : 'Light mode';
+  }
+</script>
+</body>
+</html>
