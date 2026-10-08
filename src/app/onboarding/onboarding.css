@@ -7,14 +7,18 @@
 .ob-label input, .ob-label select { display: block; width: 100%; margin-top: 6px; padding: 12px 14px; font-size: 16px; border: 2px solid #E2D8C9; border-radius: 12px; background: #fff; color: #2E2A26; }
 .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .ob-groups { display: grid; gap: 14px; margin: 20px 0 24px; }
-.ob-group { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 14px; }
+.ob-group { border: 1px solid #E2D8C9; border-radius: 14px; padding: 14px; color: #fff; }
+.ob-group.g1 { background: #687765; border-color: #687765; }
+.ob-group.g2 { background: #59627F; border-color: #59627F; }
+.ob-group.g3 { background: #76566D; border-color: #76566D; }
 .ob-group h2 { font-size: 16px; margin: 0 0 10px; }
-.ob-group h2 small { display: block; font-weight: 400; color: #6F655C; font-size: 13px; }
+.ob-group h2 small { display: block; font-weight: 400; color: rgba(255,255,255,.85); font-size: 13px; }
 .ob-needs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ob-needs button { border: 2px solid #E2D8C9; background: #FAF7F2; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; color: #2E2A26; }
-.ob-group.g1 .ob-needs button.picked { background: #687765; border-color: #687765; color: #fff; }
-.ob-group.g2 .ob-needs button.picked { background: #59627F; border-color: #59627F; color: #fff; }
-.ob-group.g3 .ob-needs button.picked { background: #76566D; border-color: #76566D; color: #fff; }
+.ob-needs button { border: 2px solid rgba(255,255,255,.5); background: transparent; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; color: #fff; }
+.ob-needs button:hover { border-color: #fff; }
+.ob-group.g1 .ob-needs button.picked { background: #fff; border-color: #fff; color: #687765; }
+.ob-group.g2 .ob-needs button.picked { background: #fff; border-color: #fff; color: #59627F; }
+.ob-group.g3 .ob-needs button.picked { background: #fff; border-color: #fff; color: #76566D; }
 .ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: #C96F4A; color: #fff; }
 .ob-go:disabled { opacity: .45; cursor: default; }
 .ob-status { background: #fff; border: 1px solid #E2D8C9; border-radius: 12px; padding: 14px; margin-top: 16px; }

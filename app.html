@@ -23,28 +23,21 @@
   h1 { font-family: Georgia, serif; font-size: 34px; line-height: 1.2; margin: 16px 0 8px; }
   .sub { color: var(--muted); margin-bottom: 24px; }
   .needs { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px; }
-  .group { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px 8px 12px; }
-  .group.selected-group { border-color: var(--clay); background: var(--sand); }
+  .group { border: 1px solid var(--line); border-radius: 14px; padding: 8px 8px 12px; color: #fff; }
+  .group.g1 { background: var(--g1); border-color: var(--g1); }
+  .group.g2 { background: var(--g2); border-color: var(--g2); }
+  .group.g3 { background: var(--g3); border-color: var(--g3); }
+  .group.g1.selected-group { background: var(--g1-dark); border-color: var(--g1-dark); }
+  .group.g2.selected-group { background: var(--g2-dark); border-color: var(--g2-dark); }
+  .group.g3.selected-group { background: var(--g3-dark); border-color: var(--g3-dark); }
   .subgroups { list-style: none; margin: 4px 8px 4px; padding: 0; }
-  .subgroups li { font-size: 14px; padding: 6px 8px; border-top: 1px solid var(--line); color: var(--ink); }
+  .subgroups li { font-size: 14px; padding: 6px 8px; border-top: 1px solid rgba(255,255,255,.25); color: #fff; }
   .subgroups li:first-child { border-top: none; }
-  .subgroups li span { color: var(--muted); }
-  .need { border: 2px solid transparent; border-radius: 10px;
+  .subgroups li span { color: rgba(255,255,255,.85); }
+  .need { background: transparent; border: 2px solid rgba(255,255,255,.45); border-radius: 10px;
           padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; color: #fff; width: 100%; }
-  .need small { display: block; font-weight: 400; color: #fff; opacity: .9; font-size: 13px; margin-top: 4px; }
-  .need.g1 { background: var(--g1); border-color: var(--g1); }
-  .need.g1:hover { background: var(--g1-dark); border-color: var(--g1-dark); }
-  .need.g2 { background: var(--g2); border-color: var(--g2); }
-  .need.g2:hover { background: var(--g2-dark); border-color: var(--g2-dark); }
-  .need.g3 { background: var(--g3); border-color: var(--g3); }
-  .need.g3:hover { background: var(--g3-dark); border-color: var(--g3-dark); }
-  .group.selected-group { background: var(--sand); }
-  .group.g1.selected-group { border-color: var(--g1); }
-  .group.g1.selected-group .need { background: var(--g1-dark); border-color: var(--g1-dark); }
-  .group.g2.selected-group { border-color: var(--g2); }
-  .group.g2.selected-group .need { background: var(--g2-dark); border-color: var(--g2-dark); }
-  .group.g3.selected-group { border-color: var(--g3); }
-  .group.g3.selected-group .need { background: var(--g3-dark); border-color: var(--g3-dark); }
+  .need small { display: block; font-weight: 400; color: rgba(255,255,255,.9); font-size: 13px; margin-top: 4px; }
+  .need:hover { border-color: #fff; background: rgba(0,0,0,.12); }
   .btn { display: inline-block; border: none; cursor: pointer; font-size: 16px; font-weight: 600;
          padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; width: 100%; }
   .btn:hover { background: var(--clay-dark); }
