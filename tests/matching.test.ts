@@ -100,16 +100,28 @@ describe("eligibility (§13)", () => {
 });
 
 describe("compatibility (§12)", () => {
-  it("current need outranks everything else", () => {
-    const needMatch = candidate({ id: "need", needs: ["listening"], interests: [] });
+  it("listeners meet talkers — never other listeners", () => {
+    const talker = candidate({ id: "talker", needs: ["venting"] });
+    const fellowListener = candidate({ id: "listener2", needs: ["listening"] });
+    const ranked = rankCandidates(viewer, [fellowListener, talker]);
+    expect(ranked[0].id).toBe("talker");
+    expect(ranked[0].sharedNeeds).toContain("venting");
+  });
+  it("symmetric needs mirror: casual chat meets casual chat", () => {
+    const dani: MatchViewer = { ...viewer, needs: ["casual-chat"] };
+    const mirror = candidate({ id: "mirror", needs: ["casual-chat"] });
+    const other = candidate({ id: "other", needs: ["pen-pal"] });
+    expect(rankCandidates(dani, [other, mirror])[0].id).toBe("mirror");
+  });
+  it("current need still outranks a pile of shared interests", () => {
+    const needMatch = candidate({ id: "need", needs: ["venting"], interests: [] });
     const interestMatch = candidate({
       id: "ints",
-      needs: ["venting"],
+      needs: ["casual-chat"],
       interests: ["books", "films", "music", "walks", "tea"],
     });
     const ranked = rankCandidates(viewer, [interestMatch, needMatch]);
     expect(ranked[0].id).toBe("need");
-    expect(ranked[0].sharedNeeds).toContain("listening");
   });
   it("unavailable users never appear as available (filtered, not scored)", () => {
     const ranked = rankCandidates(viewer, [candidate({ discoverable: false })]);

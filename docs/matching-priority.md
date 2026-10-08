@@ -2,7 +2,13 @@
 
 Order (need dominates by weight 100; next highest is availability at 40):
 
-1. Current need — 100 per shared intention. Strongest signal; decides ties first.
+1. Current need — 100 per satisfied need, via the compatibility matrix
+   (not mere overlap). Support needs pair complementarily; all others mirror:
+   - listening → venting, need-someone (never another listener)
+   - venting → listening
+   - need-someone → listening
+   - casual-chat, deep-conversation, check-ins, friendship, pen-pal,
+     quiet-companionship, shared-activity → their own kind only.
 2. Availability — 40 per shared type.
 3. Conversation depth — 25 on exact match.
 4. Conversation style — 20 per shared style.

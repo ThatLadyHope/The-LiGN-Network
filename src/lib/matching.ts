@@ -57,6 +57,21 @@ function overlap(a: string[], b: string[]): number {
   return a.filter((x) => b.includes(x)).length;
 }
 
+// Need compatibility (§12, refined): support needs pair COMPLEMENTARILY —
+// a listener needs someone talking (vent / need-someone), never another
+// listener. All other needs pair with their own kind (mirror).
+const NEED_COMPAT: Record<ConnectionIntention, ConnectionIntention[]> = {
+  listening: ["venting", "need-someone"],
+  venting: ["listening"],
+  "need-someone": ["listening"],
+  "casual-chat": ["casual-chat"],
+  "deep-conversation": ["deep-conversation"],
+  "check-ins": ["check-ins"],
+  friendship: ["friendship"],
+  "pen-pal": ["pen-pal"],
+  "quiet-companionship": ["quiet-companionship"],
+  "shared-activity": ["shared-activity"],
+};
 // PRD §12 priority: need > availability > depth > style > personality >
 // interests > life-experience > language > timezone > location.
 // Weights encode the order; need dominates by design.
@@ -80,9 +95,20 @@ export interface ScoredCandidate {
 }
 
 export function scoreCompatibility(viewer: MatchViewer, candidate: MatchCandidate): ScoredCandidate {
-  const sharedNeeds = candidate.needs.filter((n) => viewer.needs.includes(n));
+  // Compatible needs (not mere overlap): each viewer need satisfied by a
+  // complementary candidate need counts once. `sharedNeeds` carries the
+  // candidate-side needs that matched, for display as chips.
+  const sharedNeeds: ConnectionIntention[] = [];
+  let pairs = 0;
+  for (const n of viewer.needs) {
+    const hit = candidate.needs.find((c) => (NEED_COMPAT[n] ?? []).includes(c));
+    if (hit && !sharedNeeds.includes(hit)) {
+      pairs += 1;
+      sharedNeeds.push(hit);
+    }
+  }
   const score =
-    sharedNeeds.length * WEIGHTS.need +
+    pairs * WEIGHTS.need +
     overlap(candidate.availabilityTypes, viewer.availabilityTypes) * WEIGHTS.availability +
     (candidate.depth && viewer.depth && candidate.depth === viewer.depth ? WEIGHTS.depth : 0) +
     overlap(candidate.styles, viewer.styles) * WEIGHTS.style +

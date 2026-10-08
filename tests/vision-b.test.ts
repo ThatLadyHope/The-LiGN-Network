@@ -81,12 +81,14 @@ describe("advanced depth (Later Phase 3)", () => {
   it("locale falls back gracefully; need still dominates refined scoring", () => {
     expect(resolveLocale("en", ["fr"], ["fr", "en"])).toBe("en");
     expect(resolveLocale("de", ["fr"], ["fr", "en"])).toBe("fr");
-    const needMatch = refinedScore(viewer, candidate(["listening"]), 0);
+    // listening viewer: a venting talker (100) beats a stale non-match even
+    // with maxed recency bonus (capped 50) — need still dominates.
+    const talker = refinedScore(viewer, candidate(["venting"]), 0);
     const staleRich = refinedScore(
       viewer,
-      candidate(["venting"]),
+      candidate(["casual-chat"]),
       RECENCY_BONUS_MAX * 10,
     );
-    expect(needMatch.refined).toBeGreaterThan(staleRich.refined);
+    expect(talker.refined).toBeGreaterThan(staleRich.refined);
   });
 });
