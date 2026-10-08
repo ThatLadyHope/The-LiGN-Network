@@ -65,7 +65,8 @@ export default function NeedsPage() {
         }
         throw new Error(data?.error ?? "profile-failed");
       }
-      setStatus("Done — your need is saved. Discovery is next.");
+      setStatus("Saved. Taking you to Discover…");
+      setTimeout(() => router.push("/discover"), 1200);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "something-went-wrong");
     } finally {
