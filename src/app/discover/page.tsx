@@ -150,11 +150,11 @@ export default function DiscoverPage() {
           <h2>No suitable person right now — honestly.</h2>
           <p>No AI will pretend to be your match. While you wait:</p>
           <div className="dc-actions">
+            <button className="dc-act solid-sage" onClick={load}>
+              Retry connection
+            </button>
             <button className="dc-act outline" onClick={() => router.push("/onboarding/needs")}>
               Adjust your needs
-            </button>
-            <button className="dc-act quiet" onClick={load}>
-              Try again
             </button>
             <button className="dc-act solid-sage" onClick={joinQueue}>
               {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
