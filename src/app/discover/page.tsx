@@ -116,7 +116,7 @@ export default function DiscoverPage() {
         The <em>LiGN</em> Network
       </div>
       <h1>People open to the same connection</h1>
-      <p className="ob-sub">Matched on your current need first. No counts, no competition.</p>
+      <p className="ob-sub">Matched on your current need first.</p>
 
       {candidates.map((c) => (
         <article key={c.id} className="dc-card">
