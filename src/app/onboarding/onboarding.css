@@ -21,6 +21,12 @@
 .ob-group.g3 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--plum); }
 .ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; }
 .ob-go:disabled { opacity: .45; cursor: default; }
+.ob-btn-col { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.ob-btn { border-radius: 999px; padding: 12px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.ob-btn.half { width: 50%; min-width: 200px; }
+.ob-btn.quiet { border: 2px solid var(--line); background: transparent; color: var(--ink); }
+.ob-btn.sage { border: 2px solid var(--sage); background: var(--sage); color: #fff; }
+.ob-btn.danger { border: 2px solid var(--clay); background: transparent; color: var(--clay); }
 .ob-password { display: flex; gap: 8px; align-items: stretch; }
 .ob-password input { flex: 1; }
 .ob-show { border: 2px solid var(--line); background: var(--card); border-radius: 12px; padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--ink); white-space: nowrap; }
