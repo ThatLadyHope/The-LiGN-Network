@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import BackButton from "../back-button";
 import "../onboarding/onboarding.css";
 
 export default function ForgotPasswordPage() {
@@ -25,6 +26,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="ob-wrap">
+      <BackButton />
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>

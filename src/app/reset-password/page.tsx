@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import BackButton from "../back-button";
 import "../onboarding/onboarding.css";
 
 function ResetForm() {
@@ -40,6 +41,7 @@ function ResetForm() {
 
   return (
     <main className="ob-wrap">
+      <BackButton />
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>

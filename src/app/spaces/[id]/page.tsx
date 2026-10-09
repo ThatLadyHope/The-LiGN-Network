@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
+import BackButton from "../../back-button";
 import "../../chat/chat.css";
 
 interface Member {
@@ -212,6 +213,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
 
   return (
     <main className="ch-wrap">
+      <BackButton />
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>

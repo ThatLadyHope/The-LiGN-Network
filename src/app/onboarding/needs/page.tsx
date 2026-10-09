@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../onboarding.css";
+import BackButton from "../back-button";
 
 const GROUPS: { id: string; title: string; hint: string; needs: { value: string; label: string }[] }[] = [
   {
@@ -76,6 +77,7 @@ export default function NeedsPage() {
 
   return (
     <main className="ob-wrap">
+      <BackButton />
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>

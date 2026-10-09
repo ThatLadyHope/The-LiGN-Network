@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import BackButton from "../back-button";
 import "../onboarding/onboarding.css";
 
 interface Profile {
@@ -113,6 +114,7 @@ export default function ProfilePage() {
 
   return (
     <main className="ob-wrap">
+      <BackButton />
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
