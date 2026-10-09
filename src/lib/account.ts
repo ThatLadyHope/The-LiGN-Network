@@ -38,6 +38,13 @@ export function resumeAccount(account: AccountSnapshot): AccountSnapshot {
   return { ...account, accountState: "ACTIVE", returnAt: null };
 }
 
+// Auto-restore: a paused account whose return date passed comes back on
+// next contact (status read or login). Manual resume stays available always.
+export function isRestoreDue(accountState: AccountState, returnAt: string | null, now: Date): boolean {
+  if (accountState !== "PAUSED" || !returnAt) return false;
+  return now.getTime() >= new Date(returnAt).getTime();
+}
+
 // PRD §61 — deletion must explain consequences before confirmation.
 export function deletionConsequences(): string[] {
   return [

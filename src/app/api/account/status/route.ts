@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAuth } from "@/lib/auth-config";
 import { db } from "@/lib/db";
-import { pauseAccount, resumeAccount } from "@/lib/account";
+import { isRestoreDue, pauseAccount, resumeAccount } from "@/lib/account";
 
 // GET /api/account/status — my states + pending deletion info.
 export async function GET(req: NextRequest) {
@@ -14,6 +14,20 @@ export async function GET(req: NextRequest) {
     select: { accountState: true, discoveryState: true, returnAt: true, pendingDeletionAt: true },
   });
   if (!me) return NextResponse.json({ error: "no-profile" }, { status: 404 });
+
+  // Automatic restoration: a return date in the past restores on contact.
+  // Deletion cooling always wins over restoration.
+  if (
+    !me.pendingDeletionAt &&
+    isRestoreDue(me.accountState, me.returnAt?.toISOString() ?? null, new Date())
+  ) {
+    const restored = await db.user.update({
+      where: { id: session.user.id },
+      data: { accountState: "ACTIVE", discoveryState: "DISCOVERABLE", returnAt: null },
+      select: { accountState: true, discoveryState: true, returnAt: true, pendingDeletionAt: true },
+    });
+    return NextResponse.json({ status: restored, restored: true });
+  }
   return NextResponse.json({ status: me });
 }
 

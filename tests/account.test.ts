@@ -5,6 +5,7 @@ import {
   deletionBlockedBySafety,
   deletionConsequences,
   deletionIsEffective,
+  isRestoreDue,
   pauseAccount,
   requestDeletion,
   resumeAccount,
@@ -87,6 +88,13 @@ describe("pause (§18)", () => {
     expect(() =>
       pauseAccount({ ...active, accountState: "DELETED" }, null),
     ).toThrow(/deleted/);
+  });
+  it("auto-restores only paused accounts past their return date", () => {
+    const now = new Date("2026-11-10T00:00:00.000Z");
+    expect(isRestoreDue("PAUSED", "2026-11-01T00:00:00.000Z", now)).toBe(true);
+    expect(isRestoreDue("PAUSED", "2026-12-01T00:00:00.000Z", now)).toBe(false);
+    expect(isRestoreDue("PAUSED", null, now)).toBe(false);
+    expect(isRestoreDue("ACTIVE", "2026-11-01T00:00:00.000Z", now)).toBe(false);
   });
 });
 

@@ -36,6 +36,7 @@ export default function DiscoverPage() {
   const [spaceMin, setSpaceMin] = useState("30");
   const [promptIdx, setPromptIdx] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
 
   const REFLECTIONS = [
     "What kind of connection has meant the most to you lately, and why?",
@@ -44,15 +45,26 @@ export default function DiscoverPage() {
   ];
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/discover");
-    if (res.status === 401) {
+    const [d, s] = await Promise.all([fetch("/api/discover"), fetch("/api/account/status")]);
+    if (d.status === 401) {
       router.push("/onboarding");
       return;
     }
-    const data = await res.json().catch(() => null);
+    const data = await d.json().catch(() => null);
     setCandidates(data?.candidates ?? []);
     setFallback(data?.fallback?.options ?? null);
+    const st = await s.json().catch(() => null);
+    setPaused(st?.status?.accountState === "PAUSED");
+    if (st?.restored) setStatus("Welcome back — your account resumed automatically.");
   }, [router]);
+
+  async function resumeNow() {
+    const res = await fetch("/api/account/status", { method: "DELETE" });
+    if (res.ok) {
+      setPaused(false);
+      load();
+    } else setStatus("Could not resume right now.");
+  }
 
   useEffect(() => {
     load();
@@ -133,6 +145,17 @@ export default function DiscoverPage() {
         )}
       </div>
       <p className="ob-sub">Matched on your current need first.</p>
+
+      {paused && (
+        <section className="dc-empty">
+          <p>
+            You are paused — out of discovery, everything kept.{" "}
+            <button className="dc-act solid-sage" onClick={resumeNow}>
+              Resume my account
+            </button>
+          </p>
+        </section>
+      )}
 
       {candidates.map((c) => (
         <article key={c.id} className="dc-card">
