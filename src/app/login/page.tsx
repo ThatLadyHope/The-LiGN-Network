@@ -20,6 +20,21 @@ export default function LoginPage() {
     try {
       const res = await authClient.signIn.email({ email, password });
       if (res.error) throw new Error("Email or password did not match.");
+      // Recovery by simply logging in: a pending deletion inside its window
+      // is cancelled automatically; past it, the account is gone for good.
+      const st = await fetch("/api/account/status").then((r) =>
+        r.ok ? r.json().catch(() => null) : null,
+      );
+      if (st?.status?.pendingDeletionAt) {
+        const rr = await fetch("/api/account/restore", { method: "POST" });
+        if (rr.ok) {
+          setStatus("Welcome back — your deletion request is cancelled.");
+          setTimeout(() => router.push("/discover"), 1500);
+          return;
+        }
+        await authClient.signOut();
+        throw new Error("That account finished deleting. Join again to start fresh.");
+      }
       router.push("/discover");
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "something-went-wrong");

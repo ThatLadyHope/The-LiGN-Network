@@ -232,6 +232,14 @@ model ListenerQueueEntry {
   createdAt DateTime @default(now())
 }
 
+model DeletionFeedback {
+  id        String   @id @default(cuid())
+  userId    String
+  reason    String
+  message   String?
+  createdAt DateTime @default(now())
+}
+
 model Schedule {
   id     String @id @default(cuid())
   data   String?

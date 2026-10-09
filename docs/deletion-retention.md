@@ -6,9 +6,11 @@ uploaded media, verification information.
 
 ## Cooling-off
 Request records `requestedAt`; irreversible deletion no earlier than
-`requestedAt + 14 days` (assumption — PRD gives no number).
+`requestedAt + 30 days` (product decision — recover by simply logging in).
 During cooling-off the account rests PAUSED + NOT_DISCOVERABLE.
-The user may cancel before the effective date.
+Signing in inside the window cancels the request and restores the account.
+Past the window, the account is gone; joining again starts fresh.
+A final purge sweep for past-window rows is still MANUAL/ops work.
 
 ## Retention disclosure (shown before confirmation)
 - Safety/legal holds survive deletion and are named explicitly

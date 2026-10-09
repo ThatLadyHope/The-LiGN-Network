@@ -11,7 +11,7 @@ export interface AccountSnapshot {
   pendingDeletionAt: string | null;
 }
 
-export const COOLING_OFF_DAYS = 14; // Assumption — PRD gives no number (§61).
+export const COOLING_OFF_DAYS = 30; // Product decision: recover by simply logging in within 30 days.
 
 // PRD §5 — one account, one identity. The data layer must reject a second identity.
 export function assertSingleIdentity(existingCount: number): void {

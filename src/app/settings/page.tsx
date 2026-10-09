@@ -15,6 +15,9 @@ export default function SettingsPage() {
     pendingDeletionAt: string | null;
   } | null>(null);
   const [showDelete, setShowDelete] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<"why" | "pause-offer" | "confirm">("why");
+  const [leaveReason, setLeaveReason] = useState("need-space");
+  const [leaveMessage, setLeaveMessage] = useState("");
   const [consequences, setConsequences] = useState<string[]>([]);
   const [status, setStatus] = useState<string | null>(null);
 
@@ -59,11 +62,28 @@ export default function SettingsPage() {
   }
 
   async function openDelete() {
+    setDeleteStep("why");
+    setShowDelete(true);
+  }
+
+  async function sendWhy() {
+    const res = await fetch("/api/account/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reason: leaveReason, message: leaveMessage.trim() || undefined }),
+    });
+    if (!res.ok) {
+      setStatus("Could not send that — you can still continue.");
+    }
+    setDeleteStep("pause-offer");
+  }
+
+  async function continueToConfirm() {
     const res = await fetch("/api/account/delete");
     const d = await res.json().catch(() => null);
     if (res.ok) {
       setConsequences(d.consequences ?? []);
-      setShowDelete(true);
+      setDeleteStep("confirm");
     } else setStatus("Could not start deletion right now.");
   }
 
@@ -134,21 +154,67 @@ export default function SettingsPage() {
               : ""}
           </p>
         )}
-        {account?.accountState === "PAUSED" && !account.pendingDeletionAt ? (
-          <button className="ob-go" onClick={resume}>
-            Resume my account
+        <div className="ob-btn-col">
+          <button className="ob-btn half quiet" onClick={signOut}>
+            Sign out
           </button>
-        ) : (
-          <button className="ob-go" onClick={pause}>
-            Pause my account
-          </button>
-        )}
+          {account?.accountState === "PAUSED" && !account.pendingDeletionAt ? (
+            <button className="ob-btn half sage" onClick={resume}>
+              Resume my account
+            </button>
+          ) : (
+            <button className="ob-btn half sage" onClick={pause}>
+              Pause my account
+            </button>
+          )}
+          {!showDelete && (
+            <button className="ob-btn half danger" onClick={openDelete}>
+              Delete my account…
+            </button>
+          )}
+        </div>
         <p className="ob-hint">Pausing removes you from discovery. Conversations and data stay.</p>
-        {!showDelete ? (
-          <button className="ob-go" onClick={openDelete}>
-            Delete my account…
-          </button>
-        ) : (
+        {showDelete && deleteStep === "why" && (
+          <>
+            <p>Sorry to see you go. Why are you leaving?</p>
+            <label className="ob-label">
+              Reason
+              <select value={leaveReason} onChange={(e) => setLeaveReason(e.target.value)}>
+                <option value="need-space">I need space</option>
+                <option value="not-a-fit">Not a good fit</option>
+                <option value="boundary-issue">A boundary issue</option>
+                <option value="missing-something">Missing something I need</option>
+                <option value="naturally-ended">It ran its course</option>
+                <option value="other">Something else</option>
+              </select>
+            </label>
+            <label className="ob-label">
+              Anything more? (optional)
+              <input
+                value={leaveMessage}
+                maxLength={2000}
+                onChange={(e) => setLeaveMessage(e.target.value)}
+                placeholder="In your own words…"
+              />
+            </label>
+            <button className="ob-btn half sage" onClick={sendWhy}>
+              Send
+            </button>
+          </>
+        )}
+        {showDelete && deleteStep === "pause-offer" && (
+          <>
+            <p>Thank you — that helps. Before you go: would a pause do instead?</p>
+            <p className="ob-hint">Pausing removes you from discovery and keeps everything.</p>
+            <button className="ob-btn half sage" onClick={pause}>
+              Pause instead
+            </button>{" "}
+            <button className="ob-btn half danger" onClick={continueToConfirm}>
+              Continue with deletion
+            </button>
+          </>
+        )}
+        {showDelete && deleteStep === "confirm" && (
           <>
             <p>Deleting removes:</p>
             <ul>
@@ -157,17 +223,14 @@ export default function SettingsPage() {
               ))}
             </ul>
             <p className="ob-hint">
-              14-day cooling-off. Safety holds survive deletion and are disclosed. This cannot be undone after the
-              cooling period.
+              30-day cooling-off — sign in anytime within 30 days to recover. Safety holds survive deletion and are
+              disclosed. This cannot be undone after the cooling period.
             </p>
-            <button className="ob-go" onClick={confirmDelete}>
+            <button className="ob-btn half danger" onClick={confirmDelete}>
               Yes, delete my account
             </button>
           </>
         )}
-        <button className="ob-go" onClick={signOut}>
-          Sign out
-        </button>
         {status && (
           <p className="ob-status" role="status" aria-live="polite">
             {status}
