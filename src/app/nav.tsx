@@ -8,11 +8,26 @@ const AUTH_ROUTES = ["/login", "/onboarding", "/forgot-password", "reset-passwor
 export default function Nav() {
   const path = usePathname();
   if (AUTH_ROUTES.some((r) => path === r || path.startsWith(r + "/"))) return null;
+  // Discover carries its own side menu (Profile + Settings): the top bar
+  // stays to Discover + Chat only, so Settings is not duplicated.
+  const links =
+    path === "/discover" || path.startsWith("/discover/")
+      ? [
+          ["Discover", "/discover"],
+          ["Chat", "/chat"],
+        ]
+      : [
+          ["Discover", "/discover"],
+          ["Chat", "/chat"],
+          ["Settings", "/settings"],
+        ];
   return (
     <nav className="lign-nav">
-      <Link href="/discover">Discover</Link>
-      <Link href="/chat">Chat</Link>
-      <Link href="/settings">Settings</Link>
+      {links.map(([label, href]) => (
+        <Link key={href} href={href}>
+          {label}
+        </Link>
+      ))}
     </nav>
   );
 }

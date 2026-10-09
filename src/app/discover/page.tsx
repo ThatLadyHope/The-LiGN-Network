@@ -113,6 +113,9 @@ export default function DiscoverPage() {
   return (
     <main className="dc-wrap">
       <div className="dc-topbar">
+        <div className="ob-wordmark">
+          The <em>LiGN</em> Network
+        </div>
         <button
           type="button"
           className="dc-menu-btn"
@@ -122,9 +125,6 @@ export default function DiscoverPage() {
         >
           ☰
         </button>
-        <div className="ob-wordmark">
-          The <em>LiGN</em> Network
-        </div>
       </div>
       {menuOpen && (
         <nav className="dc-drawer" aria-label="Menu">
