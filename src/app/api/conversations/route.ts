@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     conversations: mine.map((c) => ({
       id: c.id,
+      connectionId: c.connection.id,
       state: c.connection.state,
       other: byId.get(
         c.connection.userAId === session.user.id ? c.connection.userBId : c.connection.userAId,

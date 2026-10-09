@@ -7,6 +7,7 @@ import "./chat.css";
 
 interface Conversation {
   id: string;
+  connectionId: string;
   state: string;
   other: { id: string; nickname: string } | null;
   preview: string | null;
@@ -34,6 +35,9 @@ export default function ChatPage() {
   const [draft, setDraft] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [typingName, setTypingName] = useState<string | null>(null);
+  const [threadState, setThreadState] = useState<string>("ACTIVE");
+  const [confirmEnd, setConfirmEnd] = useState(false);
+  const [reportCat, setReportCat] = useState("discomfort");
   const socketRef = useRef<Socket | null>(null);
   const lastTypeEmit = useRef<number>(0);
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -45,7 +49,10 @@ export default function ChatPage() {
       return;
     }
     const data = await res.json().catch(() => null);
-    if (res.ok) setMessages(data.messages ?? []);
+    if (res.ok) {
+      setMessages(data.messages ?? []);
+      if (data.state) setThreadState(data.state);
+    }
   }, [router]);
 
   const loadAll = useCallback(async () => {
@@ -125,6 +132,56 @@ export default function ChatPage() {
     }
   }
 
+  const activeConvo = conversations.find((c) => c.id === activeId) ?? null;
+
+  async function pauseResume() {
+    if (!activeConvo) return;
+    const action = threadState === "PAUSED" ? "resume" : "pause";
+    const res = await fetch(`/api/connections/${activeConvo.connectionId}/${action}`, { method: "POST" });
+    if (res.ok) {
+      setThreadState(action === "pause" ? "PAUSED" : "ACTIVE");
+      loadAll();
+    } else setStatus("Could not change that right now.");
+  }
+
+  async function endThread() {
+    if (!activeConvo) return;
+    const res = await fetch(`/api/connections/${activeConvo.connectionId}/end`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+    if (res.ok) {
+      setThreadState("ENDED");
+      setConfirmEnd(false);
+      loadAll();
+    } else setStatus("Could not end that right now.");
+  }
+
+  async function blockOther() {
+    if (!activeConvo?.other) return;
+    const res = await fetch("/api/blocks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: activeConvo.other.id }),
+    });
+    if (res.ok) {
+      setStatus("Blocked. You will not see each other around LiGN anymore.");
+      setActiveId(null);
+      loadAll();
+    } else setStatus("Could not block right now.");
+  }
+
+  async function reportOther() {
+    if (!activeConvo?.other) return;
+    const res = await fetch("/api/reports", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ targetId: activeConvo.other.id, category: reportCat }),
+    });
+    setStatus(res.ok ? "Report received. Reviewers follow up — thank you." : "Could not file the report.");
+  }
+
   return (
     <main className="ch-wrap">
       <div className="ob-wordmark">
@@ -163,8 +220,35 @@ export default function ChatPage() {
 
         <section className="ch-thread">
           {!activeId && <p>Pick a conversation. Silence is normal here.</p>}
-          {activeId && (
+          {activeId && activeConvo && (
             <>
+              <div className="ch-safety">
+                <span className="ch-state">{threadState === "ACTIVE" ? "" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
+                {threadState !== "ENDED" && (
+                  <>
+                    <button onClick={pauseResume}>{threadState === "PAUSED" ? "Resume" : "Pause"}</button>
+                    {confirmEnd ? (
+                      <>
+                        <button onClick={endThread}>Confirm end</button>
+                        <button onClick={() => setConfirmEnd(false)}>Keep</button>
+                      </>
+                    ) : (
+                      <button onClick={() => setConfirmEnd(true)}>End</button>
+                    )}
+                    <button onClick={blockOther}>Block</button>
+                    <select value={reportCat} onChange={(e) => setReportCat(e.target.value)} aria-label="Report category">
+                      <option value="discomfort">Discomfort</option>
+                      <option value="boundary-violation">Boundary violation</option>
+                      <option value="harassment">Harassment</option>
+                      <option value="serious-violation">Serious violation</option>
+                      <option value="credible-threat">Credible threat</option>
+                      <option value="exploitation">Exploitation</option>
+                      <option value="other-high-risk">Other high risk</option>
+                    </select>
+                    <button onClick={reportOther}>Report</button>
+                  </>
+                )}
+              </div>
               <div className="ch-msgs">
                 {messages.map((m) => (
                   <div key={m.id} className="ch-msg">
@@ -176,13 +260,14 @@ export default function ChatPage() {
                 <input
                   value={draft}
                   maxLength={2000}
+                  disabled={threadState !== "ACTIVE"}
                   onChange={(e) => onDraftChange(e.target.value)}
-                  placeholder="Write something honest…"
+                  placeholder={threadState === "ACTIVE" ? "Write something honest…" : "This conversation is not active."}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") send();
                   }}
                 />
-                <button onClick={send} disabled={!draft.trim()}>
+                <button onClick={send} disabled={!draft.trim() || threadState !== "ACTIVE"}>
                   Send
                 </button>
               </div>

@@ -20,3 +20,6 @@
 .ch-send input { flex: 1; padding: 12px 14px; font-size: 15px; border: 2px solid var(--line); border-radius: 12px; }
 .ch-send button { border: none; background: var(--clay); color: #fff; border-radius: 999px; padding: 0 24px; font-weight: 600; cursor: pointer; }
 .ch-send button:disabled { opacity: .45; }
+.ch-safety { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.ch-safety .ch-state { font-size: 13px; color: var(--muted); font-weight: 600; margin-right: auto; }
+.ch-safety button, .ch-safety select { border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }

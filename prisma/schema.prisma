@@ -60,6 +60,8 @@ model User {
   accountState     AccountState   @default(ACTIVE)
   discoveryState   DiscoveryState @default(DISCOVERABLE)
   safetyState      SafetyState    @default(NORMAL)
+  returnAt         DateTime?
+  pendingDeletionAt DateTime?
   verificationData String?
   createdAt        DateTime       @default(now())
   availability     Availability?
@@ -173,6 +175,8 @@ model Block {
   blockedId String
   expiresAt DateTime?
   createdAt DateTime  @default(now())
+
+  @@unique([blockerId, blockedId])
 }
 
 // Better Auth adapter tables (managed by Better Auth; never edited by hand).
