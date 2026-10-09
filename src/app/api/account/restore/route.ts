@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAuth } from "@/lib/auth-config";
 import { db } from "@/lib/db";
 import { deletionIsEffective } from "@/lib/account";
+import { purgeUserData } from "@/lib/sweep";
 
 // POST /api/account/restore — cancel a pending deletion within the window
 // (30 days) by simply being signed in. Past the window: too late.
@@ -16,6 +17,13 @@ export async function POST(req: NextRequest) {
   });
   if (!me?.pendingDeletionAt) return NextResponse.json({ error: "nothing-pending" }, { status: 409 });
   if (deletionIsEffective(new Date(), { requestedAt: "", effectiveAt: me.pendingDeletionAt.toISOString() })) {
+    // Window passed with no return: purge now (safety holds were already
+    // checked at request time; an active hold blocks here too).
+    const hold = await db.report.findFirst({
+      where: { targetId: session.user.id, review: { in: ["pending", "protecting", "in-review"] } },
+    });
+    if (hold) return NextResponse.json({ error: "safety-hold" }, { status: 409 });
+    await purgeUserData(db, session.user.id);
     return NextResponse.json({ error: "too-late" }, { status: 410 });
   }
   await db.user.update({
