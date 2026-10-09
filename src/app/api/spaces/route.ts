@@ -38,20 +38,31 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, space });
 }
 
-// GET /api/spaces — my open (unexpired) spaces.
+// GET /api/spaces — my spaces. ?state=open (default) | closed | all.
+// Closed includes expired + creator-closed: talk-again + reports live there.
 export async function GET(req: NextRequest) {
   const auth = createAuth(db);
   const session = await auth.api.getSession({ headers: req.headers });
   if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
+  const state = new URL(req.url).searchParams.get("state") ?? "open";
+  const where =
+    state === "all"
+      ? { participants: { some: { userId: session.user.id } } }
+      : state === "closed"
+        ? {
+            participants: { some: { userId: session.user.id } },
+            OR: [{ state: "closed" }, { state: "expired" }],
+          }
+        : {
+            state: "open",
+            closesAt: { gt: new Date() },
+            participants: { some: { userId: session.user.id } },
+          };
   const mine = await db.temporarySpace.findMany({
-    where: {
-      state: "open",
-      closesAt: { gt: new Date() },
-      participants: { some: { userId: session.user.id } },
-    },
+    where,
     include: { participants: true },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
   });
   return NextResponse.json({ spaces: mine });
 }
