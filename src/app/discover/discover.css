@@ -20,5 +20,5 @@
 .dc-act.outline-sage { border: 2px solid var(--sage); background: transparent; color: var(--ink); }
 .dc-space { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-top: 14px; padding: 18px; text-align: left; }
 .dc-space h3 { font-size: 15px; margin: 0 0 8px; }
-.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; border: 2px solid var(--line); border-radius: 10px; margin: 0 8px 8px 0; background: var(--cream); }
+.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; color: var(--ink); background: var(--card); border: 2px solid var(--line); border-radius: 10px; margin: 0 8px 8px 0; }
 .dc-open { font-size: 14px; color: var(--indigo); font-weight: 600; }
