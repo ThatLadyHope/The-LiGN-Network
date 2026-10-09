@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import "../../chat/chat.css";
 
@@ -35,8 +35,8 @@ const CATEGORIES = [
   "other-high-risk",
 ];
 
-export default function SpacePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function SpacePage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const [space, setSpace] = useState<SpaceInfo | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
