@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
-import "../chat/chat.css";
+import "../../chat/chat.css";
 
 interface Member {
   id: string;
