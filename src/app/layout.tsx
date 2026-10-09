@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Nav from "./nav";
 import SkipLink from "./skip-link";
 import ThemeProvider from "./theme-provider";
 import "./globals.css";
@@ -15,11 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider />
         <SkipLink />
-        <nav className="lign-nav">
-          <Link href="/discover">Discover</Link>
-          <Link href="/chat">Chat</Link>
-          <Link href="/settings">Settings</Link>
-        </nav>
+        <Nav />
         <div id="main">{children}</div>
       </body>
     </html>

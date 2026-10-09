@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import "./discover.css";
@@ -35,6 +36,7 @@ export default function DiscoverPage() {
   const [spaceMin, setSpaceMin] = useState("30");
   const [mySpaces, setMySpaces] = useState<{ id: string; purpose: string; closesAt: string }[]>([]);
   const [promptIdx, setPromptIdx] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const REFLECTIONS = [
     "What kind of connection has meant the most to you lately, and why?",
@@ -110,9 +112,30 @@ export default function DiscoverPage() {
 
   return (
     <main className="dc-wrap">
-      <div className="ob-wordmark">
-        The <em>LiGN</em> Network
+      <div className="dc-topbar">
+        <button
+          type="button"
+          className="dc-menu-btn"
+          aria-expanded={menuOpen}
+          aria-label="Open menu"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          ☰
+        </button>
+        <div className="ob-wordmark">
+          The <em>LiGN</em> Network
+        </div>
       </div>
+      {menuOpen && (
+        <nav className="dc-drawer" aria-label="Menu">
+          <Link href="/profile" onClick={() => setMenuOpen(false)}>
+            Profile
+          </Link>
+          <Link href="/settings" onClick={() => setMenuOpen(false)}>
+            Settings
+          </Link>
+        </nav>
+      )}
       <h1>People open to the same connection</h1>
       <p className="ob-sub">Matched on your current need first.</p>
 
