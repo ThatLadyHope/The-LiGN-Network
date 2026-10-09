@@ -37,13 +37,15 @@ export default function ProfilePage() {
       return;
     }
     const data = await res.json().catch(() => null);
-    if (res.ok && data.profile) {
+    if (res.ok && data?.profile) {
       setProfile(data.profile);
       setAvatarKind(data.profile.avatarKind ?? "none");
       setAvatarColor(data.profile.avatarColor ?? AVATAR_COLORS[0]);
       setBio(data.profile.bio ?? "");
       setCountry(data.profile.country ?? "");
       setInterests((data.profile.interests ?? []).join(", "));
+    } else if (res.status !== 401) {
+      setStatus("Could not load your profile. Check your connection, then reload — or join again from Get started.");
     }
   }, [router]);
 
@@ -100,6 +102,11 @@ export default function ProfilePage() {
     return (
       <main className="ob-wrap">
         <p>Loading profile…</p>
+        {status && (
+          <p className="ob-status" role="status">
+            {status}
+          </p>
+        )}
       </main>
     );
   }
