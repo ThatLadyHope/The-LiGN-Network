@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../onboarding.css";
-import BackButton from "../back-button";
+import BackButton from "../../back-button";
 
 const GROUPS: { id: string; title: string; hint: string; needs: { value: string; label: string }[] }[] = [
   {
