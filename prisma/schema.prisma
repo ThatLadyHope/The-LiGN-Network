@@ -109,8 +109,10 @@ model Conversation {
 
 model Message {
   id             String       @id @default(cuid())
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  spaceId        String?
+  space          TemporarySpace? @relation(fields: [spaceId], references: [id], onDelete: Cascade)
   senderId       String
   content        String
   moderation     String   @default("clear")
@@ -128,6 +130,7 @@ model TemporarySpace {
   createdAt  DateTime @default(now())
   closesAt   DateTime
   participants SpaceParticipant[]
+  messages     Message[]
 }
 
 model SpaceParticipant {
@@ -138,10 +141,21 @@ model SpaceParticipant {
   joinedAt DateTime @default(now())
 }
 
+model SpaceReconnectWish {
+  id       String   @id @default(cuid())
+  spaceId  String
+  wanterId String
+  wantedId String
+  createdAt DateTime @default(now())
+
+  @@unique([spaceId, wanterId, wantedId])
+}
+
 model Report {
   id        String   @id @default(cuid())
   reporterId String
   targetId  String
+  spaceId   String?
   category  String
   evidence  String?
   review    String   @default("pending")

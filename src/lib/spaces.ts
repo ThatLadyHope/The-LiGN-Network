@@ -112,3 +112,21 @@ export function postSpaceReconnect(
   // Unilateral interest is never disclosed.
   return { connected, disclosed: connected };
 }
+
+// Mutual-pair detection over stored wishes: returns pairs (a,b) where both
+// wished for each other. Unmatched wishes stay silent.
+export function findMutualPairs(
+  wishes: { wanterId: string; wantedId: string }[],
+): [string, string][] {
+  const want = new Set(wishes.map((w) => `${w.wanterId}>${w.wantedId}`));
+  const pairs: [string, string][] = [];
+  const seen = new Set<string>();
+  for (const w of wishes) {
+    const key = [w.wanterId, w.wantedId].sort().join(">");
+    if (!seen.has(key) && want.has(`${w.wantedId}>${w.wanterId}`)) {
+      seen.add(key);
+      pairs.push([w.wanterId, w.wantedId]);
+    }
+  }
+  return pairs;
+}

@@ -11,6 +11,7 @@ import {
   closeEarly,
   creatorLeave,
   expireSpace,
+  findMutualPairs,
   isExpired,
   joinSpace,
   postSpaceReconnect,
@@ -115,5 +116,14 @@ describe("post-space reconnection (§38)", () => {
   it("connects only on mutual interest; unilateral stays hidden", () => {
     expect(postSpaceReconnect(true, true)).toEqual({ connected: true, disclosed: true });
     expect(postSpaceReconnect(true, false)).toEqual({ connected: false, disclosed: false });
+  });
+  it("finds mutual wish pairs silently", () => {
+    expect(
+      findMutualPairs([
+        { wanterId: "a", wantedId: "b" },
+        { wanterId: "b", wantedId: "a" },
+        { wanterId: "a", wantedId: "c" },
+      ]),
+    ).toEqual([["a", "b"]]);
   });
 });

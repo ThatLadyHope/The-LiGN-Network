@@ -80,12 +80,10 @@ export default function DiscoverPage() {
     });
     const data = await res.json().catch(() => null);
     if (res.ok) {
-      setSpacePurpose("");
-      loadSpaces();
-      setStatus(`Space open until ${new Date(data.space.closesAt).toLocaleTimeString()}.`);
-    } else {
-      setStatus("Could not open the space.");
+      router.push(`/spaces/${data.space.id}`);
+      return;
     }
+    setStatus("Could not open the space.");
   }
 
   async function loadSpaces() {
