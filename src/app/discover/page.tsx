@@ -34,8 +34,6 @@ export default function DiscoverPage() {
   const [queuePos, setQueuePos] = useState<number | null>(null);
   const [spacePurpose, setSpacePurpose] = useState("");
   const [spaceMin, setSpaceMin] = useState("30");
-  const [mySpaces, setMySpaces] = useState<{ id: string; purpose: string; closesAt: string }[]>([]);
-  const [pastSpaces, setPastSpaces] = useState<{ id: string; purpose: string; state: string }[]>([]);
   const [promptIdx, setPromptIdx] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -89,19 +87,6 @@ export default function DiscoverPage() {
     setStatus("Could not open the space.");
   }
 
-  async function loadSpaces() {
-    const [open, closed] = await Promise.all([
-      fetch("/api/spaces").then((r) => r.json().catch(() => null)),
-      fetch("/api/spaces?state=closed").then((r) => r.json().catch(() => null)),
-    ]);
-    setMySpaces(open?.spaces ?? []);
-    setPastSpaces(closed?.spaces ?? []);
-  }
-
-  useEffect(() => {
-    loadSpaces();
-  }, []);
-
   async function sendRequest(id: string) {
     const res = await fetch("/api/requests", {
       method: "POST",
@@ -138,6 +123,9 @@ export default function DiscoverPage() {
             <Link href="/profile" onClick={() => setMenuOpen(false)}>
               Profile
             </Link>
+            <Link href="/spaces" onClick={() => setMenuOpen(false)}>
+              Your spaces
+            </Link>
             <Link href="/settings" onClick={() => setMenuOpen(false)}>
               Settings
             </Link>
@@ -172,23 +160,6 @@ export default function DiscoverPage() {
         </article>
       ))}
 
-      {(mySpaces.length > 0 || pastSpaces.length > 0) && (
-        <section className="dc-space">
-          <h3>Your spaces</h3>
-          {mySpaces.map((s) => (
-            <p key={s.id} className="dc-open">
-              <Link href={`/spaces/${s.id}`}>{s.purpose}</Link> — open until{" "}
-              {new Date(s.closesAt).toLocaleTimeString()}
-            </p>
-          ))}
-          {pastSpaces.map((s) => (
-            <p key={s.id}>
-              <Link href={`/spaces/${s.id}`}>{s.purpose}</Link> <small>· ended — talk-again & reports inside</small>
-            </p>
-          ))}
-        </section>
-      )}
-
       {candidates.length === 0 && fallback && (
         <section className="dc-empty">
           <div className="eyebrow">While you wait</div>
@@ -222,11 +193,6 @@ export default function DiscoverPage() {
             <button className="dc-act solid-clay" onClick={openSpace}>
               Open space
             </button>
-            {mySpaces.map((s) => (
-              <p key={s.id} className="dc-open">
-                Open: {s.purpose} — closes {new Date(s.closesAt).toLocaleTimeString()}
-              </p>
-            ))}
           </div>
           <div className="dc-space">
             <h3>Reflection prompt</h3>
