@@ -41,6 +41,9 @@ model User {
   id               String         @id @default(cuid())
   nickname         String
   email            String         @unique
+  avatarKind       String         @default("none")
+  avatarColor      String?
+  avatarUrl        String?
   currentNeeds     String[]       @default([])
   language         String?
   // Better Auth fields (adapter-managed; LiGN identity stays nickname-based).

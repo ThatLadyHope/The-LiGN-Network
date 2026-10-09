@@ -6,6 +6,9 @@ import "../onboarding/onboarding.css";
 
 interface Profile {
   nickname: string;
+  avatarKind: string;
+  avatarColor: string | null;
+  avatarUrl: string | null;
   bio: string | null;
   country: string | null;
   interests: string[];
@@ -14,9 +17,13 @@ interface Profile {
   currentNeeds: string[];
 }
 
+const AVATAR_COLORS = ["#687765", "#59627F", "#76566D", "#C96F4A", "#7D8C6F"];
+
 export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [avatarKind, setAvatarKind] = useState("none");
+  const [avatarColor, setAvatarColor] = useState(AVATAR_COLORS[0]);
   const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
   const [interests, setInterests] = useState("");
@@ -32,6 +39,8 @@ export default function ProfilePage() {
     const data = await res.json().catch(() => null);
     if (res.ok && data.profile) {
       setProfile(data.profile);
+      setAvatarKind(data.profile.avatarKind ?? "none");
+      setAvatarColor(data.profile.avatarColor ?? AVATAR_COLORS[0]);
       setBio(data.profile.bio ?? "");
       setCountry(data.profile.country ?? "");
       setInterests((data.profile.interests ?? []).join(", "));
@@ -51,6 +60,8 @@ export default function ProfilePage() {
       body: JSON.stringify({
         bio: bio.trim() || null,
         country: country.trim() || null,
+        avatarKind,
+        avatarColor,
         interests: interests
           .split(",")
           .map((s) => s.trim())
@@ -63,6 +74,24 @@ export default function ProfilePage() {
       load();
     } else {
       setStatus("Could not save — keep bio under 500 characters.");
+    }
+    setBusy(false);
+  }
+
+  async function uploadPhoto(file: File) {
+    setBusy(true);
+    setStatus(null);
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch("/api/profile/avatar", { method: "POST", body: form });
+    const data = await res.json().catch(() => null);
+    if (res.ok) {
+      setStatus("Photo saved.");
+      load();
+    } else if (data?.error === "storage-not-configured") {
+      setStatus("Photo storage is not set up yet — pick an initial or illustration instead.");
+    } else {
+      setStatus("Could not save that photo (JPG/PNG/WebP under 2MB).");
     }
     setBusy(false);
   }
@@ -84,6 +113,57 @@ export default function ProfilePage() {
       <p className="ob-sub">
         {[profile.ageRange, profile.language].filter(Boolean).join(" · ") || "Your identity, one per account."}
       </p>
+
+      <div className="pf-avatar-row">
+        <span
+          className="pf-avatar"
+          style={
+            profile.avatarKind === "photo" && profile.avatarUrl
+              ? { backgroundImage: `url(${profile.avatarUrl})` }
+              : { background: avatarColor }
+          }
+        >
+          {!(profile.avatarKind === "photo" && profile.avatarUrl) && profile.nickname.slice(0, 1).toUpperCase()}
+        </span>
+        <div>
+          <label className="ob-label">
+            Avatar (optional)
+            <select value={avatarKind} onChange={(e) => setAvatarKind(e.target.value)}>
+              <option value="none">None</option>
+              <option value="avatar">Initial</option>
+              <option value="illustration">Illustration color</option>
+              <option value="photo">Photo</option>
+            </select>
+          </label>
+          {(avatarKind === "avatar" || avatarKind === "illustration") && (
+            <div className="pf-colors">
+              {AVATAR_COLORS.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-label={`Avatar color ${c}`}
+                  className={avatarColor === c ? "on" : ""}
+                  style={{ background: c }}
+                  onClick={() => setAvatarColor(c)}
+                />
+              ))}
+            </div>
+          )}
+          {avatarKind === "photo" && (
+            <label className="ob-label">
+              Upload photo (JPG/PNG/WebP, ≤2MB)
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) uploadPhoto(f);
+                }}
+              />
+            </label>
+          )}
+        </div>
+      </div>
 
       <label className="ob-label">
         Short bio

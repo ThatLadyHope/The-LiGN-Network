@@ -25,6 +25,11 @@
 .ob-password input { flex: 1; }
 .ob-show { border: 2px solid var(--line); background: var(--card); border-radius: 12px; padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--ink); white-space: nowrap; }
 .ob-alt { font-size: 14px; text-align: center; margin-top: 10px; }
+.pf-avatar-row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 12px; }
+.pf-avatar { width: 72px; height: 72px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; color: #fff; background-size: cover; background-position: center; flex-shrink: 0; }
+.pf-colors { display: flex; gap: 8px; margin-top: 8px; }
+.pf-colors button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.pf-colors button.on { border-color: var(--ink); }
 .ob-alt a { color: var(--clay); font-weight: 600; }
 .ob-group-page { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
 .ob-group-page h2 { font-size: 16px; margin: 0 0 6px; }

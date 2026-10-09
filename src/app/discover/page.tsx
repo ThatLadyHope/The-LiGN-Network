@@ -136,7 +136,6 @@ export default function DiscoverPage() {
           </Link>
         </nav>
       )}
-      <h1>People open to the same connection</h1>
       <p className="ob-sub">Matched on your current need first.</p>
 
       {candidates.map((c) => (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { AvatarKind } from "@/lib/profile";
 import { createAuth } from "@/lib/auth-config";
 import { db } from "@/lib/db";
 
@@ -13,6 +14,9 @@ export async function GET(req: NextRequest) {
     where: { id: session.user.id },
     select: {
       nickname: true,
+      avatarKind: true,
+      avatarColor: true,
+      avatarUrl: true,
       bio: true,
       country: true,
       interests: true,
@@ -29,6 +33,8 @@ const EditableProfile = z.object({
   bio: z.string().max(500).nullable().optional(),
   country: z.string().max(60).nullable().optional(),
   interests: z.array(z.string().max(40)).max(30).optional(),
+  avatarKind: AvatarKind.optional(),
+  avatarColor: z.string().max(20).nullable().optional(),
 });
 
 // PUT /api/profile — progressive profiling: bio, country, interests only.
@@ -48,9 +54,14 @@ export async function PUT(req: NextRequest) {
       ...(parsed.data.bio !== undefined ? { bio: parsed.data.bio } : {}),
       ...(parsed.data.country !== undefined ? { country: parsed.data.country } : {}),
       ...(parsed.data.interests !== undefined ? { interests: parsed.data.interests } : {}),
+      ...(parsed.data.avatarKind !== undefined ? { avatarKind: parsed.data.avatarKind } : {}),
+      ...(parsed.data.avatarColor !== undefined ? { avatarColor: parsed.data.avatarColor } : {}),
     },
     select: {
       nickname: true,
+      avatarKind: true,
+      avatarColor: true,
+      avatarUrl: true,
       bio: true,
       country: true,
       interests: true,
