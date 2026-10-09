@@ -125,17 +125,17 @@ export default function DiscoverPage() {
         >
           ☰
         </button>
+        {menuOpen && (
+          <nav className="dc-drawer" aria-label="Menu">
+            <Link href="/profile" onClick={() => setMenuOpen(false)}>
+              Profile
+            </Link>
+            <Link href="/settings" onClick={() => setMenuOpen(false)}>
+              Settings
+            </Link>
+          </nav>
+        )}
       </div>
-      {menuOpen && (
-        <nav className="dc-drawer" aria-label="Menu">
-          <Link href="/profile" onClick={() => setMenuOpen(false)}>
-            Profile
-          </Link>
-          <Link href="/settings" onClick={() => setMenuOpen(false)}>
-            Settings
-          </Link>
-        </nav>
-      )}
       <p className="ob-sub">Matched on your current need first.</p>
 
       {candidates.map((c) => (

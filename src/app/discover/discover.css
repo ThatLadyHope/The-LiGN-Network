@@ -1,8 +1,8 @@
 .dc-wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
-.dc-topbar { display: flex; align-items: center; gap: 14px; }
+.dc-topbar { display: flex; align-items: center; gap: 14px; position: relative; }
 .dc-topbar .ob-wordmark { flex: 1; }
 .dc-menu-btn { border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 12px; font-size: 20px; padding: 4px 12px; cursor: pointer; line-height: 1.4; margin-left: auto; order: 2; }
-.dc-drawer { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin: 12px 0 4px; overflow: hidden; }
+.dc-drawer { position: absolute; top: 100%; right: 0; z-index: 50; display: flex; flex-direction: column; min-width: 200px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-top: 8px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
 .dc-drawer a { padding: 14px 18px; font-weight: 600; color: var(--ink); text-decoration: none; }
 .dc-drawer a + a { border-top: 1px solid var(--line); }
 .dc-drawer a:hover { background: var(--sand); }
