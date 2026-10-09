@@ -1,22 +1,22 @@
 .ch-wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
 .ch-wrap h1 { font-family: Georgia, serif; font-size: 30px; margin: 16px 0 8px; }
-.ch-requests { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.ch-requests { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
 .ch-requests h2 { font-size: 15px; margin: 0 0 8px; }
-.ch-req { border-top: 1px solid #E2D8C9; padding: 10px 0; }
+.ch-req { border-top: 1px solid var(--line); padding: 10px 0; }
 .ch-req button { margin-right: 8px; border-radius: 999px; padding: 8px 20px; font-weight: 600; cursor: pointer; }
 .ch-cols { display: grid; grid-template-columns: 240px 1fr; gap: 14px; }
-.ch-list button { display: block; width: 100%; text-align: left; background: #fff; border: 1px solid #E2D8C9; border-left: 6px solid #EFE7DA; border-radius: 12px; padding: 12px 12px 12px 14px; margin-bottom: 8px; cursor: pointer; }
-.ch-list button:hover { border-color: #7D8C6F; }
-.ch-list button.on { background: #7D8C6F; border-color: #7D8C6F; color: #fff; }
+.ch-list button { display: block; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--sand); border-radius: 12px; padding: 12px 12px 12px 14px; margin-bottom: 8px; cursor: pointer; }
+.ch-list button:hover { border-color: var(--sage); }
+.ch-list button.on { background: var(--sage); border-color: var(--sage); color: #fff; }
 .ch-list button.on small { color: rgba(255,255,255,.85); }
-.ch-list small { display: block; color: #6F655C; font-size: 13px; }
-.ch-typing { font-size: 13px; color: #59627F; font-style: italic; margin: 8px 0 0; animation: ch-pulse 1.6s ease-in-out infinite; }
+.ch-list small { display: block; color: var(--muted); font-size: 13px; }
+.ch-typing { font-size: 13px; color: var(--indigo); font-style: italic; margin: 8px 0 0; animation: ch-pulse 1.6s ease-in-out infinite; }
 @keyframes ch-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .ch-typing { animation: none; } }
-.ch-thread { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 16px; min-height: 320px; display: flex; flex-direction: column; }
+.ch-thread { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-height: 320px; display: flex; flex-direction: column; }
 .ch-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-.ch-msg { background: #EFE7DA; border-radius: 4px 16px 16px 16px; padding: 10px 14px; max-width: 85%; font-size: 15px; }
+.ch-msg { background: var(--sand); border-radius: 4px 16px 16px 16px; padding: 10px 14px; max-width: 85%; font-size: 15px; }
 .ch-send { display: flex; gap: 8px; }
-.ch-send input { flex: 1; padding: 12px 14px; font-size: 15px; border: 2px solid #E2D8C9; border-radius: 12px; }
-.ch-send button { border: none; background: #C96F4A; color: #fff; border-radius: 999px; padding: 0 24px; font-weight: 600; cursor: pointer; }
+.ch-send input { flex: 1; padding: 12px 14px; font-size: 15px; border: 2px solid var(--line); border-radius: 12px; }
+.ch-send button { border: none; background: var(--clay); color: #fff; border-radius: 999px; padding: 0 24px; font-weight: 600; cursor: pointer; }
 .ch-send button:disabled { opacity: .45; }

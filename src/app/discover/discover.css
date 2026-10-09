@@ -1,24 +1,24 @@
 .dc-wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
 .dc-wrap h1 { font-family: Georgia, serif; font-size: 30px; margin: 16px 0 8px; }
-.dc-card { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+.dc-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
 .dc-card h2 { margin: 0 0 6px; font-size: 18px; }
 .dc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
-.dc-chip { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: #EFE7DA; color: #2E2A26; }
-.dc-chip.need { background: #7D8C6F; color: #fff; font-weight: 600; }
-.dc-go { border: 2px solid #C96F4A; background: transparent; color: #C96F4A; border-radius: 999px; padding: 10px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
-.dc-go:disabled { opacity: .5; cursor: default; border-color: #E2D8C9; color: #6F655C; }
-.dc-empty { background: #EFE7DA; border: 1px solid #E2D8C9; border-radius: 16px; padding: 28px; text-align: center; }
-.dc-empty .eyebrow { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #C96F4A; font-weight: 700; }
+.dc-chip { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: var(--sand); color: var(--ink); }
+.dc-chip.need { background: var(--sage); color: #fff; font-weight: 600; }
+.dc-go { border: 2px solid var(--clay); background: transparent; color: var(--clay); border-radius: 999px; padding: 10px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.dc-go:disabled { opacity: .5; cursor: default; border-color: var(--line); color: var(--muted); }
+.dc-empty { background: var(--sand); border: 1px solid var(--line); border-radius: 16px; padding: 28px; text-align: center; }
+.dc-empty .eyebrow { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--clay); font-weight: 700; }
 .dc-empty h2 { font-family: Georgia, serif; font-size: 24px; margin: 4px 0 6px; }
-.dc-empty > p { color: #6F655C; }
+.dc-empty > p { color: var(--muted); }
 .dc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; justify-content: center; }
 .dc-act { border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
-.dc-act.outline { border: 2px solid #C96F4A; background: transparent; color: #C96F4A; }
-.dc-act.quiet { border: none; background: transparent; color: #6F655C; text-decoration: underline; }
-.dc-act.solid-sage { border: 2px solid #7D8C6F; background: #7D8C6F; color: #fff; }
-.dc-act.solid-clay { border: 2px solid #C96F4A; background: #C96F4A; color: #fff; }
-.dc-act.outline-sage { border: 2px solid #7D8C6F; background: transparent; color: #2E2A26; }
-.dc-space { background: #fff; border: 1px solid #E2D8C9; border-radius: 14px; margin-top: 14px; padding: 18px; text-align: left; }
+.dc-act.outline { border: 2px solid var(--clay); background: transparent; color: var(--clay); }
+.dc-act.quiet { border: none; background: transparent; color: var(--muted); text-decoration: underline; }
+.dc-act.solid-sage { border: 2px solid var(--sage); background: var(--sage); color: #fff; }
+.dc-act.solid-clay { border: 2px solid var(--clay); background: var(--clay); color: #fff; }
+.dc-act.outline-sage { border: 2px solid var(--sage); background: transparent; color: var(--ink); }
+.dc-space { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-top: 14px; padding: 18px; text-align: left; }
 .dc-space h3 { font-size: 15px; margin: 0 0 8px; }
-.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; border: 2px solid #E2D8C9; border-radius: 10px; margin: 0 8px 8px 0; background: #FAF7F2; }
-.dc-open { font-size: 14px; color: #59627F; font-weight: 600; }
+.dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; border: 2px solid var(--line); border-radius: 10px; margin: 0 8px 8px 0; background: var(--cream); }
+.dc-open { font-size: 14px; color: var(--indigo); font-weight: 600; }

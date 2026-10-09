@@ -1,0 +1,56 @@
+/* LiGN design tokens — single source for light + dark. */
+:root {
+  --cream: #FAF7F2;
+  --sand: #EFE7DA;
+  --ink: #2E2A26;
+  --muted: #6F655C;
+  --clay: #C96F4A;
+  --clay-dark: #A95836;
+  --sage: #7D8C6F;
+  --sage-dark: #67755C;
+  --indigo: #59627F;
+  --plum: #76566D;
+  --teal: #687765;
+  --line: #E2D8C9;
+  --card: #FFFFFF;
+}
+
+[data-theme="dark"] {
+  --cream: #1C1917;
+  --sand: #292524;
+  --ink: #F5EFE6;
+  --muted: #A8A29E;
+  --clay: #D98A5F;
+  --clay-dark: #E59A70;
+  --sage: #8FA382;
+  --sage-dark: #7C9070;
+  --indigo: #8A93B8;
+  --plum: #A67E96;
+  --teal: #8AA088;
+  --line: #44403C;
+  --card: #292524;
+}
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  margin: 0;
+}
+
+.lign-nav {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lign-nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.lign-nav a:hover {
+  color: var(--clay);
+}
