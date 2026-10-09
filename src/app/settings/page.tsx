@@ -158,6 +158,7 @@ export default function SettingsPage() {
           <button className="ob-btn half quiet" onClick={signOut}>
             Sign out
           </button>
+          <hr className="ob-btn-sep" />
           {account?.accountState === "PAUSED" && !account.pendingDeletionAt ? (
             <button className="ob-btn half sage" onClick={resume}>
               Resume my account
@@ -167,6 +168,7 @@ export default function SettingsPage() {
               Pause my account
             </button>
           )}
+          <hr className="ob-btn-sep" />
           {!showDelete && (
             <button className="ob-btn half danger" onClick={openDelete}>
               Delete my account…
