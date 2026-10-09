@@ -1,6 +1,8 @@
 // LiGN Phase 6 tests — listening, need-someone routing, temp spaces (PRD §32–§40).
 import { describe, expect, it } from "vitest";
 import {
+  LISTENER_SESSION_MIN,
+  isSessionOver,
   leaveListenerSession,
   routeNeedSomeone,
   setVentMode,
@@ -45,6 +47,10 @@ describe("listener mode (§33)", () => {
     expect(s.anonymous).toBe(true);
     expect(s.active).toBe(true);
     expect(leaveListenerSession(s).active).toBe(false);
+  });
+  it("sessions end after their time limit", () => {
+    expect(isSessionOver(new Date(NOW.getTime() + LISTENER_SESSION_MIN * 60000).toISOString(), NOW)).toBe(false);
+    expect(isSessionOver(new Date(NOW.getTime() - 1000).toISOString(), NOW)).toBe(true);
   });
 });
 

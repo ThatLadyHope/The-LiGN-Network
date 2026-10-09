@@ -41,6 +41,7 @@ model User {
   id               String         @id @default(cuid())
   nickname         String
   email            String         @unique
+  listenerMode     Boolean        @default(false)
   avatarKind       String         @default("none")
   avatarColor      String?
   avatarUrl        String?
@@ -88,6 +89,7 @@ model Connection {
   endedAt     DateTime?
   enderId     String?
   reconnectRule String? // allow | temp-block | permanent-block (ender-controlled)
+  endsAt         DateTime? // listening sessions (and only they) expire
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   conversations Conversation[]

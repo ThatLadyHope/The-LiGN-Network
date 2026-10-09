@@ -46,6 +46,11 @@ export function leaveListenerSession(session: ListenerSession): ListenerSession 
   return { ...session, active: false };
 }
 
+// A listening session is over past its end time.
+export function isSessionOver(endsAt: string, now: Date): boolean {
+  return now.getTime() >= new Date(endsAt).getTime();
+}
+
 // PRD §34 routing order. Each step returns null when unavailable; the caller
 // falls through. When everything is null the result is an honest empty state.
 export const NeedSomeoneStep = {

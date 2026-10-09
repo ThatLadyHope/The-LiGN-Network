@@ -45,6 +45,14 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (conversation.connection.state !== "ACTIVE") {
     return NextResponse.json({ error: "connection-not-active" }, { status: 409 });
   }
+  // Listening sessions are time-limited: expiry ends the connection.
+  if (conversation.connection.endsAt && new Date() >= conversation.connection.endsAt) {
+    await db.connection.update({
+      where: { id: conversation.connection.id },
+      data: { state: "ENDED", endedAt: new Date() },
+    });
+    return NextResponse.json({ error: "session-ended" }, { status: 409 });
+  }
   const body = await req.json().catch(() => null);
   const parsed = MessageContent.safeParse({ text: body?.text });
   if (!parsed.success) return NextResponse.json({ error: "invalid-message" }, { status: 400 });
