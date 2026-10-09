@@ -48,15 +48,23 @@ export default function DiscoverPage() {
     const [d, s] = await Promise.all([fetch("/api/discover"), fetch("/api/account/status")]);
     if (d.status === 401) {
       router.push("/onboarding");
-      return;
+      return { found: 0 };
     }
     const data = await d.json().catch(() => null);
+    const found = data?.candidates?.length ?? 0;
     setCandidates(data?.candidates ?? []);
     setFallback(data?.fallback?.options ?? null);
     const st = await s.json().catch(() => null);
     setPaused(st?.status?.accountState === "PAUSED");
     if (st?.restored) setStatus("Welcome back — your account resumed automatically.");
+    return { found };
   }, [router]);
+
+  async function retry() {
+    setStatus("Checking again…");
+    const { found } = await load();
+    setStatus(found > 0 ? `Found ${found} ${found === 1 ? "person" : "people"} for you.` : "Still nobody new — the queue or a space below is faster.");
+  }
 
   async function resumeNow() {
     const res = await fetch("/api/account/status", { method: "DELETE" });
@@ -189,7 +197,7 @@ export default function DiscoverPage() {
           <h2>No suitable person right now — honestly.</h2>
           <p>While you wait:</p>
           <div className="dc-actions">
-            <button className="dc-act solid-sage" onClick={load}>
+            <button className="dc-act solid-sage" onClick={retry}>
               Retry connection
             </button>
             <button className="dc-act solid-sage" onClick={() => router.push("/onboarding/needs")}>
