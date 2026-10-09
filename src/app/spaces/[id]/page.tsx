@@ -48,6 +48,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
   const [reportTarget, setReportTarget] = useState("");
   const [reportCat, setReportCat] = useState(CATEGORIES[1]);
   const [wished, setWished] = useState<string[]>([]);
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
   const socketRef = useRef<Socket | null>(null);
 
   const load = useCallback(async () => {
@@ -83,8 +84,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
   useEffect(() => {
     if (!space || space.state !== "open") return;
     loadMessages();
-    const t = setInterval(loadMessages, 5000);
-    const s = io("/spaces");
+    const t = setInterval(loadMessages, 5000);    const s = io("/spaces");
     socketRef.current = s;
     s.emit("join", id);
     s.on("message", () => loadMessages());
@@ -95,6 +95,28 @@ export default function SpacePage({ params }: { params: { id: string } }) {
       socketRef.current = null;
     };
   }, [id, space?.state, loadMessages]);
+
+  const remainingMs = space ? new Date(space.closesAt).getTime() - nowMs : 0;
+
+  useEffect(() => {
+    if (!space || space.state !== "open") return;
+    const clock = setInterval(() => {
+      setNowMs(Date.now());
+      if (new Date(space.closesAt).getTime() <= Date.now()) load();
+    }, 1000);
+    return () => clearInterval(clock);
+  }, [space?.state, space?.closesAt, load]);
+
+  function countdown(): string {
+    if (remainingMs <= 0) return "closing…";
+    const s = Math.floor(remainingMs / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return `${h}h ${m}m left`;
+    if (m > 0) return `${m}m ${sec}s left`;
+    return `${sec}s left`;
+  }
 
   async function send() {
     const text = draft.trim();
@@ -171,7 +193,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
       <h1>{space.purpose}</h1>
       <p className="ob-sub">
         {open
-          ? `Open until ${new Date(space.closesAt).toLocaleTimeString()} · ${members.length} here · never permanent`
+          ? `${countdown()} · ${members.length} here · never permanent`
           : "This space has closed. Thanks for being here."}
       </p>
 
@@ -180,9 +202,9 @@ export default function SpacePage({ params }: { params: { id: string } }) {
         <p>{members.map((m) => m.nickname).join(", ")}</p>
         {open &&
           (isCreator ? (
-            <button onClick={closeEarly}>End space early</button>
+            <button className="ch-mini" onClick={closeEarly}>End space early</button>
           ) : (
-            <button onClick={leave}>Leave space</button>
+            <button className="ch-mini" onClick={leave}>Leave space</button>
           ))}
         {open && isCreator && (
           <p className="ob-hint">Leaving as creator passes it to the longest-here member.</p>
