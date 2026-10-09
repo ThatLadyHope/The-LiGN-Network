@@ -49,7 +49,10 @@ export default function SpacePage({ params }: { params: { id: string } }) {
   const [reportCat, setReportCat] = useState(CATEGORIES[1]);
   const [wished, setWished] = useState<string[]>([]);
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  const [typingName, setTypingName] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const lastTypeEmit = useRef<number>(0);
+  const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch(`/api/spaces/${id}`);
@@ -88,13 +91,25 @@ export default function SpacePage({ params }: { params: { id: string } }) {
     socketRef.current = s;
     s.emit("join", id);
     s.on("message", () => loadMessages());
+    s.on("typing", (payload: { user?: string }) => {
+      const who =
+        typeof payload?.user === "string" && payload.user
+          ? payload.user
+          : "Someone";
+      if (who === (members.find((m) => m.id === mine)?.nickname ?? "")) return;
+      setTypingName(`${who} is typing…`);
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+      typingTimer.current = setTimeout(() => setTypingName(null), 3000);
+    });
     return () => {
       clearInterval(t);
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+      setTypingName(null);
       s.emit("leave", id);
       s.disconnect();
       socketRef.current = null;
     };
-  }, [id, space?.state, loadMessages]);
+  }, [id, space?.state, loadMessages, members, mine]);
 
   const remainingMs = space ? new Date(space.closesAt).getTime() - nowMs : 0;
 
@@ -116,6 +131,16 @@ export default function SpacePage({ params }: { params: { id: string } }) {
     if (h > 0) return `${h}h ${m}m left`;
     if (m > 0) return `${m}m ${sec}s left`;
     return `${sec}s left`;
+  }
+
+  function onDraftChange(v: string) {
+    setDraft(v);
+    const now = Date.now();
+    if (v.trim() && now - lastTypeEmit.current > 3000) {
+      lastTypeEmit.current = now;
+      const me = members.find((m) => m.id === mine)?.nickname ?? "Someone";
+      socketRef.current?.emit("typing", { room: id, user: me });
+    }
   }
 
   async function send() {
@@ -200,12 +225,12 @@ export default function SpacePage({ params }: { params: { id: string } }) {
       <section className="ch-requests">
         <h2>Here ({members.length})</h2>
         <p>{members.map((m) => m.nickname).join(", ")}</p>
-        {open &&
-          (isCreator ? (
-            <button className="ch-mini" onClick={closeEarly}>End space early</button>
-          ) : (
+        {open && (
+          <>
             <button className="ch-mini" onClick={leave}>Leave space</button>
-          ))}
+            {isCreator && <button className="ch-mini" onClick={closeEarly}>End space early</button>}
+          </>
+        )}
         {open && isCreator && (
           <p className="ob-hint">Leaving as creator passes it to the longest-here member.</p>
         )}
@@ -226,7 +251,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
             <input
               value={draft}
               maxLength={2000}
-              onChange={(e) => setDraft(e.target.value)}
+              onChange={(e) => onDraftChange(e.target.value)}
               placeholder="Write something honest…"
               onKeyDown={(e) => {
                 if (e.key === "Enter") send();
@@ -236,6 +261,7 @@ export default function SpacePage({ params }: { params: { id: string } }) {
               Send
             </button>
           </div>
+          {typingName && <p className="ch-typing">{typingName}</p>}
         </section>
       ) : (
         <section className="ch-thread">
