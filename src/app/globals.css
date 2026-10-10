@@ -65,6 +65,13 @@ body {
   text-underline-offset: 4px;
 }
 
+/* Shared across all pages (single definition — no per-page copies). */
+.ob-wordmark { font-family: Georgia, serif; font-size: 26px; letter-spacing: 5px; color: var(--clay); }
+.ob-wordmark em { font-style: italic; }
+.ob-sub { color: var(--muted); margin-bottom: 24px; }
+.ob-hint { font-size: 13px; color: var(--muted); text-align: center; }
+.ob-status { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 16px; }
+
 .lign-back {
   border: 2px solid var(--line);
   background: var(--card);
