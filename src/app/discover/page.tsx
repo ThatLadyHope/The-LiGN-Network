@@ -212,7 +212,6 @@ export default function DiscoverPage() {
         <section className="dc-empty">
           <div className="eyebrow">While you wait</div>
           <h2>No suitable person right now — honestly.</h2>
-          <p>While you wait:</p>
           <div className="dc-actions">
             <button className="dc-act solid-sage" onClick={retry}>
               Retry connection

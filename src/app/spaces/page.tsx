@@ -20,25 +20,34 @@ export default function SpacesPage() {
   const router = useRouter();
   const [open, setOpen] = useState<SpaceRow[]>([]);
   const [ended, setEnded] = useState<SpaceRow[]>([]);
+  const [joinable, setJoinable] = useState<{ id: string; purpose: string; seats: number }[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [status, setStatus] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [o, c] = await Promise.all([
+    const [o, c, b] = await Promise.all([
       fetch("/api/spaces").then((r) => {
         if (r.status === 401) router.push("/onboarding");
         return r.json().catch(() => null);
       }),
       fetch("/api/spaces?state=closed").then((r) => r.json().catch(() => null)),
+      fetch("/api/spaces/browse").then((r) => r.json().catch(() => null)),
     ]);
     setOpen(o?.spaces ?? []);
     setEnded(c?.spaces ?? []);
+    setJoinable(b?.spaces ?? []);
     setSelected([]);
   }, [router]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  async function join(id: string) {
+    const res = await fetch(`/api/spaces/${id}/join`, { method: "POST" });
+    if (res.ok) router.push(`/spaces/${id}`);
+    else setStatus("Could not join — it may be full or closed.");
+  }
 
   function toggle(id: string) {
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
@@ -63,6 +72,20 @@ export default function SpacesPage() {
         The <em>LiGN</em> Network
       </div>
       <h1>Your spaces</h1>
+
+      <section className="dc-space">
+        <h3>Open spaces to join</h3>
+        <p className="ob-hint">Small rooms (3–8) from people around LiGN. Faces stay inside.</p>
+        {joinable.length === 0 && <p className="ob-hint">None open right now — start one from Discover.</p>}
+        {joinable.map((s) => (
+          <p key={s.id}>
+            <b>{s.purpose}</b> <small>· {s.seats} seats left</small>{" "}
+            <button className="dc-act outline" onClick={() => join(s.id)}>
+              Join
+            </button>
+          </p>
+        ))}
+      </section>
 
       <section className="dc-space">
         <h3>Open now</h3>
