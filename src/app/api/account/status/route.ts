@@ -11,7 +11,13 @@ export async function GET(req: NextRequest) {
 
   const me = await db.user.findUnique({
     where: { id: session.user.id },
-    select: { accountState: true, discoveryState: true, returnAt: true, pendingDeletionAt: true },
+    select: {
+      accountState: true,
+      discoveryState: true,
+      returnAt: true,
+      pendingDeletionAt: true,
+      agreementVersion: true,
+    },
   });
   if (!me) return NextResponse.json({ error: "no-profile" }, { status: 404 });
 
@@ -24,7 +30,13 @@ export async function GET(req: NextRequest) {
     const restored = await db.user.update({
       where: { id: session.user.id },
       data: { accountState: "ACTIVE", discoveryState: "DISCOVERABLE", returnAt: null },
-      select: { accountState: true, discoveryState: true, returnAt: true, pendingDeletionAt: true },
+      select: {
+        accountState: true,
+        discoveryState: true,
+        returnAt: true,
+        pendingDeletionAt: true,
+        agreementVersion: true,
+      },
     });
     return NextResponse.json({ status: restored, restored: true });
   }

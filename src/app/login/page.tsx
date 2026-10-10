@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { AGREEMENT_VERSION } from "@/lib/agreement";
 import "../onboarding/onboarding.css";
 
 export default function LoginPage() {
@@ -34,6 +35,11 @@ export default function LoginPage() {
         }
         await authClient.signOut();
         throw new Error("That account finished deleting. Join again to start fresh.");
+      }
+      // Outdated agreement: re-accept before anything else.
+      if (st?.status && st.status.agreementVersion !== AGREEMENT_VERSION) {
+        router.push("/agreement");
+        return;
       }
       router.push("/discover");
     } catch (e) {

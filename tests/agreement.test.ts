@@ -6,6 +6,7 @@ import {
   acceptanceValid,
   buildAcceptanceRecord,
   hasReachedBottom,
+  needsReaccept,
 } from "../src/lib/agreement";
 
 describe("scroll detection", () => {
@@ -26,6 +27,12 @@ describe("version gate", () => {
     expect(acceptanceValid(undefined)).toBe(false);
     expect(acceptanceValid(null)).toBe(false);
     expect(acceptanceValid("")).toBe(false);
+  });
+  it("flags outdated or missing versions for re-acceptance", () => {
+    expect(needsReaccept(AGREEMENT_VERSION)).toBe(false);
+    expect(needsReaccept("0.9")).toBe(true);
+    expect(needsReaccept(null)).toBe(true);
+    expect(needsReaccept(undefined)).toBe(true);
   });
 });
 

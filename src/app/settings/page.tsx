@@ -15,6 +15,7 @@ export default function SettingsPage() {
     accountState: string;
     pendingDeletionAt: string | null;
   } | null>(null);
+  const [receipt, setReceipt] = useState<{ version: string; acceptedAt: string } | null>(null);
   const [showDelete, setShowDelete] = useState(false);
   const [deleteStep, setDeleteStep] = useState<"why" | "pause-offer" | "confirm">("why");
   const [leaveReason, setLeaveReason] = useState("need-space");
@@ -38,6 +39,13 @@ export default function SettingsPage() {
       })
       .then((d) => {
         if (d?.status) setAccount(d.status);
+      })
+      .catch(() => null);
+    fetch("/api/agreements/accept")
+      .then((r) => (r.ok ? r.json().catch(() => null) : null))
+      .then((d) => {
+        const latest = d?.records?.[d.records.length - 1];
+        if (latest) setReceipt({ version: latest.version, acceptedAt: latest.acceptedAt });
       })
       .catch(() => null);
   }, [router]);
@@ -159,6 +167,11 @@ export default function SettingsPage() {
 
       <section className="ob-group-page">
         <h2>Account</h2>
+        {receipt && (
+          <p className="ob-sub">
+            Agreement v{receipt.version} accepted {new Date(receipt.acceptedAt).toLocaleDateString()}.
+          </p>
+        )}
         {account && (
           <p className="ob-sub">
             Status: {account.accountState}

@@ -56,6 +56,11 @@ export function acceptanceValid(claimed: unknown): claimed is string {
   return claimed === AGREEMENT_VERSION;
 }
 
+// A new version requires separate acceptance; history is never overwritten.
+export function needsReaccept(userVersion: string | null | undefined): boolean {
+  return userVersion !== AGREEMENT_VERSION;
+}
+
 export interface AcceptanceRecordInput {
   userId: string;
   version: string;

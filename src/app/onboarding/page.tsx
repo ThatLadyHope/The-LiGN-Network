@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { AGREEMENT_TEXT, AGREEMENT_TITLE, AGREEMENT_VERSION, hasReachedBottom } from "@/lib/agreement";
+import { AGREEMENT_VERSION } from "@/lib/agreement";
+import AgreementBox from "../agreement-box";
 import "./onboarding.css";
 
 export default function SignupPage() {
@@ -17,9 +18,7 @@ export default function SignupPage() {
   const [language, setLanguage] = useState("en");
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [scrolledBottom, setScrolledBottom] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const agreeBox = useRef<HTMLDivElement | null>(null);
 
   const AGES = ["18-24", "25-34", "35-44", "45-54", "55-plus"];
   const LANGUAGES = [
@@ -52,14 +51,6 @@ export default function SignupPage() {
     password.length >= 10 &&
     language.trim().length >= 2 &&
     agreed;
-
-  function onAgreeScroll() {
-    const el = agreeBox.current;
-    if (!el || scrolledBottom) return;
-    if (hasReachedBottom(el.scrollTop, el.clientHeight, el.scrollHeight)) {
-      setScrolledBottom(true);
-    }
-  }
 
   async function submit() {
     setBusy(true);
@@ -148,34 +139,7 @@ export default function SignupPage() {
         </label>
       </div>
 
-      <h2>{AGREEMENT_TITLE}</h2>
-      <div
-        ref={agreeBox}
-        className="ob-agree-box"
-        tabIndex={0}
-        onScroll={onAgreeScroll}
-        aria-label={AGREEMENT_TITLE}
-      >
-        {AGREEMENT_TEXT}
-      </div>
-      {!scrolledBottom && (
-        <p className="ob-hint" role="status">
-          Scroll to the bottom of the agreement to continue.
-        </p>
-      )}
-      <label className="ob-agree-check">
-        <input
-          type="checkbox"
-          disabled={!scrolledBottom}
-          checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
-          aria-describedby="agree-help"
-        />
-        <span>I have read and agree to the LiGN Confidentiality and Connection Agreement.</span>
-      </label>
-      <p className="ob-hint" id="agree-help">
-        Reading alone is not acceptance — tick the box to agree.
-      </p>
+      <AgreementBox onAgreed={setAgreed} />
 
       <button className="ob-go" disabled={!valid || busy} onClick={submit}>
         {busy ? "Joining…" : "Join LiGN"}
