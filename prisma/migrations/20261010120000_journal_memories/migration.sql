@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "JournalEntry" DROP COLUMN "data",
+ADD COLUMN     "connectionId" TEXT,
+ADD COLUMN     "content" TEXT NOT NULL,
+ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "ownerId" TEXT NOT NULL;
+
+-- AlterTable
+ALTER TABLE "SharedMemory" DROP COLUMN "data",
+ADD COLUMN     "approvedA" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "approvedB" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "content" TEXT NOT NULL,
+ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "participantA" TEXT NOT NULL,
+ADD COLUMN     "participantB" TEXT NOT NULL,
+ADD COLUMN     "withdrawnBy" TEXT[] DEFAULT ARRAY[]::TEXT[];
+

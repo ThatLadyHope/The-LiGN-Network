@@ -222,6 +222,9 @@ export default function DiscoverPage() {
             <button className="dc-act solid-sage" onClick={joinQueue}>
               {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
             </button>
+            <button className="dc-act outline" onClick={() => router.push("/activities")}>
+              Browse activities
+            </button>
           </div>
           {retryMsg && (
             <p className="dc-retry-msg" role="status">

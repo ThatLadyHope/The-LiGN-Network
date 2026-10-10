@@ -248,13 +248,22 @@ model Schedule {
 }
 
 model JournalEntry {
-  id     String @id @default(cuid())
-  data   String?
+  id           String   @id @default(cuid())
+  ownerId      String
+  connectionId String?
+  content      String
+  createdAt    DateTime @default(now())
 }
 
 model SharedMemory {
-  id     String @id @default(cuid())
-  data   String?
+  id           String   @id @default(cuid())
+  participantA String
+  participantB String
+  content      String
+  approvedA    Boolean  @default(false)
+  approvedB    Boolean  @default(false)
+  withdrawnBy  String[] @default([])
+  createdAt    DateTime @default(now())
 }
 
 model TrustedPerson {

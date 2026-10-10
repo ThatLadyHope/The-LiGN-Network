@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import BackButton from "../back-button";
@@ -121,6 +122,10 @@ export default function ProfilePage() {
       <h1>{profile.nickname}</h1>
       <p className="ob-sub">
         {[profile.ageRange, profile.language].filter(Boolean).join(" · ") || "Your identity, one per account."}
+      </p>
+      <p>
+        <Link href="/journal">Connection journal</Link> · <Link href="/memories">Shared memories</Link> ·{" "}
+        <Link href="/activities">Shared activities</Link>
       </p>
 
       <div className="pf-avatar-row">
