@@ -208,6 +208,14 @@ export default function DiscoverPage() {
         </article>
       ))}
 
+      <section className="dc-space">
+        <h3>Do something together</h3>
+        <p className="ob-hint">Activities stay secondary — the company matters most.</p>
+        <button className="dc-act solid-clay" onClick={() => router.push("/activities")}>
+          Browse activities
+        </button>
+      </section>
+
       {candidates.length === 0 && fallback && (
         <section className="dc-empty">
           <div className="eyebrow">While you wait</div>
@@ -221,9 +229,6 @@ export default function DiscoverPage() {
             </button>
             <button className="dc-act solid-sage" onClick={joinQueue}>
               {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
-            </button>
-            <button className="dc-act outline" onClick={() => router.push("/activities")}>
-              Browse activities
             </button>
           </div>
           {retryMsg && (
