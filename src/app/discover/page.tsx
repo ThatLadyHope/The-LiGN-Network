@@ -37,6 +37,7 @@ export default function DiscoverPage() {
   const [promptIdx, setPromptIdx] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [retryMsg, setRetryMsg] = useState<string | null>(null);
 
   const REFLECTIONS = [
     "What kind of connection has meant the most to you lately, and why?",
@@ -67,18 +68,18 @@ export default function DiscoverPage() {
   }, [router]);
 
   async function retry() {
-    setStatus("Checking again…");
+    setRetryMsg("Checking again…");
     try {
       const r = await load();
       if ("signedOut" in r) return;
       if (r.failed) {
-        setStatus("Check failed — the app server may be down. Reload the page and try again.");
+        setRetryMsg("Check failed — the app server may be down. Reload the page and try again.");
         return;
       }
       const { found } = r;
-      setStatus(found > 0 ? `Found ${found} ${found === 1 ? "person" : "people"} for you.` : "Still nobody new — the queue or a space below is faster.");
+      setRetryMsg(found > 0 ? `Found ${found} ${found === 1 ? "person" : "people"} for you.` : "Still nobody new — the queue or a space below is faster.");
     } catch {
-      setStatus("Check failed — reload the page and try again.");
+      setRetryMsg("Check failed — reload the page and try again.");
     }
   }
 
@@ -223,6 +224,11 @@ export default function DiscoverPage() {
               {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
             </button>
           </div>
+          {retryMsg && (
+            <p className="dc-retry-msg" role="status">
+              {retryMsg}
+            </p>
+          )}
           <div className="dc-space">
             <h3>Open a temporary space (3–8 people)</h3>
             <input

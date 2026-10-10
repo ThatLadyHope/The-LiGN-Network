@@ -19,6 +19,7 @@
 .dc-empty h2 { font-family: Georgia, serif; font-size: 24px; margin: 4px 0 6px; }
 .dc-empty > p { color: var(--muted); }
 .dc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; justify-content: center; }
+.dc-retry-msg { font-size: 14px; font-weight: 600; color: var(--ink); margin: 6px 0 0; text-align: center; }
 .dc-act { border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .dc-act.outline { border: 2px solid var(--clay); background: transparent; color: var(--clay); }
 .dc-act.quiet { border: none; background: transparent; color: var(--muted); text-decoration: underline; }
