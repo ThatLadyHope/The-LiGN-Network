@@ -209,10 +209,37 @@ export default function DiscoverPage() {
       ))}
 
       <section className="dc-space">
+        <h3>Open a temporary space (3–8 people)</h3>
+        <input
+          value={spacePurpose}
+          onChange={(e) => setSpacePurpose(e.target.value)}
+          placeholder="e.g. Late-night chat"
+          maxLength={120}
+        />
+        <select value={spaceMin} onChange={(e) => setSpaceMin(e.target.value)}>
+          <option value="15">15 min</option>
+          <option value="30">30 min</option>
+          <option value="60">1 hour</option>
+          <option value="120">2 hours</option>
+        </select>
+        <button className="dc-act solid-clay" onClick={openSpace}>
+          Open space
+        </button>
+      </section>
+
+      <section className="dc-space">
         <h3>Do something together</h3>
         <p className="ob-hint">Activities stay secondary — the company matters most.</p>
         <button className="dc-act solid-clay" onClick={() => router.push("/activities")}>
           Browse activities
+        </button>
+      </section>
+
+      <section className="dc-space">
+        <h3>Reflection prompt</h3>
+        <p>{REFLECTIONS[promptIdx % REFLECTIONS.length]}</p>
+        <button className="dc-act outline" onClick={() => setPromptIdx((i) => i + 1)}>
+          Another prompt
         </button>
       </section>
 
@@ -236,31 +263,6 @@ export default function DiscoverPage() {
               {retryMsg}
             </p>
           )}
-          <div className="dc-space">
-            <h3>Open a temporary space (3–8 people)</h3>
-            <input
-              value={spacePurpose}
-              onChange={(e) => setSpacePurpose(e.target.value)}
-              placeholder="e.g. Late-night chat"
-              maxLength={120}
-            />
-            <select value={spaceMin} onChange={(e) => setSpaceMin(e.target.value)}>
-              <option value="15">15 min</option>
-              <option value="30">30 min</option>
-              <option value="60">1 hour</option>
-              <option value="120">2 hours</option>
-            </select>
-            <button className="dc-act solid-clay" onClick={openSpace}>
-              Open space
-            </button>
-          </div>
-          <div className="dc-space">
-            <h3>Reflection prompt</h3>
-            <p>{REFLECTIONS[promptIdx % REFLECTIONS.length]}</p>
-            <button className="dc-act outline" onClick={() => setPromptIdx((i) => i + 1)}>
-              Another prompt
-            </button>
-          </div>
         </section>
       )}
 
