@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { AGREEMENT_TEXT, AGREEMENT_TITLE, AGREEMENT_VERSION, hasReachedBottom } from "@/lib/agreement";
 import "./onboarding.css";
 
 export default function SignupPage() {
@@ -16,6 +17,9 @@ export default function SignupPage() {
   const [language, setLanguage] = useState("en");
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [scrolledBottom, setScrolledBottom] = useState(false);
+  const [agreed, setAgreed] = useState(false);
+  const agreeBox = useRef<HTMLDivElement | null>(null);
 
   const AGES = ["18-24", "25-34", "35-44", "45-54", "55-plus"];
   const LANGUAGES = [
@@ -46,14 +50,36 @@ export default function SignupPage() {
     nickname.length <= 30 &&
     /.+@.+\..+/.test(email) &&
     password.length >= 10 &&
-    language.trim().length >= 2;
+    language.trim().length >= 2 &&
+    agreed;
+
+  function onAgreeScroll() {
+    const el = agreeBox.current;
+    if (!el || scrolledBottom) return;
+    if (hasReachedBottom(el.scrollTop, el.clientHeight, el.scrollHeight)) {
+      setScrolledBottom(true);
+    }
+  }
 
   async function submit() {
     setBusy(true);
     setStatus(null);
     try {
-      const signup = await authClient.signUp.email({ email, password, name: nickname.trim() });
-      if (signup.error) throw new Error(signup.error.message ?? "signup-failed");
+      if (!agreed) {
+        throw new Error("Please read the agreement and tick the box to join.");
+      }
+      const signup = await authClient.signUp.email({
+        email,
+        password,
+        name: nickname.trim(),
+        agreementVersion: AGREEMENT_VERSION,
+      } as Parameters<typeof authClient.signUp.email>[0]);
+      if (signup.error) {
+        if (signup.error.message?.includes("agreement-required")) {
+          throw new Error("The agreement must be accepted to create an account.");
+        }
+        throw new Error(signup.error.message ?? "signup-failed");
+      }
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,6 +147,35 @@ export default function SignupPage() {
           </select>
         </label>
       </div>
+
+      <h2>{AGREEMENT_TITLE}</h2>
+      <div
+        ref={agreeBox}
+        className="ob-agree-box"
+        tabIndex={0}
+        onScroll={onAgreeScroll}
+        aria-label={AGREEMENT_TITLE}
+      >
+        {AGREEMENT_TEXT}
+      </div>
+      {!scrolledBottom && (
+        <p className="ob-hint" role="status">
+          Scroll to the bottom of the agreement to continue.
+        </p>
+      )}
+      <label className="ob-agree-check">
+        <input
+          type="checkbox"
+          disabled={!scrolledBottom}
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          aria-describedby="agree-help"
+        />
+        <span>I have read and agree to the LiGN Confidentiality and Connection Agreement.</span>
+      </label>
+      <p className="ob-hint" id="agree-help">
+        Reading alone is not acceptance — tick the box to agree.
+      </p>
 
       <button className="ob-go" disabled={!valid || busy} onClick={submit}>
         {busy ? "Joining…" : "Join LiGN"}

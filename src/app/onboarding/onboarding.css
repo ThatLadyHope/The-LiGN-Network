@@ -1,8 +1,5 @@
 .ob-wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
-.ob-wordmark { font-family: Georgia, serif; font-size: 26px; letter-spacing: 5px; color: var(--clay); }
-.ob-wordmark em { font-style: italic; }
 .ob-wrap h1 { font-family: Georgia, serif; font-size: 32px; margin: 16px 0 8px; }
-.ob-sub { color: var(--muted); margin-bottom: 24px; }
 .ob-label { display: block; font-weight: 600; margin-bottom: 12px; font-size: 14px; }
 .ob-label input, .ob-label select { display: block; width: 100%; margin-top: 6px; padding: 12px 14px; font-size: 16px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
 .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -39,6 +36,23 @@
 .pf-colors button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .pf-colors button.on { border-color: var(--ink); }
 .ob-alt a { color: var(--clay); font-weight: 600; }
+.ob-agree-box {
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  background: var(--card);
+  color: var(--ink);
+  scrollbar-width: thin;
+}
+.ob-agree-box:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.ob-agree-check { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: 15px; margin: 12px 0 4px; cursor: pointer; }
+.ob-agree-check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--clay); cursor: pointer; }
+.ob-agree-check input:disabled { cursor: not-allowed; }
 .ob-group-page { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
 .ob-group-page h2 { font-size: 16px; margin: 0 0 6px; }
 .ob-group-page a { color: var(--clay); font-weight: 600; }
@@ -47,5 +61,3 @@
 .ob-theme-row button.picked { background: var(--ink); border-color: var(--ink); color: var(--cream); }
 .ob-needs button:focus-visible, .ob-go:focus-visible, .ob-label input:focus-visible, .ob-label select:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .ob-needs button, .ob-go { transition: none; } }
-.ob-status { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-top: 16px; }
-.ob-hint { font-size: 13px; color: var(--muted); text-align: center; }

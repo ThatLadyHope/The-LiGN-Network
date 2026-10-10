@@ -42,6 +42,8 @@ model User {
   nickname         String
   email            String         @unique
   listenerMode     Boolean        @default(false)
+  // Latest accepted agreement version (history lives in AgreementAcceptance).
+  agreementVersion String?
   avatarKind       String         @default("none")
   avatarColor      String?
   avatarUrl        String?
@@ -240,6 +242,20 @@ model DeletionFeedback {
   reason    String
   message   String?
   createdAt DateTime @default(now())
+}
+
+// Agreement acceptance history: append-only. Never updated, never deleted
+// through client requests. Admin retrieval reads this table + the snapshot.
+model AgreementAcceptance {
+  id           String   @id @default(cuid())
+  userId       String
+  version      String
+  textSnapshot String
+  acceptedAt   DateTime @default(now())
+  status       String   @default("accepted")
+
+  @@unique([userId, version])
+  @@index([userId])
 }
 
 model Schedule {
