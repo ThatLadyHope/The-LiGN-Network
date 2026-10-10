@@ -208,6 +208,29 @@ export default function DiscoverPage() {
         </article>
       ))}
 
+      {candidates.length === 0 && fallback && (
+        <section className="dc-empty">
+          <div className="eyebrow">While you wait</div>
+          <h2>No suitable person right now — honestly.</h2>
+          <div className="dc-actions">
+            <button className="dc-act solid-sage" onClick={retry}>
+              Retry connection
+            </button>
+            <button className="dc-act solid-sage" onClick={() => router.push("/onboarding/needs")}>
+              Adjust your needs
+            </button>
+            <button className="dc-act solid-sage" onClick={joinQueue}>
+              {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
+            </button>
+          </div>
+          {retryMsg && (
+            <p className="dc-retry-msg" role="status">
+              {retryMsg}
+            </p>
+          )}
+        </section>
+      )}
+
       <section className="dc-space">
         <h3>Open a temporary space (3–8 people)</h3>
         <input
@@ -242,29 +265,6 @@ export default function DiscoverPage() {
           Another prompt
         </button>
       </section>
-
-      {candidates.length === 0 && fallback && (
-        <section className="dc-empty">
-          <div className="eyebrow">While you wait</div>
-          <h2>No suitable person right now — honestly.</h2>
-          <div className="dc-actions">
-            <button className="dc-act solid-sage" onClick={retry}>
-              Retry connection
-            </button>
-            <button className="dc-act solid-sage" onClick={() => router.push("/onboarding/needs")}>
-              Adjust your needs
-            </button>
-            <button className="dc-act solid-sage" onClick={joinQueue}>
-              {queuePos ? `In queue (#${queuePos})` : "Join listener queue"}
-            </button>
-          </div>
-          {retryMsg && (
-            <p className="dc-retry-msg" role="status">
-              {retryMsg}
-            </p>
-          )}
-        </section>
-      )}
 
       {status && (
         <p className="ob-status" role="status" aria-live="polite">
