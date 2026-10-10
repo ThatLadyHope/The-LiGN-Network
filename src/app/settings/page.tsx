@@ -21,6 +21,13 @@ export default function SettingsPage() {
   const [leaveMessage, setLeaveMessage] = useState("");
   const [consequences, setConsequences] = useState<string[]>([]);
   const [status, setStatus] = useState<string | null>(null);
+  const [returnChoice, setReturnChoice] = useState("none");
+
+  function returnAt(): string | null {
+    if (returnChoice === "none") return null;
+    const days = returnChoice === "day" ? 1 : returnChoice === "week" ? 7 : 30;
+    return new Date(Date.now() + days * 86400000).toISOString();
+  }
 
   useEffect(() => {
     setTheme(getTheme());
@@ -46,7 +53,11 @@ export default function SettingsPage() {
   }
 
   async function pause() {
-    const res = await fetch("/api/account/status", { method: "POST" });
+    const res = await fetch("/api/account/status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ returnAt }),
+    });
     if (res.ok) {
       const d = await res.json().catch(() => null);
       if (d?.status) setAccount(d.status);
@@ -166,9 +177,20 @@ export default function SettingsPage() {
               Resume my account
             </button>
           ) : (
-            <button className="ob-btn half sage" onClick={pause}>
-              Pause my account
-            </button>
+            <>
+              <label className="ob-label">
+                Back on (optional)
+                <select value={returnChoice} onChange={(e) => setReturnChoice(e.target.value)}>
+                  <option value="none">No date — I will resume myself</option>
+                  <option value="day">In 1 day</option>
+                  <option value="week">In 1 week</option>
+                  <option value="month">In 1 month</option>
+                </select>
+              </label>
+              <button className="ob-btn half sage" onClick={pause}>
+                Pause my account
+              </button>
+            </>
           )}
           <hr className="ob-btn-sep" />
           {!showDelete && (
