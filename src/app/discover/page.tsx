@@ -45,10 +45,16 @@ export default function DiscoverPage() {
   ];
 
   const load = useCallback(async () => {
-    const [d, s] = await Promise.all([fetch("/api/discover"), fetch("/api/account/status")]);
+    let d: Response;
+    let s: Response;
+    try {
+      [d, s] = await Promise.all([fetch("/api/discover"), fetch("/api/account/status")]);
+    } catch {
+      return { found: 0, failed: true as const };
+    }
     if (d.status === 401) {
       router.push("/onboarding");
-      return { found: 0 };
+      return { found: 0, failed: false as const, signedOut: true as const };
     }
     const data = await d.json().catch(() => null);
     const found = data?.candidates?.length ?? 0;
@@ -57,13 +63,23 @@ export default function DiscoverPage() {
     const st = await s.json().catch(() => null);
     setPaused(st?.status?.accountState === "PAUSED");
     if (st?.restored) setStatus("Welcome back — your account resumed automatically.");
-    return { found };
+    return { found, failed: false as const };
   }, [router]);
 
   async function retry() {
     setStatus("Checking again…");
-    const { found } = await load();
-    setStatus(found > 0 ? `Found ${found} ${found === 1 ? "person" : "people"} for you.` : "Still nobody new — the queue or a space below is faster.");
+    try {
+      const r = await load();
+      if ("signedOut" in r) return;
+      if (r.failed) {
+        setStatus("Check failed — the app server may be down. Reload the page and try again.");
+        return;
+      }
+      const { found } = r;
+      setStatus(found > 0 ? `Found ${found} ${found === 1 ? "person" : "people"} for you.` : "Still nobody new — the queue or a space below is faster.");
+    } catch {
+      setStatus("Check failed — reload the page and try again.");
+    }
   }
 
   async function resumeNow() {
