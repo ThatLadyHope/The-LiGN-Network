@@ -163,6 +163,9 @@ export default function DiscoverPage() {
             <Link href="/spaces" onClick={() => setMenuOpen(false)}>
               Your spaces
             </Link>
+            <Link href="/memories" onClick={() => setMenuOpen(false)}>
+              Memories
+            </Link>
             <Link href="/settings" onClick={() => setMenuOpen(false)}>
               Settings
             </Link>
