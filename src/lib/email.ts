@@ -1,5 +1,6 @@
-// ZeptoMail transactional email. Without a token, mail is logged to the
+// Resend transactional email. Without a key, mail is logged to the
 // console (dev only) instead of sent — never fails silently in production.
+import { Resend } from "resend";
 
 export interface OutgoingMail {
   to: string;
@@ -8,25 +9,21 @@ export interface OutgoingMail {
 }
 
 export async function sendMail(mail: OutgoingMail): Promise<{ sent: boolean; logged: boolean }> {
-  const token = process.env.ZEPTOMAIL_TOKEN;
+  const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
-  if (!token || !from) {
+  if (!key || !from) {
     if (process.env.NODE_ENV === "production") {
-      throw new Error("email: ZEPTOMAIL_TOKEN / EMAIL_FROM not configured");
+      throw new Error("email: RESEND_API_KEY / EMAIL_FROM not configured");
     }
     console.log("[mail:dev]", mail.to, mail.subject);
     return { sent: false, logged: true };
   }
-  const res = await fetch("https://api.zeptomail.com/v1.1/email", {
-    method: "POST",
-    headers: { Authorization: token, "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({
-      from: { address: from },
-      to: [{ email_address: { address: mail.to } }],
-      subject: mail.subject,
-      htmlbody: mail.html,
-    }),
+  const { error } = await new Resend(key).emails.send({
+    from,
+    to: mail.to,
+    subject: mail.subject,
+    html: mail.html,
   });
-  if (!res.ok) throw new Error(`email: zeptomail ${res.status}`);
+  if (error) throw new Error(`email: resend (${error.message})`);
   return { sent: true, logged: false };
 }

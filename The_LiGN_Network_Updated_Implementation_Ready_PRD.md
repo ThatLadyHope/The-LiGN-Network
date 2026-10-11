@@ -1,4 +1,4 @@
-ï»¿# The LiGN Network
+# The LiGN Network
 ## Implementation-Ready Product Requirements Document
 
 **Product:** The LiGN Network  
@@ -74,19 +74,19 @@ Small groups and temporary spaces are supported, but the primary experience is p
 
 The primary LiGN journey is:
 
-**Need â†’ Find â†’ Connect â†’ Evolve**
+**Need ? Find ? Connect ? Evolve**
 
 ```text
 Express current need
-        â†“
+        ?
 Discovery / Matching
-        â†“
+        ?
 Conversation
-        â†“
+        ?
 Mutual Connection
-        â†“
+        ?
 Continue / Pause / Archive / End
-        â†“
+        ?
 Optional Reconnection
 ```
 
@@ -235,7 +235,7 @@ Supported connection intentions include:
 - Pen pal
 - Quiet companionship
 - Shared activity
-- â€œI need someoneâ€
+- “I need someone”
 
 Users can select more than one.
 
@@ -467,7 +467,7 @@ Tools may include:
 - Personalized prompts
 - Suggested replies
 - Fresh starters
-- â€œIâ€™m not sure what to sayâ€
+- “I’m not sure what to say”
 
 Users can ignore these tools.
 
@@ -499,15 +499,15 @@ All ongoing relationships use:
 
 ```text
 STRANGER
-    â†“
+    ?
 CONVERSATION
-    â†“
+    ?
 MUTUAL_CONNECTION
-    â†“
+    ?
 ACTIVE
-    â†“
+    ?
 PAUSED
-    â†“
+    ?
 ARCHIVED / ENDED
 ```
 
@@ -544,7 +544,7 @@ An active connection may be:
 - Added to a recurring routine
 - Ended
 
-Users are never required to label a relationship â€œfriendship.â€
+Users are never required to label a relationship “friendship.”
 
 ---
 
@@ -679,7 +679,7 @@ Peer support must never be presented as professional mental-health care.
 Users may voluntarily enter Listener Mode.
 
 Listeners can receive:
-- Anonymous â€œI need someoneâ€ requests
+- Anonymous “I need someone” requests
 - Time-limited listening sessions
 - Support-oriented conversations
 
@@ -689,14 +689,14 @@ Listeners are not responsible for another user's safety.
 
 ---
 
-# 34. â€œI Need Someone Right Nowâ€
+# 34. “I Need Someone Right Now”
 
 A user can request immediate human connection.
 
 Routing may use:
 1. Available 1-on-1 match
 2. Listener queue
-3. Small â€œNeed Someoneâ€ room
+3. Small “Need Someone” room
 4. Trusted Person shortcut
 
 If no human is available, LiGN clearly says so.
@@ -740,11 +740,11 @@ Activities may include:
 
 Two discovery paths are supported:
 
-**Match â†’ Activity**
+**Match ? Activity**
 
 or
 
-**Activity â†’ Match**
+**Activity ? Match**
 
 Activities remain secondary to human connection.
 
@@ -755,7 +755,7 @@ Activities remain secondary to human connection.
 Users can create small temporary spaces.
 
 Default:
-- 3â€“8 participants
+- 3–8 participants
 - Defined purpose
 - Defined duration
 
@@ -787,7 +787,7 @@ At minimum, implementation must define behavior for:
 
 After a temporary space ends, participants may privately indicate:
 
-> **Iâ€™d like to talk to this person again.**
+> **I’d like to talk to this person again.**
 
 A new private connection is created only when interest is mutual.
 
@@ -797,7 +797,7 @@ Unilateral interest is not disclosed.
 
 # 39. Groups and Community
 
-Groups remain small, generally **3â€“8 people**.
+Groups remain small, generally **3–8 people**.
 
 Examples:
 - Late-night chat
@@ -833,7 +833,7 @@ Participation is not a social obligation.
 
 Information is disclosed progressively:
 
-**Nickname â†’ Basic Profile â†’ Familiar Connection â†’ Trusted Friend**
+**Nickname ? Basic Profile ? Familiar Connection ? Trusted Friend**
 
 Users may voluntarily share:
 - Phone number
@@ -1064,7 +1064,7 @@ Reports can originate from:
 
 Core flow:
 
-**Report â†’ Protect â†’ Review â†’ Action â†’ Appeal**
+**Report ? Protect ? Review ? Action ? Appeal**
 
 Possible protective actions:
 - Block
@@ -1313,35 +1313,35 @@ For example:
 
 ### Initial interaction
 ```text
-STRANGER â†’ CONVERSATION
+STRANGER ? CONVERSATION
 ```
 
 ### Mutual continuation
 ```text
-CONVERSATION â†’ MUTUAL_CONNECTION â†’ ACTIVE
+CONVERSATION ? MUTUAL_CONNECTION ? ACTIVE
 ```
 
 ### Temporary pause
 ```text
-ACTIVE â†’ PAUSED â†’ ACTIVE
+ACTIVE ? PAUSED ? ACTIVE
 ```
 
 ### Inactivity
 ```text
-ACTIVE â†’ PAUSED â†’ ARCHIVED
+ACTIVE ? PAUSED ? ARCHIVED
 ```
 
 ### Intentional ending
 ```text
-ACTIVE â†’ ENDED
+ACTIVE ? ENDED
 ```
 
 ### Reconnection
 ```text
 ARCHIVED / ENDED
-        â†“
+        ?
 new mutual interaction
-        â†“
+        ?
 ACTIVE
 ```
 
@@ -1364,12 +1364,12 @@ The system must distinguish between:
 Information in one category must not automatically inherit permissions from another.
 
 Examples:
-- Verification â‰  public identity
-- Location â‰  exact address
-- Journal â‰  shared memory
-- Trusted Person â‰  account authority
-- Availability â‰  online status
-- Safety history â‰  public profile information
+- Verification ? public identity
+- Location ? exact address
+- Journal ? shared memory
+- Trusted Person ? account authority
+- Availability ? online status
+- Safety history ? public profile information
 
 ### Permission precedence
 
@@ -1442,7 +1442,7 @@ The initial release should prove the core connection loop.
 - Listener Mode
 
 ## Temporary Spaces
-- 3â€“8 people
+- 3–8 people
 - Defined purpose
 - Time limit
 - Automatic closure
@@ -1697,7 +1697,7 @@ Users should not have to pay simply to find someone to talk to.
 
 Use:
 
-**Connection** â€” general relationship term.
+**Connection** — general relationship term.
 
 Context-specific terms may include:
 - Chat buddy
@@ -1789,7 +1789,7 @@ Users should reach their first meaningful connection without unnecessary setup.
 Before approving a feature, evaluate:
 
 1. Does it make genuine human connection easier?
-2. Does it support the **Need â†’ Find â†’ Connect â†’ Evolve** journey?
+2. Does it support the **Need ? Find ? Connect ? Evolve** journey?
 3. Does it preserve user choice?
 4. Does it preserve privacy?
 5. Does it respect boundaries?
@@ -1827,9 +1827,9 @@ The initial public version is ready when a new user can:
 
 LiGN ultimately revolves around:
 
-**Need â†’ Human â†’ Conversation â†’ Mutual Connection â†’ Relationship**
+**Need ? Human ? Conversation ? Mutual Connection ? Relationship**
 
-Everything elseâ€”matching, profiles, activities, groups, listening, scheduling, memories, trust, and safetyâ€”exists to make that loop:
+Everything else—matching, profiles, activities, groups, listening, scheduling, memories, trust, and safety—exists to make that loop:
 
 **Safer. Easier. More human. More voluntary.**
 
@@ -1840,34 +1840,34 @@ That is the implementation boundary for LiGN.
 # Appendix - Implementation Plan (plain text)
 
 ```text
-# LiGN Network â€” Full Implementation Plan (MVP + Complete Vision)
-Source: `The_LiGN_Network_Updated_Implementation_Ready_PRD.md` Â§Â§1-78 only. Appendices ignored.
-Loop: Need â†’ Human â†’ Conversation â†’ Mutual Connection â†’ Relationship.
-Journey: Need â†’ Find â†’ Connect â†’ Evolve.
+# LiGN Network — Full Implementation Plan (MVP + Complete Vision)
+Source: `The_LiGN_Network_Updated_Implementation_Ready_PRD.md` §§1-78 only. Appendices ignored.
+Loop: Need ? Human ? Conversation ? Mutual Connection ? Relationship.
+Journey: Need ? Find ? Connect ? Evolve.
 Rules: simplest compliant; no feeds/likes/followers/streaks/dating/AI-humans/large communities; Safety > Privacy > Blocking > Account > Connection > Matching > Convenience.
 
 How to use: say `go phase N` (e.g. `go phase 3`). I will execute only that phase's Tasks, produce its Outputs, run its Tests, and stop at its Gate. I will not start the next phase or push without explicit instruction.
 
 ---
 
-## Phase 1 â€” Plan lock
+## Phase 1 — Plan lock
 Objective: Freeze scope so later phases cannot diverge.
-PRD: Â§4 MVP boundary, Â§66 MVP, Â§66 exclusions, Â§67 later releases, Â§74 builder rules, Â§77 DoD.
+PRD: §4 MVP boundary, §66 MVP, §66 exclusions, §67 later releases, §74 builder rules, §77 DoD.
 Tasks:
-1. Confirm MVP = Â§66 only. Â§67 explicitly out of MVP.
-2. Record states Â§63, transitions Â§64, entities Â§62, precedence Â§65, acceptance Â§68, edges Â§69, DoD Â§77.
+1. Confirm MVP = §66 only. §67 explicitly out of MVP.
+2. Record states §63, transitions §64, entities §62, precedence §65, acceptance §68, edges §69, DoD §77.
 3. Record open questions as assumptions (see Unresolved at end). Do not invent requirements.
 Outputs: this file, `docs/scope-mvp.md`, `docs/test-strategy.md`.
 Dependencies: none. Blocks all.
-Tests: review-only â€” every Â§66 item mapped to Phases 2-9, every Â§67 item mapped to Phases 10-11.
+Tests: review-only — every §66 item mapped to Phases 2-9, every §67 item mapped to Phases 10-11.
 Gate: plan accepted. No build code in this phase.
 
-## Phase 2 â€” Foundation: states, schema, privacy
+## Phase 2 — Foundation: states, schema, privacy
 Objective: Lock state machines, data model, permission order.
-PRD: Â§62 entities, Â§63 states, Â§64 transitions, Â§65 permissions.
+PRD: §62 entities, §63 states, §64 transitions, §65 permissions.
 Tasks:
 1. Centralized enums: Account ACTIVE/PAUSED/DELETED; Discovery DISCOVERABLE/NOT_DISCOVERABLE; Connection STRANGER/CONVERSATION/MUTUAL_CONNECTION/ACTIVE/PAUSED/ARCHIVED/ENDED; Safety NORMAL/FLAGGED/RESTRICTED/SUSPENDED/REMOVED. Enforce independence.
-2. Transition guards: STRANGERâ†’CONVERSATION; CONVERSATIONâ†’MUTUAL_CONNECTIONâ†’ACTIVE; ACTIVEâ†’PAUSEDâ†’ACTIVE; ACTIVEâ†’PAUSEDâ†’ARCHIVED; ACTIVEâ†’ENDED; ARCHIVED/ENDEDâ†’new mutualâ†’ACTIVE. Never auto-reopen on single message.
+2. Transition guards: STRANGER?CONVERSATION; CONVERSATION?MUTUAL_CONNECTION?ACTIVE; ACTIVE?PAUSED?ACTIVE; ACTIVE?PAUSED?ARCHIVED; ACTIVE?ENDED; ARCHIVED/ENDED?new mutual?ACTIVE. Never auto-reopen on single message.
 3. Schema: User(identity, profile, age/safety, prefs, language, verification, account state); Availability(types, windows, temp state, discovery state); Connection(2 users, state, duration intent, timestamps, pause/archive/end info); ConnectionRequest(sender, recipient, note, state, timestamps); Conversation(participants, connection ref, type, retention); Message(conversation, sender, content, timestamp, moderation, deletion); TemporarySpace(creator, purpose, duration, capacity 3-8, participants, lifecycle); Report(reporter, target, category, evidence, review, action, appeal); Block(blocker, blocked, time, expiry). Add Schedule/JournalEntry/SharedMemory/TrustedPerson as nullable stubs only (no logic in MVP).
 4. Permission layers: public / discovery-visible / connection-visible / private / verification / journal / shared-memory / safety. Enforce precedence Safety>Privacy>Blocking>Account>Connection>Matching>Convenience. No cross-layer inheritance.
 5. Auth skeleton + request identity middleware + safety audit log.
@@ -1876,9 +1876,9 @@ Dependencies: Phase 1.
 Tests: illegal transition rejected; enum independence; verification/journal/safety never leak to discovery.
 Gate: all guards + precedence pass. No feature code yet.
 
-## Phase 3 â€” Account, profile, onboarding
+## Phase 3 — Account, profile, onboarding
 Objective: Join safely with minimal setup; leave safely.
-PRD: Â§5 identity, Â§6 profile, Â§7 photos, Â§8 age/verification, Â§9 location, Â§17-18 states/pause, Â§61 deletion, Â§75 onboarding.
+PRD: §5 identity, §6 profile, §7 photos, §8 age/verification, §9 location, §17-18 states/pause, §61 deletion, §75 onboarding.
 Tasks:
 1. Register/login, one identity per account, nickname/pseudonym. No multi-persona.
 2. Onboarding minimal: nickname + age-safety + current need + language. Defer rest progressively.
@@ -1892,9 +1892,9 @@ Dependencies: Phase 2.
 Tests: one-identity enforced; minor safety blocks; pause removes from discovery but keeps connections; delete flow + disclosure; no appearance sorting exists.
 Gate: DoD 1,2,4,12 demonstrable.
 
-## Phase 4 â€” Availability, discovery, need-first matching
+## Phase 4 — Availability, discovery, need-first matching
 Objective: State a need, see eligible humans, honest no-match.
-PRD: Â§10 intentions, Â§11 duration, Â§12 matching, Â§13 eligibility, Â§14 discovery, Â§15-16 availability.
+PRD: §10 intentions, §11 duration, §12 matching, §13 eligibility, §14 discovery, §15-16 availability.
 Tasks:
 1. Availability per type (casual, vent/listen, deep, pen pal, check-ins, quiet) + windows + temp states (need space/low energy/just listening/back later, auto-expire). Temp never ends connections. Exact online status never broadcast. Availability separate from account/discovery/connection state.
 2. Discovery frequency Daily/Weekly/Paused; paused affects discovery only.
@@ -1903,12 +1903,12 @@ Tasks:
 5. No-match screen: broaden / try later / listener queue / temp space / activity / reflection prompt. AI navigation help only, never as human.
 Outputs: availability, matching, discover modules, `docs/matching-priority.md`.
 Dependencies: Phase 3.
-Tests: blocked/ineligible never suggested; need outranks interests; unavailable not shown available; no-match honest fallback. Â§69 Matching edges.
+Tests: blocked/ineligible never suggested; need outranks interests; unavailable not shown available; no-match honest fallback. §69 Matching edges.
 Gate: Acceptance Matching green.
 
-## Phase 5 â€” 1-on-1 lifecycle + text messaging (core)
+## Phase 5 — 1-on-1 lifecycle + text messaging (core)
 Objective: Deliver the heart: 1-on-1 platonic connection.
-PRD: Â§19-21 prefs/starters, Â§22 requests, Â§23-25 lifecycle/accept, Â§26-27 silence/one-sided, Â§28-30 ending/reconnection.
+PRD: §19-21 prefs/starters, §22 requests, §23-25 lifecycle/accept, §26-27 silence/one-sided, §28-30 ending/reconnection.
 Tasks:
 1. Requests with sender context + reason + optional note; Accept/Decline/Ignore; mutual required; repeated unwanted = safety signal.
 2. Lifecycle per Phase 2; actions Continue/Pause/Archive/End. No forced friendship label.
@@ -1918,44 +1918,44 @@ Tasks:
 6. End without explanation; optional reason + closing message. Reconnection mutual-only; ender controls allow/temp-block/permanent-block; blocked party not notified; private future-reminder with no auto-notify.
 Outputs: connections, messages, chat UI, `docs/reconnection-rules.md`.
 Dependencies: Phase 4.
-Tests: mutual required; ended never auto-reopens; reconnection allow/temp/permanent; simultaneous end; pause preserves history. Â§69 Connections edges.
+Tests: mutual required; ended never auto-reopens; reconnection allow/temp/permanent; simultaneous end; pause preserves history. §69 Connections edges.
 Gate: Acceptance Connection + DoD 5-9.
 
-## Phase 6 â€” Listening, immediate need, temp spaces (3-8 only)
+## Phase 6 — Listening, immediate need, temp spaces (3-8 only)
 Objective: Urgent/support needs + small temp groups, no communities.
-PRD: Â§32-34 listening/need-someone, Â§37-38 spaces, Â§39-40 groups minimal, Â§36 activities secondary.
+PRD: §32-34 listening/need-someone, §37-38 spaces, §39-40 groups minimal, §36 activities secondary.
 Tasks:
-1. Vent modes: Just Listen / Advice Welcome / Don't Know; changeable mid-chat; peer â‰  professional care.
+1. Vent modes: Just Listen / Advice Welcome / Don't Know; changeable mid-chat; peer ? professional care.
 2. Listener Mode voluntary opt-in/out, anonymous need-someone requests, time-limited sessions, listener never responsible for safety.
-3. I-Need-Someone routing: 1-on-1 â†’ listener queue â†’ small Need-Someone room â†’ saved-connection shortcut stub (Trusted enhancements deferred). Honest empty state; never AI as human.
+3. I-Need-Someone routing: 1-on-1 ? listener queue ? small Need-Someone room ? saved-connection shortcut stub (Trusted enhancements deferred). Honest empty state; never AI as human.
 4. Spaces: 3-8 only, purpose + duration (15m/30m/1h/2h + custom within limits), auto-close, creator early-end, free leave, never permanent by default. Define join/leave/creator-leave/early-close/expire/report-after-closure. Cap enforced.
-5. Post-space: private talk-again â†’ new connection only on mutual; unilateral hidden.
+5. Post-space: private talk-again ? new connection only on mutual; unilateral hidden.
 6. Groups/board minimal: small-group opportunities list only, no algorithmic global feed, no hosting obligations.
 Outputs: listeners, spaces, need-someone modules.
 Dependencies: Phase 5.
-Tests: capacity enforced; expiry closes; post-expiry participation blocked; creator-leave behavior; report during + after closure; no-human fallback honest. Acceptance Spaces + Â§69 Spaces/No-match.
+Tests: capacity enforced; expiry closes; post-expiry participation blocked; creator-leave behavior; report during + after closure; no-human fallback honest. Acceptance Spaces + §69 Spaces/No-match.
 Gate: listener + spaces demoable without breaking 1-on-1 core.
 
-## Phase 7 â€” Boundaries, private trust, safety, moderation, emergency
+## Phase 7 — Boundaries, private trust, safety, moderation, emergency
 Objective: Enforce agency and safety before launch.
-PRD: Â§41-43 privacy/boundaries, Â§44-46 trust/conflict/apology, Â§47 Trusted minimal, Â§48 emergency, Â§51-55 controls/moderation, Â§49-50 text-only scaffolding.
+PRD: §41-43 privacy/boundaries, §44-46 trust/conflict/apology, §47 Trusted minimal, §48 emergency, §51-55 controls/moderation, §49-50 text-only scaffolding.
 Tasks:
-1. Boundaries per-connection + global + presets (no number, no socials, no romantic/sexual, no unsolicited advice, short-only, respect privacy). Repeated post-refusal requests â†’ boundary-violation signal.
-2. Progressive disclosure Nicknameâ†’Basicâ†’Familiarâ†’Trusted; contact share voluntary + privacy reminder.
-3. Trust private-only (respectful/listener/friendly/boundaries/uncomfortable); no public scores/ratings/leaderboards. Conflict Something-feels-off â†’ Clarify/Boundary/Pause/Leave/Report; repair optional. Apology structured, no forgiveness demand, never erases safety record.
+1. Boundaries per-connection + global + presets (no number, no socials, no romantic/sexual, no unsolicited advice, short-only, respect privacy). Repeated post-refusal requests ? boundary-violation signal.
+2. Progressive disclosure Nickname?Basic?Familiar?Trusted; contact share voluntary + privacy reminder.
+3. Trust private-only (respectful/listener/friendly/boundaries/uncomfortable); no public scores/ratings/leaderboards. Conflict Something-feels-off ? Clarify/Boundary/Pause/Leave/Report; repair optional. Apology structured, no forgiveness demand, never erases safety record.
 4. Trusted Person MVP: private label only, no authority/access/disclosure; not emergency contact.
 5. Safety controls always reachable: Leave/Mute/Block/Report. Block: immediate stop, no messages/requests/discovery/bypass across surfaces; minimal info to blocked party.
-6. Moderation Reportâ†’Protectâ†’Reviewâ†’Actionâ†’Appeal; 8 categories minimum; auto-detect flags only, no permanent severe auto-penalty in ordinary cases; immediate protection for serious threats; human review queue + evidence + appeal.
-7. Emergency: visible Get Help Now â†’ emergency/crisis/real-world/professional; listeners never responders; no internal emergency contacts.
+6. Moderation Report?Protect?Review?Action?Appeal; 8 categories minimum; auto-detect flags only, no permanent severe auto-penalty in ordinary cases; immediate protection for serious threats; human review queue + evidence + appeal.
+7. Emergency: visible Get Help Now ? emergency/crisis/real-world/professional; listeners never responders; no internal emergency contacts.
 8. Voice/video: text-only MVP; permission/consent scaffolding only; no routine recording.
 Outputs: safety (blocks, reports, reviews, appeals), boundaries UI, `docs/safety-categories.md`, `docs/moderation-flow.md`.
 Dependencies: Phases 5+6.
-Tests: Acceptance Blocking/Reporting/Privacy; Â§69 Safety edges (mutual reports, post-block report, appeal, repeat violations, serious threat).
+Tests: Acceptance Blocking/Reporting/Privacy; §69 Safety edges (mutual reports, post-block report, appeal, repeat violations, serious threat).
 Gate: safety walkthrough passes; no bypass found.
 
-## Phase 8 â€” Notifications, private search, polish
+## Phase 8 — Notifications, private search, polish
 Objective: Notify without manipulation; private memory only.
-PRD: Â§57 notifications, Â§59 search, Â§56 language stub.
+PRD: §57 notifications, §59 search, §56 language stub.
 Tasks:
 1. Notifications for requests, accepts, messages, safety events only. Category toggles + quiet hours + global pause. Ban streak/guilt/urgency prompts.
 2. Private search own history only; no public directory.
@@ -1966,27 +1966,27 @@ Dependencies: Phase 7.
 Tests: quiet hours suppress; pause stops non-safety; no guilt copy.
 Gate: DoD 10,11,13,14.
 
-## Phase 9 â€” MVP acceptance + release readiness (no new features)
+## Phase 9 — MVP acceptance + release readiness (no new features)
 Objective: Prove 14-point DoD.
-PRD: Â§68 acceptance, Â§69 edges, Â§77 DoD, Â§70-71 metrics, Â§76 final test.
+PRD: §68 acceptance, §69 edges, §77 DoD, §70-71 metrics, §76 final test.
 Tasks:
 1. Full matrix: matching, connection, blocking, reporting, pause, deletion, spaces, privacy.
-2. Â§69 edge matrix (account/matching/connections/spaces/safety/no-human).
+2. §69 edge matrix (account/matching/connections/spaces/safety/no-human).
 3. Instrument North Star only: meaningful mutual connections (voluntary + actual interaction + not immediately ended + still voluntary). No engagement incentives.
 4. Retention docs, safety-response docs (SLAs marked assumption if absent), copy review.
 Outputs: `docs/release-checklist.md`, `QA-MATRIX.md`, metrics stub, signed DoD 1-14.
 Dependencies: all Phases 1-8.
-Tests: full Â§68 + Â§69 pass.
-Gate to MVP launch: all green. Â§67 explicitly out.
+Tests: full §68 + §69 pass.
+Gate to MVP launch: all green. §67 explicitly out.
 
-## Phase 10 â€” Complete vision A (PRD Later Phase 2)
+## Phase 10 — Complete vision A (PRD Later Phase 2)
 Objective: Add deferred human-connection depth, still 1-on-1 heart + 3-8 only.
-PRD: Â§67 Phase 2, plus full text of Â§31 scheduling, Â§35 quiet companionship, Â§36 activities, Â§47 trusted, Â§49 voice/audio, Â§56 translation, Â§58 journal, Â§60 memories, Â§39 communities.
+PRD: §67 Phase 2, plus full text of §31 scheduling, §35 quiet companionship, §36 activities, §47 trusted, §49 voice/audio, §56 translation, §58 journal, §60 memories, §39 communities.
 Tasks:
 1. Voice messages + Live audio with trust/safety gates, explicit mic permission, immediate leave, reporting. No auto-play.
 2. Scheduling + recurring: exact/flexible time, reschedule/cancel/pause/change/end recurrence. No penalties/streaks/guilt. Notifications hook (extends Phase 8).
 3. Quiet companionship full: text presence + optional voice, time-limited, no continuous conversation required.
-4. Shared activities full: Matchâ†’Activity and Activityâ†’Match; activities secondary to connection.
+4. Shared activities full: Match?Activity and Activity?Match; activities secondary to connection.
 5. Journal private: notes/moments/topics/reminders/reflections; never auto-shared; powers private search.
 6. Shared memories: mutual participation required; withdraw removes from withdrawer's view, notifies other without reason; other may retain personal version.
 7. Trusted Person full: explicit user-controlled permissions only (still no auto access); still not emergency contact.
@@ -1994,12 +1994,12 @@ Tasks:
 9. Local communities minimal, 3-8 only, no feed ranking.
 Outputs: voice/audio, scheduling, quiet, activities, journal, memories, trusted-full, translation modules + docs updates.
 Dependencies: Phase 9 (MVP stable). Needs Phase 5 lifecycle, Phase 6 spaces, Phase 7 safety, Phase 8 notifications.
-Tests: per-feature acceptance + Â§68 regressions; scheduling no-penalty test; memory withdraw test; translation opt-in test; voice permission/leave/report test.
-Gate: MVP regressions green + new features meet Final Test Â§76.
+Tests: per-feature acceptance + §68 regressions; scheduling no-penalty test; memory withdraw test; translation opt-in test; voice permission/leave/report test.
+Gate: MVP regressions green + new features meet Final Test §76.
 
-## Phase 11 â€” Complete vision B (PRD Later Phase 3)
+## Phase 11 — Complete vision B (PRD Later Phase 3)
 Objective: Video + advanced depth without breaking principles.
-PRD: Â§67 Phase 3, Â§49 video, Â§50 recording, advanced spaces/activities/trust/language/matching.
+PRD: §67 Phase 3, §49 video, §50 recording, advanced spaces/activities/trust/language/matching.
 Tasks:
 1. Video trust-gated, explicit camera/mic permission, no auto-activation, immediate leave, accessible reporting.
 2. Recording: no routine recording; explicit consent required; limited safety-report retention, strictly limited access.
@@ -2009,11 +2009,11 @@ Tasks:
 Outputs: video, recording-consent, advanced spaces/activities/trust/language/matching.
 Dependencies: Phase 10.
 Tests: permission/consent/leave/report tests; retention/access tests; matching still need-first + no-fabrication tests.
-Gate: full vision meets Â§68 + Â§76.
+Gate: full vision meets §68 + §76.
 
-## Phase 12 â€” Full vision release readiness
+## Phase 12 — Full vision release readiness
 Objective: Prove complete LiGN.
-Tasks: full Â§68 + Â§69 + Â§77 on all features; North Star instrumentation; retention/SLA docs finalized; monetization guardrails check (Â§72 core free, never monetize loneliness/attention/popularity/access/being heard/emergency).
+Tasks: full §68 + §69 + §77 on all features; North Star instrumentation; retention/SLA docs finalized; monetization guardrails check (§72 core free, never monetize loneliness/attention/popularity/access/being heard/emergency).
 Outputs: full release checklist, QA matrix, metrics dashboard.
 Dependencies: Phase 11.
 Gate: launch complete vision.
@@ -2021,36 +2021,36 @@ Gate: launch complete vision.
 ---
 
 ## Ordered phase list
-1 plan lock â†’ 2 foundation â†’ 3 account/profile â†’ 4 matching â†’ 5 1-on-1 core â†’ 6 listening/spaces â†’ 7 safety/moderation â†’ 8 notifications/search â†’ 9 MVP release â†’ 10 vision A â†’ 11 vision B â†’ 12 full release.
+1 plan lock ? 2 foundation ? 3 account/profile ? 4 matching ? 5 1-on-1 core ? 6 listening/spaces ? 7 safety/moderation ? 8 notifications/search ? 9 MVP release ? 10 vision A ? 11 vision B ? 12 full release.
 
 ## Outputs per phase
 1 plan docs; 2 migrations + guards + privacy matrix; 3 auth/users/profile + deletion doc; 4 availability/matching/discover + priority doc; 5 connections/messages/chat + reconnection doc; 6 listeners/spaces/need-someone; 7 safety/blocks/reports/appeals/boundaries + safety docs; 8 notifications/search; 9 QA matrix + release checklist + metrics stub; 10 voice/scheduling/quiet/activities/journal/memories/trusted/translation; 11 video/recording/advanced; 12 full checklist.
 
 ## Dependency overview
-1 blocks all. 2 blocks all build. 3â†’4â†’5 strictly sequential. 6 needs 5. 7 needs 5+6. 8 needs 7. 9 needs 1-8. 10 needs 9. 11 needs 10. 12 needs 11. Never parallelize safety before lifecycle stable. Never build Â§67 before MVP gate.
+1 blocks all. 2 blocks all build. 3?4?5 strictly sequential. 6 needs 5. 7 needs 5+6. 8 needs 7. 9 needs 1-8. 10 needs 9. 11 needs 10. 12 needs 11. Never parallelize safety before lifecycle stable. Never build §67 before MVP gate.
 
 ## Recommended order
-Execute 1â†’12 in order. Say `go phase N` to execute one phase only.
+Execute 1?12 in order. Say `go phase N` to execute one phase only.
 
 ## Unresolved / underspecified (do not invent)
-1. Age thresholds/jurisdictions â€” `...:188` no numbers. Assume 18+ default, TBD.
-2. Verification provider â€” `...:190` undefined. Assume self-attestation + stub.
-3. Inactivity meaningful period + caps â€” `...:575` no numbers. Assume 7 days, max 1/14d.
-4. Custom space max â€” `...:768` unspecified. Assume max 4h.
-5. Creator-leaves-space â€” `...:776` required but unspecified. Needs decision.
-6. Report-after-closure retention â€” unspecified. Assume 30-day hold, needs legal.
-7. Cooling-off length â€” `...:1214` unspecified. Assume 14 days.
-8. Legal/safety retention inventory â€” `...:1216` unspecified.
-9. Life-experience signal collection â€” `...:265` sensitive. Assume opt-in tags only.
-10. Personality algorithm â€” unspecified. Assume tag overlap, no opaque scoring.
-11. Safety SLAs â€” `...:1650` no targets. Open.
-12. Availability windows vs excluded scheduling â€” assume declarative only in MVP.
-13. Trusted shortcut in need-someone routing `...:692` vs deferred enhancements â€” assume saved-connection stub in MVP.
-14. Board scope vs no-feed â€” `...:809` undefined. Assume chronological small-group list, no ranking.
-15. Language depth â€” store-only in MVP.
-16. Scheduling mentions vs MVP exclusion â€” stubs only until Phase 10.
-17. Quiet companionship full vs MVP exclusion â€” text-presence only until Phase 10.
-18. Journal in search `...:1169` vs Journal excluded â€” topics-only until Phase 10.
+1. Age thresholds/jurisdictions — `...:188` no numbers. Assume 18+ default, TBD.
+2. Verification provider — `...:190` undefined. Assume self-attestation + stub.
+3. Inactivity meaningful period + caps — `...:575` no numbers. Assume 7 days, max 1/14d.
+4. Custom space max — `...:768` unspecified. Assume max 4h.
+5. Creator-leaves-space — `...:776` required but unspecified. Needs decision.
+6. Report-after-closure retention — unspecified. Assume 30-day hold, needs legal.
+7. Cooling-off length — `...:1214` unspecified. Assume 14 days.
+8. Legal/safety retention inventory — `...:1216` unspecified.
+9. Life-experience signal collection — `...:265` sensitive. Assume opt-in tags only.
+10. Personality algorithm — unspecified. Assume tag overlap, no opaque scoring.
+11. Safety SLAs — `...:1650` no targets. Open.
+12. Availability windows vs excluded scheduling — assume declarative only in MVP.
+13. Trusted shortcut in need-someone routing `...:692` vs deferred enhancements — assume saved-connection stub in MVP.
+14. Board scope vs no-feed — `...:809` undefined. Assume chronological small-group list, no ranking.
+15. Language depth — store-only in MVP.
+16. Scheduling mentions vs MVP exclusion — stubs only until Phase 10.
+17. Quiet companionship full vs MVP exclusion — text-presence only until Phase 10.
+18. Journal in search `...:1169` vs Journal excluded — topics-only until Phase 10.
 ```
 
 ---
@@ -2058,8 +2058,8 @@ Execute 1â†’12 in order. Say `go phase N` to execute one phase only.
 # Appendix A - Technology Stack (plain text)
 
 ```text
-# LiGN â€” Technology Stack
-Source: PRD Â§Â§1-78 and `docs/IMPLEMENTATION_PLAN_FULL.md` Phases 1-12.
+# LiGN — Technology Stack
+Source: PRD §§1-78 and `docs/IMPLEMENTATION_PLAN_FULL.md` Phases 1-12.
 
 ## Local Development Architecture
 
@@ -2077,7 +2077,7 @@ Where uploaded files are stored:
 Supabase Storage (S3-compatible) in all envs. No local-disk branch, no R2.
 
 How authentication works locally:
-Better Auth 1.x with email + password, DB-backed sessions in Postgres. Supabase Auth is NOT used. Email sending via ZeptoMail; without a key, verification links log to console in dev only.
+Better Auth 1.x with email + password, DB-backed sessions in Postgres. Supabase Auth is NOT used. Email sending via Resend; without a key, verification links log to console in dev only.
 
 Required environment variables (.env, never committed):
 DATABASE_URL="supabase-pooled-url"
@@ -2085,7 +2085,7 @@ DIRECT_URL="supabase-direct-url"
 BETTER_AUTH_SECRET="dev-only-random-string"
 SUPABASE_URL="" SUPABASE_ANON_KEY="" SUPABASE_SERVICE_KEY="" SUPABASE_PUBLIC_BUCKET="lign-public" SUPABASE_PRIVATE_BUCKET="lign-private"
 PAYSTACK_SECRET_KEY="" PAYSTACK_PUBLIC_KEY=""
-EMAIL_FROM="" ZEPTOMAIL_TOKEN=""
+EMAIL_FROM="" RESEND_API_KEY=""
 
 Required local dependencies/services:
 Node.js 20 LTS + npm. Docker needed only for the offline Postgres fallback. No paid services required to start.
@@ -2108,18 +2108,18 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
 | File Storage | Supabase Storage (S3-compatible) | Avatars/illustrations, later journal/memory media |
 | API layer | REST JSON via Route Handlers | Profiles, requests, messages, spaces, reports |
 | Realtime | Socket.io 4 self-hosted (same Node process) | MVP 1-on-1 chat, spaces, listener queue, notifications |
-| Email | ZeptoMail API (console fallback in dev) | Verification, safety events, notifications |
-| Payments | Paystack API (Phase 10+ only) | Optional subscriptions/premium; MVP core stays free per Â§72 |
+| Email | Resend API (console fallback in dev) | Verification, safety events, notifications |
+| Payments | Paystack API (Phase 10+ only) | Optional subscriptions/premium; MVP core stays free per §72 |
 | Testing | Vitest + Testing Library | Unit + route + realtime tests |
 | Validation | Zod | Transition guards, input shapes |
 
 ## Decisions and Assumptions
 
 1. Supabase Postgres replaces Docker Postgres as primary: same PostgreSQL the schema was built for, so no model changes and no migration rewrite; Docker stays as offline fallback.
-2. Better Auth replaces custom bcrypt/JWT and stays: Supabase Auth not adopted â€” no benefit, real migration pain.
+2. Better Auth replaces custom bcrypt/JWT and stays: Supabase Auth not adopted — no benefit, real migration pain.
 3. Supabase Storage replaces Cloudflare R2: one vendor for data + files; S3-compatible so storage code repoints rather than rewrites.
-4. Email confirmed as ZeptoMail.
-5. Paystack gated to Phase 10+: Â§72 core connection stays free; no paywall on finding someone to talk to.
+4. Email is Resend (migrated from ZeptoMail).
+5. Paystack gated to Phase 10+: §72 core connection stays free; no paywall on finding someone to talk to.
 6. Realtime in MVP via self-hosted Socket.io: no paid vendor; polling kept only as fallback.
 7. Hosting is local device for now: no deploy platform configured; production host undecided.
 ```
@@ -2134,7 +2134,7 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LiGN Network â€” Visual Preview</title>
+<title>LiGN Network — Visual Preview</title>
 <style>
   :root {
     --cream: #FAF7F2;
@@ -2218,31 +2218,31 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
   <hr class="wordmark-rule">
   <div class="eyebrow" style="margin-top:14px">Visual style preview</div>
   <h1>What kind of connection do you need right now?</h1>
-  <p class="sub">Visual style preview â€” warm, calm, human. No streaks, no counts, no pressure.</p>
+  <p class="sub">Visual style preview — warm, calm, human. No streaks, no counts, no pressure.</p>
 
   <section>
     <h2>Colors</h2>
     <div class="swatches">
-      <div class="swatch"><div class="c" style="background:#FAF7F2"></div><div class="n"><b>Cream</b><span>#FAF7F2 Â· background</span></div></div>
-      <div class="swatch"><div class="c" style="background:#EFE7DA"></div><div class="n"><b>Sand</b><span>#EFE7DA Â· surfaces</span></div></div>
-      <div class="swatch"><div class="c" style="background:#2E2A26"></div><div class="n"><b>Ink</b><span>#2E2A26 Â· text</span></div></div>
-      <div class="swatch"><div class="c" style="background:#C96F4A"></div><div class="n"><b>Clay</b><span>#C96F4A Â· primary action</span></div></div>
-      <div class="swatch"><div class="c" style="background:#7D8C6F"></div><div class="n"><b>Sage</b><span>#7D8C6F Â· calm accents</span></div></div>
+      <div class="swatch"><div class="c" style="background:#FAF7F2"></div><div class="n"><b>Cream</b><span>#FAF7F2 · background</span></div></div>
+      <div class="swatch"><div class="c" style="background:#EFE7DA"></div><div class="n"><b>Sand</b><span>#EFE7DA · surfaces</span></div></div>
+      <div class="swatch"><div class="c" style="background:#2E2A26"></div><div class="n"><b>Ink</b><span>#2E2A26 · text</span></div></div>
+      <div class="swatch"><div class="c" style="background:#C96F4A"></div><div class="n"><b>Clay</b><span>#C96F4A · primary action</span></div></div>
+      <div class="swatch"><div class="c" style="background:#7D8C6F"></div><div class="n"><b>Sage</b><span>#7D8C6F · calm accents</span></div></div>
     </div>
   </section>
 
   <section>
     <h2>Typography</h2>
     <div class="type-h1">Warm serif for moments that matter</div>
-    <div class="type-body">Clean sans for everything else. Body text stays at 16px, generous line height, never shouty. Silence is normal here â€” the interface should feel like a quiet room, not a feed.</div>
-    <div class="type-small">Small / muted â€” used for gentle hints, never guilt ("No rush â€” reply whenever feels right.")</div>
+    <div class="type-body">Clean sans for everything else. Body text stays at 16px, generous line height, never shouty. Silence is normal here — the interface should feel like a quiet room, not a feed.</div>
+    <div class="type-small">Small / muted — used for gentle hints, never guilt ("No rush — reply whenever feels right.")</div>
   </section>
 
   <section>
     <h2>Buttons</h2>
     <button class="btn btn-primary">Find connection</button>
     <button class="btn btn-secondary">Pause</button>
-    <p class="hint">Primary is clay, pill-shaped, single clear action. Secondary is quiet â€” leaving or pausing must always feel allowed.</p>
+    <p class="hint">Primary is clay, pill-shaped, single clear action. Secondary is quiet — leaving or pausing must always feel allowed.</p>
     <div class="chat">
       <span class="tag">JUST LISTENING</span>
       <div class="bubble">Hey, no rush at all. I'm here to listen whenever you're ready.</div>
@@ -2252,7 +2252,7 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
   <section>
     <h2>Sample input</h2>
     <label for="need">What kind of connection do you need right now?</label>
-    <input type="text" id="need" placeholder="e.g. Someone to vent to, no advice neededâ€¦">
+    <input type="text" id="need" placeholder="e.g. Someone to vent to, no advice needed…">
     <p class="hint">Placeholder suggests an honest need. No character counters, no pressure.</p>
   </section>
 </div>

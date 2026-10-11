@@ -17,7 +17,7 @@ Where uploaded files are stored:
 Supabase Storage (S3-compatible) in all envs. No local-disk branch, no R2.
 
 How authentication works locally:
-Better Auth 1.x with email + password, DB-backed sessions in Postgres. Supabase Auth is NOT used. Email sending via ZeptoMail; without a key, verification links log to console in dev only.
+Better Auth 1.x with email + password, DB-backed sessions in Postgres. Supabase Auth is NOT used. Email sending via Resend; without a key, verification links log to console in dev only.
 
 Required environment variables (.env, never committed):
 DATABASE_URL="supabase-pooled-url"
@@ -26,7 +26,7 @@ BETTER_AUTH_SECRET="dev-only-random-string"
 SUPABASE_URL="" SUPABASE_ANON_KEY="" SUPABASE_SERVICE_KEY=""
 SUPABASE_PUBLIC_BUCKET="lign-public" SUPABASE_PRIVATE_BUCKET="lign-private"
 PAYSTACK_SECRET_KEY="" PAYSTACK_PUBLIC_KEY=""
-EMAIL_FROM="" ZEPTOMAIL_TOKEN=""
+EMAIL_FROM="" RESEND_API_KEY=""
 
 Required local dependencies/services:
 Node.js 20 LTS + npm. Docker needed only for the offline Postgres fallback. No paid services required to start.
@@ -50,7 +50,7 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
 | File Storage | Supabase Storage (S3-compatible) | Avatars/illustrations, later journal/memory media |
 | API layer | REST JSON via Route Handlers | Profiles, requests, messages, spaces, reports |
 | Realtime | Socket.io 4 self-hosted (same Node process) | MVP 1-on-1 chat, spaces, listener queue, notifications |
-| Email | ZeptoMail API (console fallback in dev) | Verification, safety events, notifications |
+| Email | Resend API (console fallback in dev) | Verification, safety events, notifications |
 | Payments | Paystack API (Phase 10+ only) | Optional subscriptions/premium; MVP core stays free per §72 |
 | Testing | Vitest + Testing Library | Unit + route + realtime tests |
 | Validation | Zod | Transition guards, input shapes |
@@ -60,7 +60,7 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
 1. Supabase Postgres replaces Docker Postgres as primary: same PostgreSQL the schema was built for, so no model changes and no migration rewrite; Docker stays as offline fallback.
 2. Better Auth replaces custom bcrypt/JWT and stays: Supabase Auth not adopted � no benefit, real migration pain.
 3. Supabase Storage replaces Cloudflare R2: one vendor for data + files; S3-compatible so storage code repoints rather than rewrites.
-4. Email confirmed as ZeptoMail.
+4. Email is Resend (migrated from ZeptoMail).
 5. Paystack gated to Phase 10+: §72 core connection stays free; no paywall on finding someone to talk to.
 6. Realtime in MVP via self-hosted Socket.io: no paid vendor; polling kept only as fallback.
 7. Hosting is local device for now: no deploy platform configured; production host undecided.
