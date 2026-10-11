@@ -26,11 +26,12 @@ export function storage(): SupabaseClient {
 }
 
 export function publicBucket(): string {
-  return required("SUPABASE_PUBLIC_BUCKET");
+  // Bucket names are identifiers, not secrets — safe to default in code.
+  return process.env.SUPABASE_PUBLIC_BUCKET || "lign-public";
 }
 
 export function privateBucket(): string {
-  return required("SUPABASE_PRIVATE_BUCKET");
+  return process.env.SUPABASE_PRIVATE_BUCKET || "lign-private";
 }
 
 // Public upload (avatars). Key pattern: avatars/{userId}.{ext}.
