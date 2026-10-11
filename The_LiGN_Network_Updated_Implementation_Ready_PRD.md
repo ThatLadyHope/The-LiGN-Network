@@ -2083,7 +2083,7 @@ Required environment variables (.env, never committed):
 DATABASE_URL="supabase-pooled-url"
 DIRECT_URL="supabase-direct-url"
 BETTER_AUTH_SECRET="dev-only-random-string"
-SUPABASE_URL="" SUPABASE_ANON_KEY="" SUPABASE_SERVICE_KEY="" SUPABASE_BUCKET="lign"
+SUPABASE_URL="" SUPABASE_ANON_KEY="" SUPABASE_SERVICE_KEY="" SUPABASE_PUBLIC_BUCKET="lign-public" SUPABASE_PRIVATE_BUCKET="lign-private"
 PAYSTACK_SECRET_KEY="" PAYSTACK_PUBLIC_KEY=""
 EMAIL_FROM="" ZEPTOMAIL_TOKEN=""
 

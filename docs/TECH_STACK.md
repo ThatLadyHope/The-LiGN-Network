@@ -21,8 +21,10 @@ Better Auth 1.x with email + password, DB-backed sessions in Postgres. Supabase 
 
 Required environment variables (.env, never committed):
 DATABASE_URL="supabase-pooled-url"
-BETTER_AUTH_SECRET="dev-only-random-string"
 DIRECT_URL="supabase-direct-url"
+BETTER_AUTH_SECRET="dev-only-random-string"
+SUPABASE_URL="" SUPABASE_ANON_KEY="" SUPABASE_SERVICE_KEY=""
+SUPABASE_PUBLIC_BUCKET="lign-public" SUPABASE_PRIVATE_BUCKET="lign-private"
 PAYSTACK_SECRET_KEY="" PAYSTACK_PUBLIC_KEY=""
 EMAIL_FROM="" ZEPTOMAIL_TOKEN=""
 
@@ -56,7 +58,7 @@ App http://localhost:3000, API http://localhost:3000/api/*, realtime on same ori
 ## Decisions and Assumptions
 
 1. Supabase Postgres replaces Docker Postgres as primary: same PostgreSQL the schema was built for, so no model changes and no migration rewrite; Docker stays as offline fallback.
-2. Better Auth replaces custom bcrypt/JWT and stays: Supabase Auth not adopted — no benefit, real migration pain.
+2. Better Auth replaces custom bcrypt/JWT and stays: Supabase Auth not adopted ï¿½ no benefit, real migration pain.
 3. Supabase Storage replaces Cloudflare R2: one vendor for data + files; S3-compatible so storage code repoints rather than rewrites.
 4. Email confirmed as ZeptoMail.
 5. Paystack gated to Phase 10+: Â§72 core connection stays free; no paywall on finding someone to talk to.
