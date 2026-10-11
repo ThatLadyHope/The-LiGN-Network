@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -17,6 +18,7 @@ export default function SignupPage() {
   const [ageRange, setAgeRange] = useState("25-34");
   const [language, setLanguage] = useState("en");
   const [status, setStatus] = useState<string | null>(null);
+  const [emailTaken, setEmailTaken] = useState(false);
   const [busy, setBusy] = useState(false);
   const [agreed, setAgreed] = useState(false);
 
@@ -68,6 +70,10 @@ export default function SignupPage() {
       if (signup.error) {
         if (signup.error.message?.includes("agreement-required")) {
           throw new Error("The agreement must be accepted to create an account.");
+        }
+        if (/already exists|already in use|duplicate/i.test(signup.error.message ?? "")) {
+          setEmailTaken(true);
+          throw new Error("This email already has an account.");
         }
         throw new Error(signup.error.message ?? "signup-failed");
       }
@@ -145,7 +151,8 @@ export default function SignupPage() {
       </button>
       {status && (
         <p className="ob-status" role="status" aria-live="polite">
-          {status}
+          {status}{" "}
+          {emailTaken && <Link href="/login">Sign in instead</Link>}
         </p>
       )}
     </main>
