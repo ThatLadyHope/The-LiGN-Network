@@ -62,8 +62,3 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
   return NextResponse.json({ ok: true, connected });
 }
-
-// Reports stay possible inside the evidence window after closure.
-export function closesAtPlusWindowOk(closedAt: Date, now: Date): boolean {
-  return reportAllowedAfterClosure(closedAt, now);
-}
