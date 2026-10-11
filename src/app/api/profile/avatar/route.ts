@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAuth } from "@/lib/auth-config";
 import { db } from "@/lib/db";
-import { putFile } from "@/lib/storage";
+import { publicUrl, putFile } from "@/lib/storage";
 
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BYTES = 2 * 1024 * 1024;
 
-// POST /api/profile/avatar (multipart `file`) — optional photo upload to R2.
-// Avatars stay optional per §7. Without R2 keys configured, fails closed
-// with storage-not-configured instead of pretending to work.
+// POST /api/profile/avatar (multipart `file`) — optional photo upload to the
+// public Supabase bucket. Avatars stay optional per §7. Without keys
+// configured, fails closed instead of pretending to work.
 export async function POST(req: NextRequest) {
   const auth = createAuth(db);
   const session = await auth.api.getSession({ headers: req.headers });
@@ -27,8 +27,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "storage-not-configured" }, { status: 501 });
   }
-  const base = process.env.R2_PUBLIC_URL;
-  const url = base ? `${base}/${key}` : null;
+  const url = publicUrl(key);
   await db.user.update({
     where: { id: session.user.id },
     data: { avatarKind: "photo", avatarUrl: url },

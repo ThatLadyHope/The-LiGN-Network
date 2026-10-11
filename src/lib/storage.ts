@@ -1,6 +1,8 @@
-// Cloudflare R2 storage (S3-compatible). Bucket/keys come from env;
-// without them every call fails closed with a clear error.
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+// Supabase Storage: two buckets (see docs/storage-layout.md).
+// - lign-public: avatars, directly readable.
+// - lign-private: shared/chat images, signed URLs after membership check.
+// Service key stays server-side; it never leaves this module.
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 function required(name: string): string {
   const v = process.env[name];
@@ -8,29 +10,51 @@ function required(name: string): string {
   return v;
 }
 
-let client: S3Client | null = null;
+let client: SupabaseClient | null = null;
 
-export function r2(): S3Client {
+export function storage(): SupabaseClient {
   if (!client) {
-    client = new S3Client({
-      region: "auto",
-      endpoint: `https://${required("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: required("R2_ACCESS_KEY_ID"),
-        secretAccessKey: required("R2_SECRET_ACCESS_KEY"),
-      },
-    });
+    client = createClient(required("SUPABASE_URL"), required("SUPABASE_SERVICE_KEY"));
   }
   return client;
 }
 
+export function publicBucket(): string {
+  return required("SUPABASE_PUBLIC_BUCKET");
+}
+
+export function privateBucket(): string {
+  return required("SUPABASE_PRIVATE_BUCKET");
+}
+
+// Public upload (avatars). Key pattern: avatars/{userId}.{ext}.
 export async function putFile(key: string, body: Uint8Array, contentType: string): Promise<void> {
-  await r2().send(
-    new PutObjectCommand({ Bucket: required("R2_BUCKET"), Key: key, Body: body, ContentType: contentType }),
-  );
+  const { error } = await storage().storage.from(publicBucket()).upload(key, body, {
+    contentType,
+    upsert: true,
+  });
+  if (error) throw new Error(`storage: upload failed (${error.message})`);
 }
 
 export async function getFile(key: string): Promise<Uint8Array> {
-  const out = await r2().send(new GetObjectCommand({ Bucket: required("R2_BUCKET"), Key: key }));
-  return out.Body!.transformToByteArray();
+  const { data, error } = await storage().storage.from(publicBucket()).download(key);
+  if (error || !data) throw new Error(`storage: download failed (${error?.message ?? "empty"})`);
+  return new Uint8Array(await data.arrayBuffer());
+}
+
+export function publicUrl(key: string): string {
+  const { data } = storage().storage.from(publicBucket()).getPublicUrl(key);
+  return data.publicUrl;
+}
+
+// Private download: short-lived signed URL, only after the caller verified
+// membership (participant of the memory/conversation). No URL, no bytes.
+export async function signedUrl(key: string, expiresInSec = 300): Promise<string> {
+  const { data, error } = await storage()
+    .storage.from(privateBucket())
+    .createSignedUrl(key, expiresInSec);
+  if (error || !data?.signedUrl) {
+    throw new Error(`storage: signed URL failed (${error?.message ?? "empty"})`);
+  }
+  return data.signedUrl;
 }
