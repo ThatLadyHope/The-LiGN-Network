@@ -36,6 +36,8 @@
 .pf-colors button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .pf-colors button.on { border-color: var(--ink); }
 .ob-alt a { color: var(--clay); font-weight: 600; }
+.rp-flow { font-size: 13px; color: var(--muted); }
+.rp-flow .done { color: var(--ink); font-weight: 700; }
 .mem-door { border: 1px solid var(--line); border-radius: 14px; padding: 8px; }
 .mem-door button { display: block; width: 100%; text-align: left; background: transparent; border: 2px solid rgba(255,255,255,.45); border-radius: 10px; padding: 18px 20px; cursor: pointer; color: #fff; }
 .mem-door button:hover { border-color: #fff; background: rgba(0,0,0,.12); }

@@ -48,6 +48,22 @@ export function advanceReport(state: ReportState): ReportState {
   return REPORT_FLOW[state];
 }
 
+// Appeals: only the reported person, only once action exists or review is
+// underway — never on unfiled or already-closed reports.
+export function canAppeal(review: string, isTarget: boolean): boolean {
+  if (!isTarget) return false;
+  return review === "in-review" || review === "actioned";
+}
+
+export const REPORT_FLOW_LABELS: { state: ReportState; label: string }[] = [
+  { state: "pending", label: "Received" },
+  { state: "protecting", label: "Protecting" },
+  { state: "in-review", label: "Under review" },
+  { state: "actioned", label: "Action decided" },
+  { state: "appealed", label: "Appeal open" },
+  { state: "closed", label: "Closed" },
+];
+
 // A report never establishes guilt by itself.
 export function reportEstablishesGuilt(): false {
   return false;

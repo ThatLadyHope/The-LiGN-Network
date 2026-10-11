@@ -13,11 +13,22 @@ interface Record {
   status: string;
 }
 
+interface AppealRow {
+  id: string;
+  reporterId: string;
+  targetId: string;
+  category: string;
+  review: string;
+  appeal: string | null;
+  createdAt: string;
+}
+
 // Minimal admin lookup: token-gated, shows full history + exact text.
 export default function AdminPage() {
   const [token, setToken] = useState("");
   const [userId, setUserId] = useState("");
   const [records, setRecords] = useState<Record[]>([]);
+  const [appeals, setAppeals] = useState<AppealRow[]>([]);
   const [status, setStatus] = useState<string | null>(null);
 
   async function lookup() {
@@ -29,6 +40,19 @@ export default function AdminPage() {
     if (res.ok) setRecords(data.records ?? []);
     else {
       setRecords([]);
+      setStatus(res.status === 403 ? "Wrong admin token." : "Lookup failed.");
+    }
+  }
+
+  async function loadAppeals() {
+    setStatus(null);
+    const res = await fetch("/api/admin/reports?openAppeals=1", {
+      headers: { "x-admin-token": token },
+    });
+    const data = await res.json().catch(() => null);
+    if (res.ok) setAppeals(data.reports ?? []);
+    else {
+      setAppeals([]);
       setStatus(res.status === 403 ? "Wrong admin token." : "Lookup failed.");
     }
   }
@@ -63,6 +87,20 @@ export default function AdminPage() {
             <summary>Exact text accepted</summary>
             <p style={{ whiteSpace: "pre-wrap" }}>{r.textSnapshot}</p>
           </details>
+        </div>
+      ))}
+
+      <h1>Open appeals</h1>
+      <button className="ob-go" disabled={!token} onClick={loadAppeals}>
+        Load open appeals
+      </button>
+      {appeals.map((a) => (
+        <div key={a.id} className="ob-group-page">
+          <p>
+            <b>{a.category}</b> · reporter <span>{a.reporterId}</span> · target <span>{a.targetId}</span>
+          </p>
+          {a.appeal && <p>Appeal: {a.appeal}</p>}
+          <p className="ob-hint">{new Date(a.createdAt).toLocaleString()}</p>
         </div>
       ))}
 

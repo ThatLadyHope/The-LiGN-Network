@@ -166,6 +166,9 @@ export default function DiscoverPage() {
             <Link href="/memories" onClick={() => setMenuOpen(false)}>
               Memories
             </Link>
+            <Link href="/reports" onClick={() => setMenuOpen(false)}>
+              Reports
+            </Link>
             <Link href="/settings" onClick={() => setMenuOpen(false)}>
               Settings
             </Link>

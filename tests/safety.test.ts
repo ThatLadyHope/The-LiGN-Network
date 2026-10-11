@@ -16,6 +16,7 @@ import {
 import {
   advanceReport,
   blockNoticeForBlockedParty,
+  canAppeal,
   getHelpNow,
   ordinaryInteractionAllowed,
   reportEstablishesGuilt,
@@ -80,6 +81,13 @@ describe("safety (§51–§55)", () => {
     expect(ordinaryInteractionAllowed({ blocked: true })).toBe(false);
     expect(ordinaryInteractionAllowed({ blocked: false })).toBe(true);
     expect(blockNoticeForBlockedParty()).toEqual({ notice: "unavailable" });
+  });
+  it("appeals belong to the reported person under review or decided", () => {
+    expect(canAppeal("in-review", true)).toBe(true);
+    expect(canAppeal("actioned", true)).toBe(true);
+    expect(canAppeal("pending", true)).toBe(false);
+    expect(canAppeal("closed", true)).toBe(false);
+    expect(canAppeal("actioned", false)).toBe(false);
   });
   it("emergency path lists resources; listeners never responders", () => {
     const help = getHelpNow();
