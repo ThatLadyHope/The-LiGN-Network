@@ -1,0 +1,11 @@
+# Netlify: builds Next.js 14 App Router from GitHub main. Every push redeploys.
+[build]
+  command = "npx prisma generate && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Socket.io gateway note: Netlify has no long-lived custom server, so the
+# self-hosted gateway in server.js does not run here. Chat falls back to its
+# built-in 5s polling automatically — same UI, slightly slower live updates.
