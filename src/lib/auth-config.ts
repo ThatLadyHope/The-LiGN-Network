@@ -60,13 +60,25 @@ export function createAuth(db: AuthDatabase) {
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,
-      // Forgot-password delivery doubles as email verification at that point:
-      // the link proves inbox control before any password changes.
+      // Inbox proof at signup doubles as the welcome: one mail, verify link
+      // plus first steps. Non-blocking — the app never holds signup hostage.
+      requireEmailVerification: false,
       sendResetPassword: async ({ user, url }) => {
         await sendMail({
           to: user.email,
           subject: "Reset your LiGN password",
           html: `<p>You asked to reset your LiGN password. This link works once:</p><p><a href="${url}">Reset password</a></p><p>If that was not you, ignore this mail — nothing changes.</p>`,
+        });
+      },
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        await sendMail({
+          to: user.email,
+          subject: "Welcome to LiGN — verify your email",
+          html: `<p>Welcome to LiGN, ${user.name ?? "friend"}. One click proves this inbox is yours:</p><p><a href="${url}">Verify my email</a></p><p>Then: say what kind of connection you need, and meet someone real. No streaks, no pressure — silence is normal here.</p>`,
         });
       },
     },
