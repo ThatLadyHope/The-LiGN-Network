@@ -7,8 +7,12 @@ import { AGREEMENT_TEXT, AGREEMENT_TITLE, AGREEMENT_VERSION, hasReachedBottom } 
 // Bottom ≠ acceptance; the parent decides what agreement enables.
 export default function AgreementBox({
   onAgreed,
+  showTitle = true,
+  showHelp = true,
 }: {
   onAgreed: (agreed: boolean) => void;
+  showTitle?: boolean;
+  showHelp?: boolean;
 }) {
   const [scrolledBottom, setScrolledBottom] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -29,7 +33,7 @@ export default function AgreementBox({
 
   return (
     <>
-      <h2>{AGREEMENT_TITLE}</h2>
+      {showTitle && <h2>{AGREEMENT_TITLE}</h2>}
       <p className="ob-hint">Version {AGREEMENT_VERSION}</p>
       <div
         ref={box}
@@ -51,13 +55,14 @@ export default function AgreementBox({
           disabled={!scrolledBottom}
           checked={agreed}
           onChange={(e) => tick(e.target.checked)}
-          aria-describedby="agree-help"
         />
         <span>I have read and agree to the LiGN Confidentiality and Connection Agreement.</span>
       </label>
-      <p className="ob-hint" id="agree-help">
-        Reading alone is not acceptance — tick the box to agree.
-      </p>
+      {showHelp && (
+        <p className="ob-hint" id="agree-help">
+          Reading alone is not acceptance — tick the box to agree.
+        </p>
+      )}
     </>
   );
 }

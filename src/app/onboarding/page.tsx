@@ -92,7 +92,6 @@ export default function SignupPage() {
         The <em>LiGN</em> Network
       </div>
       <h1>Get started</h1>
-      <p className="ob-sub">One identity, minimal setup. No photo, no pressure.</p>
 
       <label className="ob-label">
         Nickname
@@ -139,7 +138,7 @@ export default function SignupPage() {
         </label>
       </div>
 
-      <AgreementBox onAgreed={setAgreed} />
+      <AgreementBox onAgreed={setAgreed} showTitle={false} showHelp={false} />
 
       <button className="ob-go" disabled={!valid || busy} onClick={submit}>
         {busy ? "Joining…" : "Join LiGN"}
@@ -149,7 +148,6 @@ export default function SignupPage() {
           {status}
         </p>
       )}
-      <p className="ob-hint">Silence is normal here. You can pause or leave anytime.</p>
     </main>
   );
 }
