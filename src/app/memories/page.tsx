@@ -41,15 +41,10 @@ export default function MemoriesHubPage() {
 
       <div className="ob-groups">
         {ITEMS.map((item) => (
-          <section key={item.id} className="ob-group" style={{ background: item.color, borderColor: item.color }}>
-            <button
-              type="button"
-              className="need"
-              style={{ background: "transparent", borderColor: "rgba(255,255,255,.45)" }}
-              onClick={() => router.push(item.href)}
-            >
-              {item.title}
-              <small>{item.hint}</small>
+          <section key={item.id} className="mem-door" style={{ background: item.color, borderColor: item.color }}>
+            <button type="button" onClick={() => router.push(item.href)}>
+              <span className="mem-title">{item.title}</span>
+              <span className="mem-hint">{item.hint}</span>
             </button>
           </section>
         ))}
