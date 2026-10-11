@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAuth } from "@/lib/auth-config";
 import { db } from "@/lib/db";
+import { verifyImage } from "@/lib/filetype";
 import { publicUrl, putFile } from "@/lib/storage";
 
-const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BYTES = 2 * 1024 * 1024;
 
 // POST /api/profile/avatar (multipart `file`) — optional photo upload to the
@@ -17,13 +17,17 @@ export async function POST(req: NextRequest) {
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof Blob)) return NextResponse.json({ error: "no-file" }, { status: 400 });
-  if (!ALLOWED.has(file.type)) return NextResponse.json({ error: "bad-type" }, { status: 400 });
-  if (file.size > MAX_BYTES) return NextResponse.json({ error: "too-large" }, { status: 400 });
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (bytes.length > MAX_BYTES || bytes.length === 0) {
+    return NextResponse.json({ error: "bad-size" }, { status: 400 });
+  }
+  // Magic bytes must agree with the claimed label — spoofed types rejected.
+  const kind = verifyImage(bytes, file.type);
+  if (!kind) return NextResponse.json({ error: "bad-type" }, { status: 400 });
 
-  const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-  const key = `avatars/${session.user.id}-${Date.now()}.${ext}`;
+  const key = `avatars/${session.user.id}-${Date.now()}.${kind}`;
   try {
-    await putFile(key, new Uint8Array(await file.arrayBuffer()), file.type);
+    await putFile(key, bytes, file.type);
   } catch {
     return NextResponse.json({ error: "storage-not-configured" }, { status: 501 });
   }
