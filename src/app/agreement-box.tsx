@@ -31,6 +31,8 @@ export default function AgreementBox({
     onAgreed(checked);
   }
 
+  const [title, ...rest] = AGREEMENT_TEXT.split("\n\n");
+
   return (
     <>
       {showTitle && <h2>{AGREEMENT_TITLE}</h2>}
@@ -42,7 +44,8 @@ export default function AgreementBox({
         onScroll={onScroll}
         aria-label={AGREEMENT_TITLE}
       >
-        {AGREEMENT_TEXT}
+        <strong>{title}</strong>
+        {"\n\n" + rest.join("\n\n")}
       </div>
       {!scrolledBottom && (
         <p className="ob-hint" role="status">
