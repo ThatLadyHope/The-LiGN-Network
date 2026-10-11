@@ -3,6 +3,12 @@
 // - lign-private: shared/chat images, signed URLs after membership check.
 // Service key stays server-side; it never leaves this module.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import WebSocketImpl from "ws";
+
+// Node 20 lacks a global WebSocket, which the client requires at construction.
+if (typeof globalThis.WebSocket === "undefined") {
+  (globalThis as Record<string, unknown>).WebSocket = WebSocketImpl;
+}
 
 function required(name: string): string {
   const v = process.env[name];
