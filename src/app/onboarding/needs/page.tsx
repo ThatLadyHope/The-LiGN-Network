@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AGREEMENT_VERSION } from "@/lib/agreement";
 import "../onboarding.css";
 import BackButton from "../../back-button";
 
@@ -56,7 +57,7 @@ export default function NeedsPage() {
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentNeeds: picked }),
+        body: JSON.stringify({ currentNeeds: picked, agreementVersion: AGREEMENT_VERSION }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {

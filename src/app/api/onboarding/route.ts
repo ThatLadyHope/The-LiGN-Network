@@ -15,15 +15,15 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => null);
   const nickname = typeof body?.nickname === "string" ? body.nickname.trim() : "";
-  if (nickname.length < 1 || nickname.length > 30) {
+  const nicknameGiven = nickname.length > 0;
+  if (nicknameGiven && nickname.length > 30) {
     return NextResponse.json({ error: "invalid-nickname" }, { status: 400 });
   }
   if (!acceptanceValid(body?.agreementVersion)) {
     return NextResponse.json({ error: "agreement-required" }, { status: 400 });
   }
-  const data: { nickname: string; ageRange?: string; language?: string; currentNeeds?: string[] } = {
-    nickname,
-  };
+  const data: { nickname?: string; ageRange?: string; language?: string; currentNeeds?: string[] } = {};
+  if (nicknameGiven) data.nickname = nickname;
   if (body?.ageRange !== undefined) {
     const r = AgeRange.safeParse(body.ageRange);
     if (!r.success) return NextResponse.json({ error: "invalid-age" }, { status: 400 });
@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
 
   const existing = await db.user.findUnique({ where: { clerkId } });
   let localId: string;
+  let createdNow = false;
   if (existing) {
     await db.user.update({ where: { id: existing.id }, data });
     localId = existing.id;
@@ -49,10 +50,27 @@ export async function POST(req: NextRequest) {
     const cu = await currentUser();
     const email = cu?.emailAddresses?.[0]?.emailAddress;
     if (!email) return NextResponse.json({ error: "email-required" }, { status: 400 });
-    const created = await db.user.create({
-      data: { clerkId, email, agreementVersion: AGREEMENT_VERSION, ...data },
-    });
-    localId = created.id;
+    // Pre-Clerk (Better Auth era) row with the same email: link it to this
+    // Clerk identity instead of inserting a duplicate.
+    const legacy = await db.user.findUnique({ where: { email } });
+    if (legacy) {
+      if (legacy.clerkId && legacy.clerkId !== clerkId) {
+        return NextResponse.json({ error: "email-in-use" }, { status: 409 });
+      }
+      await db.user.update({
+        where: { id: legacy.id },
+        data: { clerkId, agreementVersion: AGREEMENT_VERSION, ...data },
+      });
+      localId = legacy.id;
+    } else {
+      // Brand-new profile: nickname is required.
+      if (!nicknameGiven) return NextResponse.json({ error: "invalid-nickname" }, { status: 400 });
+      const created = await db.user.create({
+        data: { clerkId, email, agreementVersion: AGREEMENT_VERSION, nickname, ...data },
+      });
+      localId = created.id;
+      createdNow = true;
+    }
   }
   try {
     await db.agreementAcceptance.upsert({
@@ -66,8 +84,8 @@ export async function POST(req: NextRequest) {
       update: {},
     });
   } catch {
-    // Fail closed: no record, no profile.
-    if (!existing) await db.user.delete({ where: { id: localId } }).catch(() => null);
+    // Fail closed: no record, no profile (only remove rows we just made).
+    if (createdNow) await db.user.delete({ where: { id: localId } }).catch(() => null);
     return NextResponse.json({ error: "acceptance-failed" }, { status: 500 });
   }
   await db.user.update({ where: { id: localId }, data: { agreementVersion: AGREEMENT_VERSION } });

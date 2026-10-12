@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useSignIn } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
+import { useSignIn, useUser } from "@clerk/nextjs";
 import "../onboarding/onboarding.css";
 
 export default function LoginPage() {
@@ -14,6 +14,11 @@ export default function LoginPage() {
   const [show, setShow] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (isSignedIn) router.push("/discover");
+  }, [isSignedIn, router]);
 
   async function submit() {
     if (!isLoaded) return;

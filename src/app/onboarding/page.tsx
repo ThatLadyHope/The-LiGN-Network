@@ -1,11 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSignUp } from "@clerk/nextjs";
+import { useSignUp, useUser } from "@clerk/nextjs";
 import { AGREEMENT_VERSION } from "@/lib/agreement";
 import AgreementBox from "../agreement-box";
 import "./onboarding.css";
+
+// Clerk's raw messages, translated into plain guidance. Unknown codes fall
+// through to Clerk's own text plus the code for diagnosis.
+function friendlySignupError(e: unknown, fallback: string): string {
+  const err = (e as { errors?: { code?: string; message?: string }[] })?.errors?.[0];
+  if (!err) return e instanceof Error && e.message ? e.message : fallback;
+  switch (err.code) {
+    case "form_identifier_exists":
+    case "form_identifier_not_found":
+      return "This email already has an account — sign in instead.";
+    case "form_code_incorrect":
+      return "That code didn't match — use the newest email, then try again.";
+    case "verification_expired":
+    case "form_code_expired":
+      return "That code expired — tap Resend code for a fresh one.";
+    case "verification_already_verified":
+      return "Already verified — tap Verify email to finish signing in.";
+    case "session_exists":
+      return "You're already signed in — taking you in…";
+    case "form_password_pwned":
+      return "That password has appeared in a data breach — choose a different one.";
+    case "form_password_length_too_short":
+      return "Use a longer password (12+ characters is safest).";
+    default:
+      return err.message ? `${err.message} (${err.code ?? "unknown-code"})` : fallback;
+  }
+}
 
 export default function SignupPage() {
   const router = useRouter();
@@ -21,6 +48,21 @@ export default function SignupPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const { isSignedIn } = useUser();
+
+  // Signed-in users don't belong on the signup form (prevents session_exists
+  // dead-ends): send them into the app.
+  useEffect(() => {
+    if (isSignedIn) router.push("/discover");
+  }, [isSignedIn, router]);
+
+  // Resend cooldown: every new code kills the previous one, so slow users down.
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   const AGES = ["18-24", "25-34", "35-44", "45-54", "55-plus"];
   const LANGUAGES = [
@@ -63,12 +105,31 @@ export default function SignupPage() {
       await signUp.create({ emailAddress: email, password });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setVerifying(true);
+      setCooldown(30);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "";
-      if (/already exists|identifier.*taken|in use/i.test(msg)) {
-        throw new Error("This email already has an account.");
+      const msg = friendlySignupError(e, "something-went-wrong");
+      if (/already signed in/i.test(msg)) {
+        setStatus(msg);
+        setTimeout(() => router.push("/discover"), 1200);
+        return;
       }
-      setStatus(msg || "something-went-wrong");
+      setStatus(msg);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function resend() {
+    if (!isLoaded || cooldown > 0) return;
+    setBusy(true);
+    setStatus(null);
+    try {
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setCode("");
+      setCooldown(30);
+      setStatus("Fresh code sent — use the newest email, then enter it within a few minutes.");
+    } catch (e) {
+      setStatus(friendlySignupError(e, "something-went-wrong"));
     } finally {
       setBusy(false);
     }
@@ -79,8 +140,23 @@ export default function SignupPage() {
     setBusy(true);
     setStatus(null);
     try {
-      const res = await signUp.attemptEmailAddressVerification({ code });
-      if (res.status !== "complete") throw new Error("That code did not match — try again.");
+      const clean = code.trim();
+      let res;
+      try {
+        res = await signUp.attemptEmailAddressVerification({ code: clean });
+      } catch (err) {
+        // The address may already be verified (stale or double-submitted
+        // code): reload — if the signup is in fact complete, carry on.
+        const fresh = await signUp.reload().catch(() => undefined);
+        const done = fresh ?? signUp;
+        if (done.status === "complete") {
+          res = done;
+        } else {
+          setStatus(friendlySignupError(err, "something-went-wrong"));
+          return;
+        }
+      }
+      if (res.status !== "complete") throw new Error("That code didn't match — use the newest email, then try again.");
       await setActive({ session: res.createdSessionId });
       const profile = await fetch("/api/onboarding", {
         method: "POST",
@@ -93,10 +169,18 @@ export default function SignupPage() {
         }),
       });
       const data = await profile.json().catch(() => null);
-      if (!profile.ok) throw new Error(data?.error ?? "profile-failed");
+      if (!profile.ok) {
+        // Signed in but profile not created (e.g. legacy email row): the
+        // Needs step finishes profile creation, so send them there.
+        if (profile.status === 400 || profile.status === 409 || profile.status === 500) {
+          router.push("/onboarding/needs");
+          return;
+        }
+        throw new Error(data?.error ?? "profile-failed");
+      }
       router.push("/onboarding/needs");
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : "something-went-wrong");
+      setStatus(friendlySignupError(e, "something-went-wrong"));
     } finally {
       setBusy(false);
     }
@@ -170,6 +254,11 @@ export default function SignupPage() {
           <button className="ob-go" disabled={code.trim().length < 4 || busy} onClick={verify}>
             {busy ? "Verifying…" : "Verify email"}
           </button>
+          <p className="ob-alt">
+            <button type="button" className="ob-show" disabled={busy || cooldown > 0} onClick={resend}>
+              {cooldown > 0 ? `Resend code (${cooldown}s)` : "Resend code"}
+            </button>
+          </p>
         </>
       )}
       {status && (
