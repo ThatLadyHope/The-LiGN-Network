@@ -113,6 +113,11 @@ export default function SignupPage() {
         setTimeout(() => router.push("/discover"), 1200);
         return;
       }
+      if (/already has an account/i.test(msg)) {
+        setStatus(`${msg} Taking you to sign in…`);
+        setTimeout(() => router.push("/login"), 1800);
+        return;
+      }
       setStatus(msg);
     } finally {
       setBusy(false);
