@@ -22,8 +22,8 @@ export async function GET() {
     ok: database === "ok",
     database,
     dbHost: host,
-    authSecret: process.env.BETTER_AUTH_SECRET ? "set" : "missing",
-    authUrl: process.env.BETTER_AUTH_URL ?? "missing",
+    authSecret: process.env.CLERK_SECRET_KEY ? "set" : "missing",
+    authUrl: "clerk-hosted",
     resend: process.env.RESEND_API_KEY ? "set" : "missing",
     adminToken: process.env.ADMIN_TOKEN ? "set" : "missing",
   });
