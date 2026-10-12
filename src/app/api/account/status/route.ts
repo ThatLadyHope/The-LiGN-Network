@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { isRestoreDue, pauseAccount, resumeAccount } from "@/lib/account";
 
 // GET /api/account/status — my states + pending deletion info.
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: {
       accountState: true,
       discoveryState: true,
@@ -28,7 +27,7 @@ export async function GET(req: NextRequest) {
     isRestoreDue(me.accountState, me.returnAt?.toISOString() ?? null, new Date())
   ) {
     const restored = await db.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: { accountState: "ACTIVE", discoveryState: "DISCOVERABLE", returnAt: null },
       select: {
         accountState: true,
@@ -45,12 +44,11 @@ export async function GET(req: NextRequest) {
 
 // POST /api/account/pause { returnAt? } — leave discovery, keep everything.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: { accountState: true, discoveryState: true, returnAt: true, pendingDeletionAt: true },
   });
   if (!me) return NextResponse.json({ error: "no-profile" }, { status: 404 });
@@ -66,7 +64,7 @@ export async function POST(req: NextRequest) {
       typeof body?.returnAt === "string" ? body.returnAt : null,
     );
     await db.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: {
         accountState: next.accountState,
         discoveryState: next.discoveryState,
@@ -81,12 +79,11 @@ export async function POST(req: NextRequest) {
 
 // DELETE /api/account/status — resume a paused account.
 export async function DELETE(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: { accountState: true, discoveryState: true, returnAt: true, pendingDeletionAt: true },
   });
   if (!me) return NextResponse.json({ error: "no-profile" }, { status: 404 });
@@ -98,7 +95,7 @@ export async function DELETE(req: NextRequest) {
       pendingDeletionAt: me.pendingDeletionAt?.toISOString() ?? null,
     });
     await db.user.update({
-      where: { id: session.user.id },
+      where: { id: userId },
       data: { accountState: next.accountState, discoveryState: "DISCOVERABLE", returnAt: null },
     });
     return NextResponse.json({ ok: true });

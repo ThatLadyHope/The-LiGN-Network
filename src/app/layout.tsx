@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import Nav from "./nav";
 import SkipLink from "./skip-link";
 import ThemeProvider from "./theme-provider";
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <ClerkProvider>
+      <html lang="en">
       <body>
         <ThemeProvider />
         <SkipLink />
@@ -19,5 +21,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div id="main">{children}</div>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 
 // GET /api/requests/incoming — pending requests addressed to me.
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const pending = await db.connectionRequest.findMany({
-    where: { recipientId: session.user.id, state: "pending" },
+    where: { recipientId: userId, state: "pending" },
     orderBy: { createdAt: "desc" },
   });
   const senders = await db.user.findMany({

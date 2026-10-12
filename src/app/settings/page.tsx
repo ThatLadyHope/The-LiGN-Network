@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { useClerk } from "@clerk/nextjs";
 import { applyTheme, getTheme, type Theme } from "../theme-provider";
 import BackButton from "../back-button";
 import "../onboarding/onboarding.css";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { signOut: clerkSignOut } = useClerk();
   const [theme, setTheme] = useState<Theme>("light");
   const [account, setAccount] = useState<{
     accountState: string;
@@ -56,7 +57,7 @@ export default function SettingsPage() {
   }
 
   async function signOut() {
-    await authClient.signOut();
+    await clerkSignOut();
     router.push("/login");
   }
 
@@ -117,7 +118,7 @@ export default function SettingsPage() {
     if (res.ok) {
       setShowDelete(false);
       setStatus(`Deletion requested. Everything ends by ${new Date(d.effectiveAt).toLocaleDateString()} unless you come back — signing out now.`);
-      await authClient.signOut();
+      await clerkSignOut();
       setTimeout(() => router.push("/login"), 2500);
     } else if (res.status === 409) {
       setStatus("Deletion is held while a safety review is open. Contact support if this is wrong.");

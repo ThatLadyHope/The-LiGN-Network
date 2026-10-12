@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { LISTENER_SESSION_MIN } from "@/lib/listening";
 
 // GET /api/listeners/queue — waiting requests, ANONYMOUS: need + wait time
 // only. No nicknames, no user ids. Listeners must be in Listener Mode.
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: { listenerMode: true },
   });
   if (!me?.listenerMode) return NextResponse.json({ error: "listener-mode-required" }, { status: 403 });
 
   const entries = await db.listenerQueueEntry.findMany({
-    where: { userId: { not: session.user.id } },
+    where: { userId: { not: userId } },
     orderBy: { createdAt: "asc" },
     take: 20,
   });
@@ -35,12 +34,11 @@ export async function GET(req: NextRequest) {
 // time-limited (60 min) ACTIVE connection + conversation; the waiter leaves
 // the queue. Identity is revealed only at this point, to these two people.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: { listenerMode: true },
   });
   if (!me?.listenerMode) return NextResponse.json({ error: "listener-mode-required" }, { status: 403 });
@@ -50,13 +48,13 @@ export async function POST(req: NextRequest) {
     typeof body?.token === "string"
       ? await db.listenerQueueEntry.findUnique({ where: { id: body.token } })
       : null;
-  if (!entry || entry.userId === session.user.id) {
+  if (!entry || entry.userId === userId) {
     return NextResponse.json({ error: "gone" }, { status: 404 });
   }
   await db.listenerQueueEntry.delete({ where: { id: entry.id } });
   const connection = await db.connection.create({
     data: {
-      userAId: session.user.id,
+      userAId: userId,
       userBId: entry.userId,
       state: "ACTIVE",
       endsAt: new Date(Date.now() + LISTENER_SESSION_MIN * 60000),

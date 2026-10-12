@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { findMutualPairs, reportAllowedAfterClosure } from "@/lib/spaces";
 
@@ -7,13 +7,12 @@ import { findMutualPairs, reportAllowedAfterClosure } from "@/lib/spaces";
 // A connection request is created ONLY when both wished (mutual).
 // Unilateral wishes stay silent. Works during and after the space.
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   const wantedId = body?.userId;
-  if (typeof wantedId !== "string" || wantedId === session.user.id) {
+  if (typeof wantedId !== "string" || wantedId === userId) {
     return NextResponse.json({ error: "invalid-user" }, { status: 400 });
   }
   const space = await db.temporarySpace.findUnique({
@@ -22,28 +21,28 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   });
   if (!space) return NextResponse.json({ error: "not-found" }, { status: 404 });
   const ids = space.participants.map((p) => p.userId);
-  if (!ids.includes(session.user.id) || !ids.includes(wantedId)) {
+  if (!ids.includes(userId) || !ids.includes(wantedId)) {
     return NextResponse.json({ error: "not-participants" }, { status: 403 });
   }
   await db.spaceReconnectWish.upsert({
     where: {
-      spaceId_wanterId_wantedId: { spaceId: params.id, wanterId: session.user.id, wantedId },
+      spaceId_wanterId_wantedId: { spaceId: params.id, wanterId: userId, wantedId },
     },
-    create: { spaceId: params.id, wanterId: session.user.id, wantedId },
+    create: { spaceId: params.id, wanterId: userId, wantedId },
     update: {},
   });
   const wishes = await db.spaceReconnectWish.findMany({ where: { spaceId: params.id } });
   const mutual = findMutualPairs(wishes).some(
     ([a, b]) =>
-      (a === session.user.id && b === wantedId) || (a === wantedId && b === session.user.id),
+      (a === userId && b === wantedId) || (a === wantedId && b === userId),
   );
   let connected = false;
   if (mutual) {
     const dupe = await db.connectionRequest.findFirst({
       where: {
         OR: [
-          { senderId: session.user.id, recipientId: wantedId },
-          { senderId: wantedId, recipientId: session.user.id },
+          { senderId: userId, recipientId: wantedId },
+          { senderId: wantedId, recipientId: userId },
         ],
         state: "pending",
       },
@@ -51,7 +50,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (!dupe) {
       await db.connectionRequest.create({
         data: {
-          senderId: session.user.id,
+          senderId: userId,
           recipientId: wantedId,
           note: "From a temporary space together.",
           state: "pending",

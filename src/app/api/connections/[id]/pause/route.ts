@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { applyConnectionAction, endConnection, EndReason } from "@/lib/connections";
 
@@ -16,11 +16,10 @@ async function myConnection(userId: string, id: string) {
 
 // POST /api/connections/[id]/pause — ACTIVE → PAUSED. Either member.
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
-  const connection = await myConnection(session.user.id, params.id);
+  const connection = await myConnection(userId, params.id);
   if (!connection) return NextResponse.json({ error: "not-found" }, { status: 404 });
   try {
     const next = applyConnectionAction(connection.state, "pause");

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { endConnection, EndReason } from "@/lib/connections";
 
@@ -8,14 +8,13 @@ const REASONS = ["need-space", "not-a-fit", "boundary-issue", "naturally-ended",
 // POST /api/connections/[id]/end { reason?, closingMessage? } — end without
 // explanation required. Records the ender for reconnection control.
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const connection = await db.connection.findUnique({ where: { id: params.id } });
   if (
     !connection ||
-    (connection.userAId !== session.user.id && connection.userBId !== session.user.id)
+    (connection.userAId !== userId && connection.userBId !== userId)
   ) {
     return NextResponse.json({ error: "not-found" }, { status: 404 });
   }
@@ -26,7 +25,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       ? body.closingMessage.slice(0, 500)
       : null;
   try {
-    const result = endConnection(connection.state, session.user.id, reason as EndReason, closing);
+    const result = endConnection(connection.state, userId, reason as EndReason, closing);
     await db.connection.update({
       where: { id: connection.id },
       data: { state: result.state, endedAt: new Date(), enderId: result.enderId },

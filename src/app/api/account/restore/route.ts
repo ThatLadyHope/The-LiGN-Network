@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { deletionIsEffective } from "@/lib/account";
 import { purgeUserData } from "@/lib/sweep";
@@ -7,12 +7,11 @@ import { purgeUserData } from "@/lib/sweep";
 // POST /api/account/restore — cancel a pending deletion within the window
 // (30 days) by simply being signed in. Past the window: too late.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: { pendingDeletionAt: true },
   });
   if (!me?.pendingDeletionAt) return NextResponse.json({ error: "nothing-pending" }, { status: 409 });
@@ -20,14 +19,14 @@ export async function POST(req: NextRequest) {
     // Window passed with no return: purge now (safety holds were already
     // checked at request time; an active hold blocks here too).
     const hold = await db.report.findFirst({
-      where: { targetId: session.user.id, review: { in: ["pending", "protecting", "in-review"] } },
+      where: { targetId: userId, review: { in: ["pending", "protecting", "in-review"] } },
     });
     if (hold) return NextResponse.json({ error: "safety-hold" }, { status: 409 });
-    await purgeUserData(db, session.user.id);
+    await purgeUserData(db, userId);
     return NextResponse.json({ error: "too-late" }, { status: 410 });
   }
   await db.user.update({
-    where: { id: session.user.id },
+    where: { id: userId },
     data: { pendingDeletionAt: null, accountState: "ACTIVE", discoveryState: "DISCOVERABLE" },
   });
   return NextResponse.json({ ok: true });

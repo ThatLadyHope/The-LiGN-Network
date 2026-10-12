@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { validateRequest } from "@/lib/connections";
 
 // POST /api/requests { recipientId, reason?, note? } — sends a connection request.
 // Mutual interest enforced later at accept time; duplicates and self-requests rejected.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   const recipientId = body?.recipientId;
@@ -17,7 +16,7 @@ export async function POST(req: NextRequest) {
   }
   try {
     validateRequest({
-      senderId: session.user.id,
+      senderId: userId,
       recipientId,
       reason: body?.reason ?? null,
       note: body?.note ?? null,
@@ -28,8 +27,8 @@ export async function POST(req: NextRequest) {
   const blocked = await db.block.findFirst({
     where: {
       OR: [
-        { blockerId: session.user.id, blockedId: recipientId },
-        { blockerId: recipientId, blockedId: session.user.id },
+        { blockerId: userId, blockedId: recipientId },
+        { blockerId: recipientId, blockedId: userId },
       ],
     },
   });
@@ -42,13 +41,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "unavailable" }, { status: 404 });
   }
   const dupe = await db.connectionRequest.findFirst({
-    where: { senderId: session.user.id, recipientId, state: "pending" },
+    where: { senderId: userId, recipientId, state: "pending" },
   });
   if (dupe) return NextResponse.json({ error: "already-pending", id: dupe.id }, { status: 409 });
 
   const created = await db.connectionRequest.create({
     data: {
-      senderId: session.user.id,
+      senderId: userId,
       recipientId,
       note: typeof body?.note === "string" ? body.note.slice(0, 500) : null,
       state: "pending",

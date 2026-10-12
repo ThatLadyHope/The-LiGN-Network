@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { reportAllowedAfterClosure } from "@/lib/spaces";
 
 // GET /api/spaces/[id] — space detail for members. Auto-expires on read:
 // past closesAt flips open → expired, and participation stops there.
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const space = await db.temporarySpace.findUnique({
     where: { id: params.id },
     include: { participants: true },
   });
   if (!space) return NextResponse.json({ error: "not-found" }, { status: 404 });
-  const member = space.participants.some((p) => p.userId === session.user.id);
+  const member = space.participants.some((p) => p.userId === userId);
   if (!member) return NextResponse.json({ error: "not-member" }, { status: 403 });
 
   let state = space.state;
@@ -30,21 +29,20 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({
     space: { ...space, state },
     members: users,
-    mine: session.user.id,
-    isCreator: space.creatorId === session.user.id,
+    mine: userId,
+    isCreator: space.creatorId === userId,
   });
 }
 
 // DELETE /api/spaces/[id] — creator deletes history ONLY after the 30-day
 // report window closes. Protects others' reconnect rights and evidence.
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const space = await db.temporarySpace.findUnique({ where: { id: params.id } });
   if (!space) return NextResponse.json({ error: "not-found" }, { status: 404 });
-  if (space.creatorId !== session.user.id) {
+  if (space.creatorId !== userId) {
     return NextResponse.json({ error: "creator-only" }, { status: 403 });
   }
   if (space.state === "open" || !reportAllowedAfterClosure(space.closesAt, new Date())) {

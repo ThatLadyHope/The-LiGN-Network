@@ -1,22 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createAuth } from "@/lib/auth-config";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { AgeRange, ConnectionIntention } from "@/lib/profile";
+import { AGREEMENT_TEXT, AGREEMENT_VERSION, acceptanceValid } from "@/lib/agreement";
 
-// PRD §75: progressive onboarding. Step 1 (signup) sends ageRange + language;
-// step 2 (needs) sends those plus currentNeeds. Each provided field is
-// validated; nickname falls back to the signup name. One identity per account.
+// PRD §75: progressive onboarding. Creates the LOCAL LiGN profile on first
+// call (Clerk owns identity; we own the profile, one per Clerk id), then
+// updates it. Agreement acceptance is enforced here, server-side, with a
+// persisted versioned record — never on client word alone.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) {
-    return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
-  }
+  const { userId: clerkId } = await auth();
+  if (!clerkId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+
   const body = await req.json().catch(() => null);
-  const nickname = body?.nickname ?? session.user.name ?? "";
-  if (typeof nickname !== "string" || nickname.length < 1 || nickname.length > 30) {
+  const nickname = typeof body?.nickname === "string" ? body.nickname.trim() : "";
+  if (nickname.length < 1 || nickname.length > 30) {
     return NextResponse.json({ error: "invalid-nickname" }, { status: 400 });
+  }
+  if (!acceptanceValid(body?.agreementVersion)) {
+    return NextResponse.json({ error: "agreement-required" }, { status: 400 });
   }
   const data: { nickname: string; ageRange?: string; language?: string; currentNeeds?: string[] } = {
     nickname,
@@ -36,6 +39,37 @@ export async function POST(req: NextRequest) {
     if (!r.success) return NextResponse.json({ error: "invalid-needs" }, { status: 400 });
     data.currentNeeds = r.data;
   }
-  await db.user.update({ where: { id: session.user.id }, data });
+
+  const existing = await db.user.findUnique({ where: { clerkId } });
+  let localId: string;
+  if (existing) {
+    await db.user.update({ where: { id: existing.id }, data });
+    localId = existing.id;
+  } else {
+    const cu = await currentUser();
+    const email = cu?.emailAddresses?.[0]?.emailAddress;
+    if (!email) return NextResponse.json({ error: "email-required" }, { status: 400 });
+    const created = await db.user.create({
+      data: { clerkId, email, agreementVersion: AGREEMENT_VERSION, ...data },
+    });
+    localId = created.id;
+  }
+  try {
+    await db.agreementAcceptance.upsert({
+      where: { userId_version: { userId: localId, version: AGREEMENT_VERSION } },
+      create: {
+        userId: localId,
+        version: AGREEMENT_VERSION,
+        textSnapshot: AGREEMENT_TEXT,
+        status: "accepted",
+      },
+      update: {},
+    });
+  } catch {
+    // Fail closed: no record, no profile.
+    if (!existing) await db.user.delete({ where: { id: localId } }).catch(() => null);
+    return NextResponse.json({ error: "acceptance-failed" }, { status: 500 });
+  }
+  await db.user.update({ where: { id: localId }, data: { agreementVersion: AGREEMENT_VERSION } });
   return NextResponse.json({ ok: true });
 }

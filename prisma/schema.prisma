@@ -42,6 +42,8 @@ model User {
   id               String         @id @default(cuid())
   nickname         String
   email            String         @unique
+  // Clerk identity (Better Auth removed; its tables stay dormant).
+  clerkId          String?        @unique
   listenerMode     Boolean        @default(false)
   // Latest accepted agreement version (history lives in AgreementAcceptance).
   agreementVersion String?

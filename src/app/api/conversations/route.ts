@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 
 // GET /api/conversations — my ongoing 1-on-1 conversations with the other
 // person's nickname and the latest message preview.
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const mine = await db.conversation.findMany({
     where: {
       connection: {
-        OR: [{ userAId: session.user.id }, { userBId: session.user.id }],
+        OR: [{ userAId: userId }, { userBId: userId }],
         state: { in: ["ACTIVE", "PAUSED"] },
       },
     },
@@ -23,7 +22,7 @@ export async function GET(req: NextRequest) {
     orderBy: { createdAt: "desc" },
   });
   const otherIds = mine.map((c) =>
-    c.connection.userAId === session.user.id ? c.connection.userBId : c.connection.userAId,
+    c.connection.userAId === userId ? c.connection.userBId : c.connection.userAId,
   );
   const others = await db.user.findMany({
     where: { id: { in: otherIds } },
@@ -36,7 +35,7 @@ export async function GET(req: NextRequest) {
       connectionId: c.connection.id,
       state: c.connection.state,
       other: byId.get(
-        c.connection.userAId === session.user.id ? c.connection.userBId : c.connection.userAId,
+        c.connection.userAId === userId ? c.connection.userBId : c.connection.userAId,
       ) ?? null,
       preview: c.messages[0]?.content.slice(0, 80) ?? null,
     })),

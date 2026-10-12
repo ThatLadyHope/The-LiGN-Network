@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { isDiscoverable, type AvailabilityInput } from "@/lib/availability";
 import {
@@ -12,12 +12,11 @@ import {
 // GET /api/discover — eligible people for the viewer's current needs.
 // Eligibility before scoring; honest fallback when nobody qualifies.
 export async function GET(req: Request) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: (req as Request).headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     include: { availability: true },
   });
   if (!me) return NextResponse.json({ error: "no-profile" }, { status: 404 });

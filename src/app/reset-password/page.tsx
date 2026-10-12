@@ -1,26 +1,32 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import BackButton from "../back-button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSignIn } from "@clerk/nextjs";
 import "../onboarding/onboarding.css";
 
-function ResetForm() {
+export default function ResetPasswordPage() {
   const router = useRouter();
-  const token = useSearchParams().get("token") ?? "";
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function submit() {
+    if (!isLoaded) return;
     setBusy(true);
     setStatus(null);
     try {
-      const res = await authClient.resetPassword({ newPassword: password, token });
-      if (res.error) throw new Error("That link is invalid or expired — request a new one.");
-      router.push("/login");
+      const res = await signIn.attemptFirstFactor({
+        strategy: "reset_password_email_code",
+        code,
+        password,
+      });
+      if (res.status !== "complete") throw new Error("That code is invalid or expired — request a new one.");
+      await setActive({ session: res.createdSessionId });
+      router.push("/discover");
     } catch (e) {
       setStatus(e instanceof Error ? e.message : "something-went-wrong");
     } finally {
@@ -28,27 +34,19 @@ function ResetForm() {
     }
   }
 
-  if (!token) {
-    return (
-      <main className="ob-wrap">
-        <h1>Reset password</h1>
-        <p className="ob-status" role="status">
-          This page needs the link from your email.
-        </p>
-      </main>
-    );
-  }
-
   return (
     <main className="ob-wrap">
-      <BackButton />
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
       <h1>Choose a new password</h1>
 
       <label className="ob-label">
-        New password (10+ chars)
+        Code from your email
+        <input value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
+      </label>
+      <label className="ob-label">
+        New password (8+ chars)
         <span className="ob-password">
           <input
             type={show ? "text" : "password"}
@@ -61,7 +59,7 @@ function ResetForm() {
         </span>
       </label>
 
-      <button className="ob-go" disabled={password.length < 10 || busy} onClick={submit}>
+      <button className="ob-go" disabled={code.trim().length < 4 || password.length < 8 || busy} onClick={submit}>
         {busy ? "Saving…" : "Save new password"}
       </button>
       {status && (
@@ -70,13 +68,5 @@ function ResetForm() {
         </p>
       )}
     </main>
-  );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense>
-      <ResetForm />
-    </Suspense>
   );
 }

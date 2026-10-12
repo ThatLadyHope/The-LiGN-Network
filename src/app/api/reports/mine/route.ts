@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 
 function directionOf(r: { reporterId: string }, me: string): "by-me" | "against-me" {
@@ -10,18 +10,17 @@ function directionOf(r: { reporterId: string }, me: string): "by-me" | "against-
 // each with its flow position. Reporter/target identities of OTHER people
 // are limited to nicknames (no contact, no evidence).
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const rows = await db.report.findMany({
-    where: { OR: [{ reporterId: session.user.id }, { targetId: session.user.id }] },
+    where: { OR: [{ reporterId: userId }, { targetId: userId }] },
     orderBy: { createdAt: "desc" },
     take: 100,
   });
   const otherIds = new Set<string>();
   for (const r of rows) {
-    otherIds.add(r.reporterId === session.user.id ? r.targetId : r.reporterId);
+    otherIds.add(r.reporterId === userId ? r.targetId : r.reporterId);
   }
   const others = await db.user.findMany({
     where: { id: { in: [...otherIds] } },
@@ -31,14 +30,14 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     reports: rows.map((r) => ({
       id: r.id,
-      direction: directionOf(r, session.user.id),
+      direction: directionOf(r, userId),
       category: r.category,
       review: r.review,
       action: r.action,
       appeal: r.appeal,
       createdAt: r.createdAt,
       otherNickname:
-        names.get(r.reporterId === session.user.id ? r.targetId : r.reporterId) ?? "Someone",
+        names.get(r.reporterId === userId ? r.targetId : r.reporterId) ?? "Someone",
     })),
   });
 }

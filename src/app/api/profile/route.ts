@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { AvatarKind } from "@/lib/profile";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 
 // GET /api/profile — my own profile (private to me).
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const me = await db.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: userId },
     select: {
       nickname: true,
       avatarKind: true,
@@ -40,16 +39,15 @@ const EditableProfile = z.object({
 // PUT /api/profile — progressive profiling: bio, country, interests only.
 // Identity (nickname), age, and needs stay on their own flows.
 export async function PUT(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   const parsed = EditableProfile.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "invalid-profile" }, { status: 400 });
 
   const updated = await db.user.update({
-    where: { id: session.user.id },
+    where: { id: userId },
     data: {
       ...(parsed.data.bio !== undefined ? { bio: parsed.data.bio } : {}),
       ...(parsed.data.country !== undefined ? { country: parsed.data.country } : {}),

@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { validateSpace } from "@/lib/spaces";
 
 // POST /api/spaces { purpose, durationMin, capacity? } — open a 3–8 temporary space.
 // Creator joins automatically. Auto-expiry enforced on read; chat UI arrives later.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   const input = {
-    creatorId: session.user.id,
+    creatorId: userId,
     purpose: typeof body?.purpose === "string" ? body.purpose.slice(0, 120) : "",
     durationMin: Number(body?.durationMin) || 30,
     capacity: Math.min(Math.max(Number(body?.capacity) || 8, 3), 8),
@@ -31,7 +30,7 @@ export async function POST(req: NextRequest) {
       capacity: input.capacity,
       state: "open",
       closesAt,
-      participants: { create: { userId: session.user.id } },
+      participants: { create: { userId: userId } },
     },
     include: { participants: true },
   });
@@ -41,23 +40,22 @@ export async function POST(req: NextRequest) {
 // GET /api/spaces — my spaces. ?state=open (default) | closed | all.
 // Closed includes expired + creator-closed: talk-again + reports live there.
 export async function GET(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const state = new URL(req.url).searchParams.get("state") ?? "open";
   const where =
     state === "all"
-      ? { participants: { some: { userId: session.user.id } } }
+      ? { participants: { some: { userId: userId } } }
       : state === "closed"
         ? {
-            participants: { some: { userId: session.user.id } },
+            participants: { some: { userId: userId } },
             OR: [{ state: "closed" }, { state: "expired" }],
           }
         : {
             state: "open",
             closesAt: { gt: new Date() },
-            participants: { some: { userId: session.user.id } },
+            participants: { some: { userId: userId } },
           };
   const mine = await db.temporarySpace.findMany({
     where,

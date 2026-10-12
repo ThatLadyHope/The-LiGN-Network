@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { canAppeal } from "@/lib/safety";
 
@@ -7,13 +7,12 @@ import { canAppeal } from "@/lib/safety";
 // only while review is underway or decided. Re-appeals overwrite the message,
 // never the history.
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const report = await db.report.findUnique({ where: { id: params.id } });
   if (!report) return NextResponse.json({ error: "not-found" }, { status: 404 });
-  if (!canAppeal(report.review, report.targetId === session.user.id)) {
+  if (!canAppeal(report.review, report.targetId === userId)) {
     return NextResponse.json({ error: "cannot-appeal" }, { status: 409 });
   }
   const body = await req.json().catch(() => null);

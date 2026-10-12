@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 import { RATE, checkLimit, clientKey, limitedResponse } from "@/lib/rate-limit";
 
-// Central abuse gate: auth endpoints strict, state-changing calls moderate.
+// Clerk guards identity; the matrix below keeps the abuse gates.
 // Single-instance memory store (see rate-limit.ts for the multi-instance note).
-export function middleware(req: NextRequest) {
+export default clerkMiddleware((_, req) => {
   const path = req.nextUrl.pathname;
   if (!path.startsWith("/api/")) return NextResponse.next();
 
   const key = clientKey(req);
   if (path.startsWith("/api/auth/")) {
-    const rule = path.includes("password-reset") ? RATE.reset : RATE.auth;
-    if (!checkLimit(`auth:${key}`, rule)) return limitedResponse();
+    if (!checkLimit(`auth:${key}`, RATE.auth)) return limitedResponse();
     return NextResponse.next();
   }
   if (req.method !== "GET") {
@@ -18,6 +18,8 @@ export function middleware(req: NextRequest) {
     if (!checkLimit(`write:${key}`, rule)) return limitedResponse();
   }
   return NextResponse.next();
-}
+});
 
-export const config = { matcher: "/api/:path*" };
+export const config = {
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+};

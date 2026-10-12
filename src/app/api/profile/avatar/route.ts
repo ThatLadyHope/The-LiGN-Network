@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { verifyImage } from "@/lib/filetype";
 import { publicUrl, putFile } from "@/lib/storage";
@@ -10,9 +10,8 @@ const MAX_BYTES = 2 * 1024 * 1024;
 // public Supabase bucket. Avatars stay optional per §7. Without keys
 // configured, fails closed instead of pretending to work.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
@@ -25,7 +24,7 @@ export async function POST(req: NextRequest) {
   const kind = verifyImage(bytes, file.type);
   if (!kind) return NextResponse.json({ error: "bad-type" }, { status: 400 });
 
-  const key = `avatars/${session.user.id}-${Date.now()}.${kind}`;
+  const key = `avatars/${userId}-${Date.now()}.${kind}`;
   try {
     await putFile(key, bytes, file.type);
   } catch {
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest) {
   }
   const url = publicUrl(key);
   await db.user.update({
-    where: { id: session.user.id },
+    where: { id: userId },
     data: { avatarKind: "photo", avatarUrl: url },
   });
   return NextResponse.json({ ok: true, url });

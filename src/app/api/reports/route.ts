@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 import { reportAllowedAfterClosure } from "@/lib/spaces";
 
@@ -17,9 +17,8 @@ const CATEGORIES = [
 // POST /api/reports { targetId, category, evidence?, spaceId? }.
 // Space reports accepted during the space and inside the 30-day window after.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   if (typeof body?.targetId !== "string" || !CATEGORIES.includes(body?.category)) {
@@ -32,7 +31,7 @@ export async function POST(req: NextRequest) {
       include: { participants: true },
     });
     if (!space) return NextResponse.json({ error: "not-found" }, { status: 404 });
-    const member = space.participants.some((p) => p.userId === session.user.id);
+    const member = space.participants.some((p) => p.userId === userId);
     if (!member) return NextResponse.json({ error: "not-member" }, { status: 403 });
     if (space.state !== "open") {
       // Closed/expired: evidence window still allows reports.
@@ -44,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
   const report = await db.report.create({
     data: {
-      reporterId: session.user.id,
+      reporterId: userId,
       targetId: body.targetId,
       spaceId,
       category: body.category,

@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 
 // POST /api/spaces/[id]/leave — free leave anytime. Creator-leave transfers
 // ownership to the earliest-joined remaining participant; an empty space closes.
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const space = await db.temporarySpace.findUnique({
     where: { id: params.id },
@@ -15,10 +14,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   });
   if (!space) return NextResponse.json({ error: "not-found" }, { status: 404 });
   await db.spaceParticipant.deleteMany({
-    where: { spaceId: space.id, userId: session.user.id },
+    where: { spaceId: space.id, userId: userId },
   });
-  const rest = space.participants.filter((p) => p.userId !== session.user.id);
-  if (session.user.id === space.creatorId) {
+  const rest = space.participants.filter((p) => p.userId !== userId);
+  if (userId === space.creatorId) {
     if (rest.length === 0) {
       await db.temporarySpace.update({ where: { id: space.id }, data: { state: "closed" } });
     } else {

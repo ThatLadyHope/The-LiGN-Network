@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import { AGREEMENT_VERSION } from "@/lib/agreement";
+import { useSignIn } from "@clerk/nextjs";
 import "../onboarding/onboarding.css";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { isLoaded, signIn, setActive } = useSignIn();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -16,13 +16,14 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
 
   async function submit() {
+    if (!isLoaded) return;
     setBusy(true);
     setStatus(null);
     try {
-      const res = await authClient.signIn.email({ email, password });
-      if (res.error) throw new Error("Email or password did not match.");
-      // Recovery by simply logging in: a pending deletion inside its window
-      // is cancelled automatically; past it, the account is gone for good.
+      const res = await signIn.create({ identifier: email, password });
+      if (res.status !== "complete") throw new Error("Email or password did not match.");
+      await setActive({ session: res.createdSessionId });
+      // Recovery by simply logging in + outdated-agreement routing, as before.
       const st = await fetch("/api/account/status").then((r) =>
         r.ok ? r.json().catch(() => null) : null,
       );
@@ -33,11 +34,16 @@ export default function LoginPage() {
           setTimeout(() => router.push("/discover"), 1500);
           return;
         }
-        await authClient.signOut();
         throw new Error("That account finished deleting. Join again to start fresh.");
       }
-      // Outdated agreement: re-accept before anything else.
-      if (st?.status && st.status.agreementVersion !== AGREEMENT_VERSION) {
+      // No local profile yet (Clerk user, never onboarded) or outdated
+      // agreement: route accordingly instead of dropping into the app.
+      if (!st?.status) {
+        router.push("/onboarding/needs");
+        return;
+      }
+      const { AGREEMENT_VERSION } = await import("@/lib/agreement");
+      if (st.status.agreementVersion !== AGREEMENT_VERSION) {
         router.push("/agreement");
         return;
       }

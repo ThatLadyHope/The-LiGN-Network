@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAuth } from "@/lib/auth-config";
+import { localUserId } from "@/lib/session";
 import { db } from "@/lib/db";
 
 const REASONS = [
@@ -14,9 +14,8 @@ const REASONS = [
 // POST /api/account/feedback { reason, message? } — why someone is leaving.
 // Stored privately for product learning; never conditions deletion.
 export async function POST(req: NextRequest) {
-  const auth = createAuth(db);
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session?.user) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
+  const userId = await localUserId();
+  if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const body = await req.json().catch(() => null);
   if (!REASONS.includes(body?.reason)) {
@@ -27,7 +26,7 @@ export async function POST(req: NextRequest) {
       ? body.message.slice(0, 2000)
       : null;
   await db.deletionFeedback.create({
-    data: { userId: session.user.id, reason: body.reason, message },
+    data: { userId: userId, reason: body.reason, message },
   });
   return NextResponse.json({ ok: true });
 }
