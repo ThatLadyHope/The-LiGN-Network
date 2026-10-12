@@ -22,6 +22,7 @@ export async function GET() {
     ok: database === "ok",
     database,
     dbHost: host,
+    poolerMode: url.includes("pgbouncer=true") ? "on" : "off",
     authSecret: process.env.CLERK_SECRET_KEY ? "set" : "missing",
     authUrl: "clerk-hosted",
     resend: process.env.RESEND_API_KEY ? "set" : "missing",
