@@ -25,7 +25,7 @@ export default function LoginPage() {
     setBusy(true);
     setStatus(null);
     try {
-      const res = await signIn.create({ identifier: email, password });
+      const res = await signIn.create({ identifier: email.trim(), password });
       if (res.status !== "complete") throw new Error("Email or password did not match.");
       await setActive({ session: res.createdSessionId });
       // Recovery by simply logging in + outdated-agreement routing, as before.

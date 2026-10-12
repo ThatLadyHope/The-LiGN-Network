@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     setStatus(null);
     try {
-      await signIn.create({ strategy: "reset_password_email_code", identifier: email });
+      await signIn.create({ strategy: "reset_password_email_code", identifier: email.trim() });
       // Same message either way: never reveal whether an account exists.
       setSent(true);
       setStatus("If an account uses that email, a reset code is on its way.");
