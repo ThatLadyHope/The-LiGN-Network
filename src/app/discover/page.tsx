@@ -39,6 +39,7 @@ export default function DiscoverPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [retryMsg, setRetryMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { isLoaded: authLoaded, isSignedIn } = useUser();
   const unauthTries = useRef(0);
   const authRef = useRef({ loaded: false, signedIn: false });
@@ -109,7 +110,7 @@ export default function DiscoverPage() {
   }
 
   useEffect(() => {
-    load();
+    load().finally(() => setLoading(false));
   }, [load]);
 
   async function joinQueue() {
@@ -209,7 +210,16 @@ export default function DiscoverPage() {
         </section>
       )}
 
-      {candidates.length > 0 && (
+      {loading ? (
+        <section className="dc-people" aria-label="Loading">
+          <div className="dc-people-head">
+            <h2>Available now</h2>
+          </div>
+          <div className="ui-skeleton" />
+          <div className="ui-skeleton" />
+          <div className="ui-skeleton" />
+        </section>
+      ) : candidates.length > 0 ? (
         <section className="dc-people" aria-label="Available connections">
           <div className="dc-people-head">
             <h2>Available now</h2>
@@ -253,9 +263,9 @@ export default function DiscoverPage() {
             })}
           </ul>
         </section>
-      )}
+      ) : null}
 
-      {candidates.length === 0 && fallback && (
+      {!loading && candidates.length === 0 && fallback && (
         <section className="dc-empty">
           <div className="eyebrow">While you wait</div>
           <h2>No suitable person right now — honestly.</h2>

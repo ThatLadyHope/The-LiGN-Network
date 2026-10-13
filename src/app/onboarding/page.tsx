@@ -256,7 +256,7 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="ob-wrap anim-in">
+    <main className="ob-wrap">
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>

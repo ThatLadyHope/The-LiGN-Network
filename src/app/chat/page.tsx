@@ -156,6 +156,17 @@ export default function ChatPage() {
   }
 
   const activeConvo = conversations.find((c) => c.id === activeId) ?? null;
+  const otherId = activeConvo?.other?.id ?? null;
+  const isMine = (senderId: string) => (otherId ? senderId !== otherId : false);
+  // The icebreaker prompt retires once you've sent anything in the thread —
+  // thread history counts, so it stays gone across reloads.
+  const hasSent = messages.some((m) => isMine(m.senderId));
+  const inputPlaceholder =
+    threadState !== "ACTIVE"
+      ? "This conversation is not active."
+      : hasSent
+        ? "Message…"
+        : "Write something honest…";
 
   // One tick = stored on LiGN's server. Two ticks = the other person opened
   // this thread after the message was sent. Nothing in between is claimed.
@@ -238,7 +249,7 @@ export default function ChatPage() {
   }
 
   return (
-    <main className="ch-wrap anim-in">
+    <main className="ch-wrap">
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
@@ -369,7 +380,7 @@ export default function ChatPage() {
                   maxLength={2000}
                   disabled={threadState !== "ACTIVE"}
                   onChange={(e) => onDraftChange(e.target.value)}
-                  placeholder={threadState === "ACTIVE" ? "Write something honest…" : "This conversation is not active."}
+                  placeholder={inputPlaceholder}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") send();
                   }}

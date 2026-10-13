@@ -110,9 +110,12 @@
   to { opacity: 1; transform: none; }
 }
 
+/* Quiet Premium, app-wide: every screen eases in on mount. */
+.ob-wrap, .dc-wrap, .ch-wrap { animation: ui-in 180ms ease-out; }
+
 @media (prefers-reduced-motion: reduce) {
   .ui-btn, .ui-input { transition: none; }
   .ui-btn-primary:hover:not(:disabled) { transform: none; }
   .ui-skeleton { animation: none; }
-  .anim-in { animation: none; }
+  .anim-in, .ob-wrap, .dc-wrap, .ch-wrap { animation: none; }
 }
