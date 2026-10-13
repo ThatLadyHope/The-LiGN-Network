@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSignIn } from "@clerk/nextjs";
+import { DISPOSABLE_EMAIL_MESSAGE, isDisposableEmail } from "@/lib/email-policy";
 import "../onboarding/onboarding.css";
 
 export default function ForgotPasswordPage() {
@@ -16,6 +17,11 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     setStatus(null);
     try {
+      if (isDisposableEmail(email)) {
+        setSent(false);
+        setStatus(DISPOSABLE_EMAIL_MESSAGE);
+        return;
+      }
       await signIn.create({ strategy: "reset_password_email_code", identifier: email.trim() });
       // Same message either way: never reveal whether an account exists.
       setSent(true);

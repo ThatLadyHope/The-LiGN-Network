@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignUp, useUser } from "@clerk/nextjs";
 import { AGREEMENT_VERSION } from "@/lib/agreement";
+import { DISPOSABLE_EMAIL_MESSAGE, isDisposableEmail } from "@/lib/email-policy";
 import { MIN_PASSWORD_LENGTH } from "@/lib/password-policy";
 import AgreementBox from "../agreement-box";
 import PasswordField from "../password-field";
@@ -107,6 +108,7 @@ export default function SignupPage() {
     setStatus(null);
     try {
       if (!agreed) throw new Error("Please read the agreement and tick the box to join.");
+      if (isDisposableEmail(email)) throw new Error(DISPOSABLE_EMAIL_MESSAGE);
       await signUp.create({ emailAddress: email, password });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setVerifying(true);
@@ -228,6 +230,11 @@ export default function SignupPage() {
     });
     const data = await profile.json().catch(() => null);
     if (!profile.ok) {
+      if (data?.error === "email-not-allowed") {
+        throw new Error(
+          "Temporary email addresses aren't allowed — start over with your permanent email address.",
+        );
+      }
       // Signed in but profile not created (e.g. legacy email row): the
       // Needs step finishes profile creation, so send them there.
       if (profile.status === 400 || profile.status === 409 || profile.status === 500) {

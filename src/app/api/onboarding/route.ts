@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { AgeRange, ConnectionIntention } from "@/lib/profile";
 import { AGREEMENT_TEXT, AGREEMENT_VERSION, acceptanceValid } from "@/lib/agreement";
+import { isDisposableEmail } from "@/lib/email-policy";
 
 // PRD §75: progressive onboarding. Creates the LOCAL LiGN profile on first
 // call (Clerk owns identity; we own the profile, one per Clerk id), then
@@ -43,6 +44,21 @@ export async function POST(req: NextRequest) {
   const existing = await db.user.findUnique({ where: { clerkId } });
   let localId: string;
   let createdNow = false;
+  // Effective email for the throwaway-domain check: stored address for
+  // existing rows, Clerk address otherwise. Checked BEFORE any write.
+  const storedEmail = existing?.email ?? null;
+  const cuPre = existing ? null : await currentUser();
+  const effectiveEmail = storedEmail ?? cuPre?.emailAddresses?.[0]?.emailAddress ?? null;
+  if (effectiveEmail && isDisposableEmail(effectiveEmail)) {
+    // Fail closed: no profile. Remove a just-created Clerk identity so the
+    // throwaway address can't linger (never for pre-existing local rows).
+    if (!existing) {
+      await clerkClient()
+        .then((cc) => cc.users.deleteUser(clerkId))
+        .catch(() => null);
+    }
+    return NextResponse.json({ error: "email-not-allowed" }, { status: 400 });
+  }
   if (existing) {
     await db.user.update({ where: { id: existing.id }, data });
     localId = existing.id;

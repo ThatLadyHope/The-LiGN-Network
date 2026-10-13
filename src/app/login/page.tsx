@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSignIn, useUser } from "@clerk/nextjs";
+import { DISPOSABLE_EMAIL_MESSAGE, isDisposableEmail } from "@/lib/email-policy";
 import PasswordField from "../password-field";
 import "../onboarding/onboarding.css";
 
@@ -76,6 +77,7 @@ export default function LoginPage() {
     setBusy(true);
     setStatus(null);
     try {
+      if (isDisposableEmail(email)) throw new Error(DISPOSABLE_EMAIL_MESSAGE);
       const res = await signIn.create({ identifier: email.trim(), password });
       if (res.status === "complete") {
         await setActive({ session: res.createdSessionId });

@@ -65,6 +65,11 @@ export default function NeedsPage() {
           router.push("/onboarding");
           return;
         }
+        if (data?.error === "email-not-allowed") {
+          throw new Error(
+            "Temporary email addresses aren't allowed — sign out and join again with your permanent email address.",
+          );
+        }
         throw new Error(data?.error ?? "profile-failed");
       }
       setStatus("Saved. Taking you to Discover…");
