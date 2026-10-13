@@ -1,9 +1,9 @@
-.ob-wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
-.ob-wrap h1 { font-family: Georgia, serif; font-size: 32px; margin: 16px 0 8px; }
-.ob-label { display: block; font-weight: 600; margin-bottom: 12px; font-size: 14px; }
+.ob-wrap { max-width: 640px; margin: 0 auto; padding: 28px 20px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
+.ob-wrap h1 { font-family: Georgia, serif; font-size: 26px; margin: 10px 0 6px; }
+.ob-label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 14px; }
 .ob-label input, .ob-label select { display: block; width: 100%; margin-top: 8px; padding: 13px 16px; font-size: 16px; border: 2px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink); }
 .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.ob-groups { display: grid; gap: 14px; margin: 20px 0 24px; }
+.ob-groups { display: grid; gap: 10px; margin: 14px 0 18px; }
 .ob-group { border: 1px solid var(--line); border-radius: 20px; padding: 18px; box-shadow: var(--shadow-sm); }
 .ob-group.g1 { background: var(--teal); border-color: var(--teal); color: var(--on-teal); }
 .ob-group.g2 { background: var(--indigo); border-color: var(--indigo); color: var(--on-indigo); }

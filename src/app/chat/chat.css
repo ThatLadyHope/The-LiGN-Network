@@ -1,5 +1,5 @@
-.ch-wrap { max-width: 860px; margin: 0 auto; padding: 40px 24px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
-.ch-wrap h1 { font-family: Georgia, serif; font-size: 30px; margin: 16px 0 8px; }
+.ch-wrap { max-width: 860px; margin: 0 auto; padding: 28px 20px; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
+.ch-wrap h1 { font-family: Georgia, serif; font-size: 24px; margin: 10px 0 8px; }
 .ch-requests { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-md); }
 .ch-requests h2 { font-size: 15px; margin: 0 0 8px; }
 .ch-req { border-top: 1px solid var(--line); padding: 10px 0; }
@@ -14,15 +14,17 @@
 @keyframes ch-pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .ch-typing { animation: none; } }
 .ch-thread { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; min-height: 320px; display: flex; flex-direction: column; box-shadow: var(--shadow-md); }
-.ch-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.ch-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
 .ch-msg { background: var(--sand); border-radius: 4px 16px 16px 16px; padding: 10px 14px; max-width: 85%; font-size: 15px; }
 /* Thread header: who you're with. */
-.ch-head { font-family: Georgia, serif; font-size: 18px; margin-bottom: 4px; }
+.ch-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-family: Georgia, serif; font-size: 16px; margin-bottom: 6px; }
+.ch-head .ch-state { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 12px; color: var(--muted); font-weight: 600; }
 /* Day dividers. */
 .ch-day { display: flex; justify-content: center; margin: 10px 0 2px; }
 .ch-day span { font-size: 12px; font-weight: 700; color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, var(--card)); border: 1px solid var(--line); border-radius: 999px; padding: 3px 14px; }
 /* Message rows: mine right, theirs left. */
-.ch-row { display: flex; }
+.ch-row { display: flex; animation: ui-row-in 160ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .ch-row { animation: none; } }
 .ch-row.mine { justify-content: flex-end; }
 .ch-row.theirs { justify-content: flex-start; }
 .ch-bubble { max-width: 78%; padding: 10px 14px 6px; font-size: 15px; line-height: 1.55; }
@@ -44,4 +46,9 @@
 .ch-mini { border: 2px solid var(--clay); background: transparent; color: var(--clay); border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; margin-right: 8px; }
 .ch-safety { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .ch-safety .ch-state { font-size: 13px; color: var(--muted); font-weight: 600; margin-right: auto; }
+.ch-more { margin-left: auto; }
+.ch-more summary { list-style: none; }
+.ch-more summary::-webkit-details-marker { display: none; }
+.ch-more-body { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; }
+.ch-list .ui-skeleton { height: 64px; border-radius: 16px; margin-bottom: 10px; }
 .ch-safety select { border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }

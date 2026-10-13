@@ -39,6 +39,7 @@ export default function ChatPage() {
   const [typingName, setTypingName] = useState<string | null>(null);
   const [threadState, setThreadState] = useState<string>("ACTIVE");
   const [confirmEnd, setConfirmEnd] = useState(false);
+  const [loadingList, setLoadingList] = useState(true);
   const [reportCat, setReportCat] = useState("discomfort");
   const socketRef = useRef<Socket | null>(null);
   const lastTypeEmit = useRef<number>(0);
@@ -71,7 +72,7 @@ export default function ChatPage() {
   }, [router]);
 
   useEffect(() => {
-    loadAll();
+    loadAll().finally(() => setLoadingList(false));
   }, [loadAll]);
 
   useEffect(() => {
@@ -218,7 +219,7 @@ export default function ChatPage() {
   }
 
   return (
-    <main className="ch-wrap">
+    <main className="ch-wrap anim-in">
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
@@ -239,8 +240,15 @@ export default function ChatPage() {
       )}
 
       <div className="ch-cols">
-        <aside className="ch-list">
-          {conversations.map((c) => (
+        <aside className="ch-list" aria-label="Conversations">
+          {loadingList ? (
+            <>
+              <div className="ui-skeleton" style={{ height: 64 }} />
+              <div className="ui-skeleton" style={{ height: 64 }} />
+              <div className="ui-skeleton" style={{ height: 64 }} />
+            </>
+          ) : (
+            conversations.map((c) => (
             <button
               key={c.id}
               className={c.id === activeId ? "on" : ""}
@@ -249,8 +257,9 @@ export default function ChatPage() {
               <b>{c.other?.nickname ?? "Someone"}</b>
               <small>{c.preview ?? "Say hello — no rush."}</small>
             </button>
-          ))}
-          {conversations.length === 0 && <p>No conversations yet. Send a request from Discover.</p>}
+            ))
+          )}
+          {!loadingList && conversations.length === 0 && <p>No conversations yet. Send a request from Discover.</p>}
         </aside>
 
         <section className="ch-thread">
@@ -259,11 +268,13 @@ export default function ChatPage() {
             <>
               <div className="ch-head">
                 <b>{activeConvo.other?.nickname ?? "Someone"}</b>
+                <span className="ch-state">{threadState === "ACTIVE" ? "Active" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
               </div>
               <div className="ch-safety">
-                <span className="ch-state">{threadState === "ACTIVE" ? "" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
                 {threadState !== "ENDED" && (
-                  <>
+                  <details className="ch-more">
+                    <summary className="ui-btn ui-btn-ghost ui-btn-sm">More</summary>
+                    <div className="ch-more-body">
                     <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={pauseResume}>{threadState === "PAUSED" ? "Resume" : "Pause"}</button>
                     {confirmEnd ? (
                       <>
@@ -284,7 +295,8 @@ export default function ChatPage() {
                       <option value="other-high-risk">Other high risk</option>
                     </select>
                     <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={reportOther}>Report</button>
-                  </>
+                    </div>
+                  </details>
                 )}
               </div>
               <div className="ch-msgs">
