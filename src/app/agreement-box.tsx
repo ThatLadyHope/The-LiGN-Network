@@ -9,11 +9,14 @@ export default function AgreementBox({
   onAgreed,
   showTitle = true,
   showHelp = true,
+  startOpen = false,
 }: {
   onAgreed: (agreed: boolean) => void;
   showTitle?: boolean;
   showHelp?: boolean;
+  startOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(startOpen);
   const [scrolledBottom, setScrolledBottom] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const box = useRef<HTMLDivElement | null>(null);
@@ -33,12 +36,46 @@ export default function AgreementBox({
 
   const [title, ...rest] = AGREEMENT_TEXT.split("\n\n");
 
+  if (!open) {
+    return (
+      <div className="ob-agree-collapsed">
+        <button
+          type="button"
+          className="ob-agree-toggle"
+          onClick={() => setOpen(true)}
+          aria-expanded={false}
+          aria-controls="lign-agreement-body"
+        >
+          <span>
+            <b>{AGREEMENT_TITLE}</b>
+            <small>Version {AGREEMENT_VERSION} — tap to read{agreed ? " · agreed" : ""}</small>
+          </span>
+          <span aria-hidden="true" className="ob-agree-caret">▸</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       {showTitle && <h2>{AGREEMENT_TITLE}</h2>}
       <p className="ob-hint">Version {AGREEMENT_VERSION}</p>
+      <button
+        type="button"
+        className="ob-agree-toggle open"
+        onClick={() => setOpen(false)}
+        aria-expanded={true}
+        aria-controls="lign-agreement-body"
+      >
+        <span>
+          <b>{AGREEMENT_TITLE}</b>
+          <small>Tap to collapse</small>
+        </span>
+        <span aria-hidden="true" className="ob-agree-caret">▾</span>
+      </button>
       <div
         ref={box}
+        id="lign-agreement-body"
         className="ob-agree-box"
         tabIndex={0}
         onScroll={onScroll}

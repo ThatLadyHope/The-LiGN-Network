@@ -61,6 +61,12 @@
 .ob-agree-check { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: 15px; margin: 12px 0 4px; cursor: pointer; }
 .ob-agree-check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--clay); cursor: pointer; }
 .ob-agree-check input:disabled { cursor: not-allowed; }
+.ob-agree-collapsed { margin: 12px 0; }
+.ob-agree-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-size: 14px; }
+.ob-agree-toggle span b { display: block; }
+.ob-agree-toggle span small { color: var(--muted); font-weight: 400; }
+.ob-agree-toggle.open { margin-bottom: 8px; }
+.ob-agree-caret { font-size: 18px; color: var(--clay); flex: none; }
 .ob-group-page { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
 .ob-group-page h2 { font-size: 16px; margin: 0 0 6px; }
 .ob-group-page a { color: var(--clay); font-weight: 600; }
