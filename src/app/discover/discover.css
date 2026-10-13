@@ -28,5 +28,21 @@
 .dc-act.outline-sage { border: 2px solid var(--sage); background: transparent; color: var(--ink); }
 .dc-space { background: var(--card); border: 1px solid var(--line); border-radius: 20px; margin-top: 16px; padding: 20px; text-align: left; box-shadow: var(--shadow-sm); }
 .dc-space h3 { font-size: 15px; margin: 0 0 8px; }
+/* Available-connections bar: one subtle distinct row per person. */
+.dc-people { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-md); overflow: hidden; margin-bottom: 16px; }
+.dc-people-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 18px 10px; }
+.dc-people-head h2 { margin: 0; font-size: 18px; font-family: Georgia, serif; font-weight: 400; }
+.dc-people ul { list-style: none; margin: 0; padding: 0 10px 12px; display: grid; gap: 8px; }
+.dc-person { display: flex; align-items: center; gap: 12px; background: var(--cream); border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; }
+.dc-avatar { width: 42px; height: 42px; flex: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; }
+.dc-avatar.tone-teal { background: var(--teal); color: var(--on-teal); }
+.dc-avatar.tone-indigo { background: var(--indigo); color: var(--on-indigo); }
+.dc-avatar.tone-plum { background: var(--plum); color: var(--on-plum); }
+.dc-avatar.tone-sage { background: var(--sage); color: var(--on-sage); }
+.dc-person-main { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.dc-person-main b { font-size: 15px; }
+.dc-person-needs { display: flex; flex-wrap: wrap; gap: 6px; }
+.dc-person-main small { display: block; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.dc-person .dc-act { flex: none; }
 .dc-space input, .dc-space select { padding: 10px 12px; font-size: 14px; color: var(--ink); background: var(--card); border: 2px solid var(--line); border-radius: 10px; margin: 0 8px 8px 0; }
 .dc-open { font-size: 14px; color: var(--indigo); font-weight: 600; }

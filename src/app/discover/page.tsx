@@ -132,9 +132,13 @@ export default function DiscoverPage() {
     });
     if (res.ok) {
       setSent((s) => [...s, id]);
+      // Requests become conversations in Chat once accepted — take them
+      // there so the wait happens in the right place.
+      router.push("/chat");
     } else if (res.status === 409) {
       setSent((s) => [...s, id]);
-      setStatus("Request already pending.");
+      setStatus("Request already pending — taking you to chat to wait there.");
+      setTimeout(() => router.push("/chat"), 1200);
     } else {
       setStatus("Could not send the request — they may no longer be available.");
     }
@@ -188,31 +192,51 @@ export default function DiscoverPage() {
         </section>
       )}
 
-      {candidates.map((c) => (
-        <article key={c.id} className="dc-card">
-          <h2>{c.profile?.nickname ?? "Someone"}</h2>
-          {c.profile?.bio && <p>{c.profile.bio}</p>}
-          <div className="dc-chips">
-            {c.sharedNeeds.map((n) => (
-              <span key={n} className="dc-chip need">
-                {NEED_LABELS[n] ?? n}
-              </span>
-            ))}
-            {(c.profile?.interests ?? []).map((i) => (
-              <span key={i} className="dc-chip">
-                {i}
-              </span>
-            ))}
+      {candidates.length > 0 && (
+        <section className="dc-people" aria-label="Available connections">
+          <div className="dc-people-head">
+            <h2>Available now</h2>
+            <span className="ui-badge">
+              {candidates.length} {candidates.length === 1 ? "person" : "people"}
+            </span>
           </div>
-          <button
-            className="dc-go"
-            disabled={sent.includes(c.id)}
-            onClick={() => sendRequest(c.id)}
-          >
-            {sent.includes(c.id) ? "Request sent" : "Send request"}
-          </button>
-        </article>
-      ))}
+          <ul>
+            {candidates.map((c, i) => {
+              const tones = ["teal", "indigo", "plum", "sage"] as const;
+              const tone = tones[i % tones.length];
+              const needs = c.sharedNeeds ?? [];
+              const extra = needs.length > 2 ? needs.length - 2 : 0;
+              const done = sent.includes(c.id);
+              return (
+                <li key={c.id} className="dc-person">
+                  <span className={`dc-avatar tone-${tone}`} aria-hidden="true">
+                    {(c.profile?.nickname ?? "?").trim().charAt(0).toUpperCase() || "?"}
+                  </span>
+                  <span className="dc-person-main">
+                    <b>{c.profile?.nickname ?? "Someone"}</b>
+                    <span className="dc-person-needs">
+                      {needs.slice(0, 2).map((n) => (
+                        <span key={n} className="dc-chip need">
+                          {NEED_LABELS[n] ?? n}
+                        </span>
+                      ))}
+                      {extra > 0 && <span className="dc-chip">+{extra}</span>}
+                    </span>
+                    {c.profile?.bio && <small>{c.profile.bio}</small>}
+                  </span>
+                  <button
+                    className={done ? "dc-act quiet" : "dc-act solid-clay"}
+                    disabled={done}
+                    onClick={() => sendRequest(c.id)}
+                  >
+                    {done ? "Sent" : "Send request"}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
 
       {candidates.length === 0 && fallback && (
         <section className="dc-empty">
