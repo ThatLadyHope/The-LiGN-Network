@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useUser } from "@clerk/nextjs";
 import { io, type Socket } from "socket.io-client";
 import { dayLabel, messageTick, timeLabel } from "@/lib/messaging";
 import "./chat.css";
@@ -44,11 +45,28 @@ export default function ChatPage() {
   const socketRef = useRef<Socket | null>(null);
   const lastTypeEmit = useRef<number>(0);
   const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { isLoaded: authLoaded, isSignedIn } = useUser();
+  const unauthTries = useRef(0);
+  const authRef = useRef({ loaded: false, signedIn: false });
+  authRef.current = { loaded: authLoaded, signedIn: !!isSignedIn };
+
+  // A 401 while Clerk is still warming up (slow networks read as signed-out
+  // for a second or two) is NOT a logout: retry before concluding anything.
+  function handleUnauthorized(retry: () => void) {
+    const a = authRef.current;
+    if (!a.loaded || (a.signedIn && unauthTries.current < 3)) {
+      unauthTries.current += 1;
+      setTimeout(retry, 1500);
+      return;
+    }
+    unauthTries.current = 0;
+    router.push("/onboarding");
+  }
 
   const loadMessages = useCallback(async (id: string) => {
     const res = await fetch(`/api/conversations/${id}/messages`);
     if (res.status === 401) {
-      router.push("/onboarding");
+      handleUnauthorized(() => loadMessages(id));
       return;
     }
     const data = await res.json().catch(() => null);
@@ -62,9 +80,10 @@ export default function ChatPage() {
   const loadAll = useCallback(async () => {
     const [c, r] = await Promise.all([fetch("/api/conversations"), fetch("/api/requests/incoming")]);
     if (c.status === 401 || r.status === 401) {
-      router.push("/onboarding");
+      handleUnauthorized(() => loadAll());
       return;
     }
+    unauthTries.current = 0;
     const cd = await c.json().catch(() => null);
     const rd = await r.json().catch(() => null);
     setConversations(cd?.conversations ?? []);
@@ -267,13 +286,26 @@ export default function ChatPage() {
           {activeId && activeConvo && (
             <>
               <div className="ch-head">
-                <b>{activeConvo.other?.nickname ?? "Someone"}</b>
-                <span className="ch-state">{threadState === "ACTIVE" ? "Active" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
-              </div>
-              <div className="ch-safety">
+                <span className="ch-who">
+                  <b>{activeConvo.other?.nickname ?? "Someone"}</b>
+                  <span className="ch-state">{threadState === "ACTIVE" ? "Active" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
+                </span>
                 {threadState !== "ENDED" && (
                   <details className="ch-more">
-                    <summary className="ui-btn ui-btn-ghost ui-btn-sm">More</summary>
+                    <summary className="ui-btn ui-btn-ghost ui-btn-sm">
+                      More
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <circle cx="12" cy="5" r="1.8" />
+                        <circle cx="12" cy="12" r="1.8" />
+                        <circle cx="12" cy="19" r="1.8" />
+                      </svg>
+                    </summary>
                     <div className="ch-more-body">
                     <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={pauseResume}>{threadState === "PAUSED" ? "Resume" : "Pause"}</button>
                     {confirmEnd ? (

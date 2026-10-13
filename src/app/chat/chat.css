@@ -17,8 +17,10 @@
 .ch-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
 .ch-msg { background: var(--sand); border-radius: 4px 16px 16px 16px; padding: 10px 14px; max-width: 85%; font-size: 15px; }
 /* Thread header: who you're with. */
-.ch-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-family: Georgia, serif; font-size: 16px; margin-bottom: 6px; }
-.ch-head .ch-state { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 12px; color: var(--muted); font-weight: 600; }
+.ch-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.ch-head b { font-family: Georgia, serif; font-size: 16px; font-weight: 400; }
+.ch-who { display: grid; gap: 1px; min-width: 0; }
+.ch-who .ch-state { font-size: 12px; color: var(--muted); font-weight: 600; }
 /* Day dividers. */
 .ch-day { display: flex; justify-content: center; margin: 10px 0 2px; }
 .ch-day span { font-size: 12px; font-weight: 700; color: var(--ink); background: color-mix(in srgb, var(--ink) 12%, var(--card)); border: 1px solid var(--line); border-radius: 999px; padding: 3px 14px; }
@@ -44,9 +46,7 @@
 .ch-send button:disabled { opacity: .45; }
 .ch-sendbtn { display: inline-flex; align-items: center; justify-content: center; padding: 0 18px !important; }
 .ch-mini { border: 2px solid var(--clay); background: transparent; color: var(--clay); border-radius: 999px; padding: 8px 20px; font-size: 14px; font-weight: 600; cursor: pointer; margin-right: 8px; }
-.ch-safety { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-.ch-safety .ch-state { font-size: 13px; color: var(--muted); font-weight: 600; margin-right: auto; }
-.ch-more { margin-left: auto; }
+.ch-more { flex: none; }
 .ch-more summary { list-style: none; }
 .ch-more summary::-webkit-details-marker { display: none; }
 .ch-more-body { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 8px; }

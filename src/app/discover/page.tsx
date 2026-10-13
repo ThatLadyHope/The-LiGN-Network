@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 import "./discover.css";
 
 interface Candidate {
@@ -38,6 +39,22 @@ export default function DiscoverPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [retryMsg, setRetryMsg] = useState<string | null>(null);
+  const { isLoaded: authLoaded, isSignedIn } = useUser();
+  const unauthTries = useRef(0);
+  const authRef = useRef({ loaded: false, signedIn: false });
+  authRef.current = { loaded: authLoaded, signedIn: !!isSignedIn };
+
+  function handleUnauthorized(retry: () => void) {
+    const a = authRef.current;
+    if (!a.loaded || (a.signedIn && unauthTries.current < 3)) {
+      unauthTries.current += 1;
+      setTimeout(retry, 1500);
+      return true;
+    }
+    unauthTries.current = 0;
+    router.push("/onboarding");
+    return true;
+  }
 
   const REFLECTIONS = [
     "What kind of connection has meant the most to you lately, and why?",
@@ -54,9 +71,10 @@ export default function DiscoverPage() {
       return { found: 0, failed: true as const };
     }
     if (d.status === 401) {
-      router.push("/onboarding");
-      return { found: 0, failed: false as const, signedOut: true as const };
+      handleUnauthorized(() => load());
+      return { found: 0, failed: false as const };
     }
+    unauthTries.current = 0;
     const data = await d.json().catch(() => null);
     const found = data?.candidates?.length ?? 0;
     setCandidates(data?.candidates ?? []);
@@ -71,7 +89,6 @@ export default function DiscoverPage() {
     setRetryMsg("Checking again…");
     try {
       const r = await load();
-      if ("signedOut" in r) return;
       if (r.failed) {
         setRetryMsg("Check failed — the app server may be down. Reload the page and try again.");
         return;
