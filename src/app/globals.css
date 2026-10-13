@@ -44,7 +44,9 @@
 }
 
 body {
-  background: var(--cream);
+  background:
+    radial-gradient(56% 340px at 50% -80px, color-mix(in srgb, var(--clay) 12%, transparent), transparent 70%),
+    var(--cream);
   color: var(--ink);
   margin: 0;
 }
