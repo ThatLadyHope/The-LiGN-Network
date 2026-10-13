@@ -50,6 +50,7 @@ export default function PasswordField({
       <span className="ob-password">
         <input
           type={show ? "text" : "password"}
+          className="ui-input"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}

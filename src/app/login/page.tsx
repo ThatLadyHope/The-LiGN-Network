@@ -146,7 +146,7 @@ export default function LoginPage() {
         <>
           <label className="ob-label">
             Email
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+            <input className="ui-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
           </label>
           <PasswordField
             label="Password"
@@ -155,7 +155,7 @@ export default function LoginPage() {
             autoComplete="current-password"
           />
 
-          <button className="ob-go" disabled={!email || !password || busy} onClick={submit}>
+          <button className="ob-go ui-btn" disabled={!email || !password || busy} onClick={submit}>
             {busy ? "Signing in…" : "Sign in"}
           </button>
         </>
@@ -164,9 +164,9 @@ export default function LoginPage() {
           <p className="ob-sub">Check your inbox — enter the 6-digit code.</p>
           <label className="ob-label">
             Verification code
-            <input value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
+            <input className="ui-input" value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
           </label>
-          <button className="ob-go" disabled={code.trim().length < 4 || busy} onClick={verifyCode}>
+          <button className="ob-go ui-btn" disabled={code.trim().length < 4 || busy} onClick={verifyCode}>
             {busy ? "Verifying…" : "Verify email"}
           </button>
           <p className="ob-alt">

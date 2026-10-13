@@ -4,6 +4,7 @@ import Nav from "./nav";
 import SkipLink from "./skip-link";
 import ThemeProvider from "./theme-provider";
 import "./globals.css";
+import "./ui.css";
 
 export const metadata: Metadata = {
   title: "LiGN — Get started",

@@ -44,10 +44,10 @@ export default function ForgotPasswordPage() {
 
       <label className="ob-label">
         Email
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+        <input className="ui-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
       </label>
 
-      <button className="ob-go" disabled={!/.+@.+\..+/.test(email) || busy} onClick={submit}>
+      <button className="ob-go ui-btn" disabled={!/.+@.+\..+/.test(email) || busy} onClick={submit}>
         {busy ? "Sending…" : "Send reset code"}
       </button>
       {sent && (

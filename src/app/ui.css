@@ -1,0 +1,102 @@
+/* LiGN UI kit — shadcn-inspired primitives on LiGN tokens (Warm Minimal).
+ * Additive only: existing page classes keep working. Pilot: onboarding,
+ * login, chat. Light + dark via the tokens in globals.css. */
+:root {
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgba(46, 42, 38, 0.06);
+  --shadow-md: 0 4px 14px rgba(46, 42, 38, 0.1);
+  --ring: 0 0 0 3px rgba(201, 111, 74, 0.28);
+}
+
+[data-theme="dark"] {
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --ring: 0 0 0 3px rgba(217, 138, 95, 0.35);
+}
+
+/* Buttons */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius);
+  padding: 12px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, border-color 150ms ease;
+}
+.ui-btn:active { transform: translateY(1px); }
+.ui-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+.ui-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.ui-btn-primary { background: var(--clay); color: #fff; box-shadow: var(--shadow-sm); }
+.ui-btn-primary:hover:not(:disabled) { background: var(--clay-dark); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.ui-btn-outline { background: var(--card); color: var(--ink); border-color: var(--line); }
+.ui-btn-outline:hover:not(:disabled) { border-color: var(--clay); box-shadow: var(--shadow-sm); }
+.ui-btn-ghost { background: transparent; color: var(--ink); border-color: transparent; padding: 8px 14px; }
+.ui-btn-ghost:hover:not(:disabled) { background: var(--sand); }
+.ui-btn-sm { padding: 7px 14px; font-size: 13px; border-radius: var(--radius-full); }
+.ui-btn-block { width: 100%; }
+
+/* Inputs */
+.ui-input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px 14px;
+  font-size: 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.ui-input::placeholder { color: var(--muted); opacity: 0.7; }
+.ui-input:focus { outline: none; border-color: var(--clay); box-shadow: var(--ring); }
+.ui-input:disabled { opacity: 0.55; }
+
+/* Cards */
+.ui-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+}
+
+/* Badges / pills */
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  padding: 3px 12px;
+  background: var(--sand);
+  color: var(--ink);
+}
+.ui-badge-accent { background: var(--clay); color: #fff; }
+.ui-badge-calm { background: var(--sage); color: #fff; }
+
+/* Skeleton loader */
+.ui-skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--sand) 25%, var(--line) 50%, var(--sand) 75%);
+  background-size: 200% 100%;
+  animation: ui-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes ui-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-btn, .ui-input { transition: none; }
+  .ui-btn-primary:hover:not(:disabled) { transform: none; }
+  .ui-skeleton { animation: none; }
+}

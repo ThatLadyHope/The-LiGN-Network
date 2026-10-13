@@ -53,7 +53,7 @@ export default function ResetPasswordPage() {
 
       <label className="ob-label">
         Code from your email
-        <input value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
+        <input className="ui-input" value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
       </label>
       <PasswordField
         label={`New password (${MIN_PASSWORD_LENGTH}+ characters)`}
@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
         autoComplete="new-password"
       />
 
-      <button className="ob-go" disabled={code.trim().length < 4 || password.length < MIN_PASSWORD_LENGTH || busy} onClick={submit}>
+      <button className="ob-go ui-btn" disabled={code.trim().length < 4 || password.length < MIN_PASSWORD_LENGTH || busy} onClick={submit}>
         {busy ? "Saving…" : "Save new password"}
       </button>
       {status && (

@@ -231,8 +231,8 @@ export default function ChatPage() {
             <div key={r.id} className="ch-req">
               <b>{r.sender?.nickname ?? "Someone"}</b>
               {r.note && <p>{r.note}</p>}
-              <button onClick={() => respond(r.id, "accept")}>Accept</button>
-              <button onClick={() => respond(r.id, "decline")}>Decline</button>
+              <button className="ui-btn ui-btn-primary ui-btn-sm" onClick={() => respond(r.id, "accept")}>Accept</button>
+              <button className="ui-btn ui-btn-outline ui-btn-sm" onClick={() => respond(r.id, "decline")}>Decline</button>
             </div>
           ))}
         </section>
@@ -264,16 +264,16 @@ export default function ChatPage() {
                 <span className="ch-state">{threadState === "ACTIVE" ? "" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
                 {threadState !== "ENDED" && (
                   <>
-                    <button onClick={pauseResume}>{threadState === "PAUSED" ? "Resume" : "Pause"}</button>
+                    <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={pauseResume}>{threadState === "PAUSED" ? "Resume" : "Pause"}</button>
                     {confirmEnd ? (
                       <>
-                        <button onClick={endThread}>Confirm end</button>
-                        <button onClick={() => setConfirmEnd(false)}>Keep</button>
+                        <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={endThread}>Confirm end</button>
+                        <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={() => setConfirmEnd(false)}>Keep</button>
                       </>
                     ) : (
-                      <button onClick={() => setConfirmEnd(true)}>End</button>
+                      <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={() => setConfirmEnd(true)}>End</button>
                     )}
-                    <button onClick={blockOther}>Block</button>
+                    <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={blockOther}>Block</button>
                     <select value={reportCat} onChange={(e) => setReportCat(e.target.value)} aria-label="Report category">
                       <option value="discomfort">Discomfort</option>
                       <option value="boundary-violation">Boundary violation</option>
@@ -283,7 +283,7 @@ export default function ChatPage() {
                       <option value="exploitation">Exploitation</option>
                       <option value="other-high-risk">Other high risk</option>
                     </select>
-                    <button onClick={reportOther}>Report</button>
+                    <button className="ui-btn ui-btn-ghost ui-btn-sm" onClick={reportOther}>Report</button>
                   </>
                 )}
               </div>
@@ -297,7 +297,7 @@ export default function ChatPage() {
                       lastDay = day;
                       rows.push(
                         <div key={`day-${m.id}`} className="ch-day">
-                          <span>{day}</span>
+                          <span className="ui-badge">{day}</span>
                         </div>,
                       );
                     }

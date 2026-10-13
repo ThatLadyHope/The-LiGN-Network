@@ -16,7 +16,10 @@
 .ob-group.g1 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--teal); }
 .ob-group.g2 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--indigo); }
 .ob-group.g3 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--plum); }
-.ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; }
+.ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: var(--clay); color: #fff; transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease; }
+.ob-go:hover:not(:disabled) { background: var(--clay-dark); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.ob-go:active:not(:disabled) { transform: translateY(1px); }
+.ob-go:focus-visible { outline: none; box-shadow: var(--ring); }
 .ob-go:disabled { opacity: .45; cursor: default; }
 .ob-btn-col { display: flex; flex-direction: column; margin: 12px 0; }
 .ob-btn-col .ob-btn + .ob-btn { margin-top: 14px; }

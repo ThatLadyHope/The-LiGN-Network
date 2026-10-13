@@ -264,11 +264,11 @@ export default function SignupPage() {
 
       <label className="ob-label">
         Nickname
-        <input value={nickname} maxLength={30} onChange={(e) => setNickname(e.target.value)} placeholder="e.g. Wren" />
+        <input className="ui-input" value={nickname} maxLength={30} onChange={(e) => setNickname(e.target.value)} placeholder="e.g. Wren" />
       </label>
       <label className="ob-label">
         Email
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+        <input className="ui-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
       </label>
       <PasswordField
         label={`Password (${MIN_PASSWORD_LENGTH}+ characters)`}
@@ -280,7 +280,7 @@ export default function SignupPage() {
       <div className="ob-row">
         <label className="ob-label">
           Age range
-          <select value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
+          <select className="ui-input" value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
             {AGES.map((a) => (
               <option key={a} value={a}>
                 {a}
@@ -290,7 +290,7 @@ export default function SignupPage() {
         </label>
         <label className="ob-label">
           Language
-          <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+          <select className="ui-input" value={language} onChange={(e) => setLanguage(e.target.value)}>
             {LANGUAGES.map(([code, name]) => (
               <option key={code} value={code}>
                 {name}
@@ -303,7 +303,7 @@ export default function SignupPage() {
       <AgreementBox onAgreed={setAgreed} showTitle={false} showHelp={false} />
 
       {!verifying ? (
-        <button className="ob-go" disabled={!valid || busy} onClick={submit}>
+        <button className="ob-go ui-btn" disabled={!valid || busy} onClick={submit}>
           {busy ? "Joining…" : "Join LiGN"}
         </button>
       ) : (
@@ -311,9 +311,9 @@ export default function SignupPage() {
           <p className="ob-sub">Check your inbox — enter the 6-digit code.</p>
           <label className="ob-label">
             Verification code
-            <input value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
+            <input className="ui-input" value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
           </label>
-          <button className="ob-go" disabled={code.trim().length < 4 || busy} onClick={verify}>
+          <button className="ob-go ui-btn" disabled={code.trim().length < 4 || busy} onClick={verify}>
             {busy ? "Verifying…" : "Verify email"}
           </button>
           <p className="ob-alt">
