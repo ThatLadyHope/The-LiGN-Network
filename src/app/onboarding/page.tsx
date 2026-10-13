@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignUp, useUser } from "@clerk/nextjs";
 import { AGREEMENT_VERSION } from "@/lib/agreement";
+import { MIN_PASSWORD_LENGTH } from "@/lib/password-policy";
 import AgreementBox from "../agreement-box";
+import PasswordField from "../password-field";
 import "./onboarding.css";
 
 // Clerk's raw messages, translated into plain guidance. Unknown codes fall
@@ -28,7 +30,7 @@ function friendlySignupError(e: unknown, fallback: string): string {
     case "form_password_pwned":
       return "That password has appeared in a data breach — choose a different one.";
     case "form_password_length_too_short":
-      return "Use a longer password (12+ characters is safest).";
+      return `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
     default:
       return err.message ? `${err.message} (${err.code ?? "unknown-code"})` : fallback;
   }
@@ -40,7 +42,6 @@ export default function SignupPage() {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [show, setShow] = useState(false);
   const [ageRange, setAgeRange] = useState("25-34");
   const [language, setLanguage] = useState("en");
   const [code, setCode] = useState("");
@@ -50,6 +51,9 @@ export default function SignupPage() {
   const [agreed, setAgreed] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const { isSignedIn } = useUser();
+  // Ref guard: React state updates async, so two rapid taps could both pass
+  // `busy`. The ref closes the double-submit hole that strands verifications.
+  const workingRef = useRef(false);
 
   // Signed-in users don't belong on the signup form (prevents session_exists
   // dead-ends): send them into the app.
@@ -92,12 +96,13 @@ export default function SignupPage() {
     nickname.trim().length > 0 &&
     nickname.length <= 30 &&
     /.+@.+\..+/.test(email) &&
-    password.length >= 8 &&
+    password.length >= MIN_PASSWORD_LENGTH &&
     language.trim().length >= 2 &&
     agreed;
 
   async function submit() {
-    if (!isLoaded) return;
+    if (!isLoaded || workingRef.current) return;
+    workingRef.current = true;
     setBusy(true);
     setStatus(null);
     try {
@@ -121,6 +126,7 @@ export default function SignupPage() {
       setStatus(msg);
     } finally {
       setBusy(false);
+      workingRef.current = false;
     }
   }
 
@@ -141,54 +147,105 @@ export default function SignupPage() {
   }
 
   async function verify() {
-    if (!isLoaded) return;
+    if (!isLoaded || workingRef.current) return;
+    const su = signUp;
+    if (!su) return;
+    workingRef.current = true;
     setBusy(true);
     setStatus(null);
     try {
-      const clean = code.trim();
-      let res;
-      try {
-        res = await signUp.attemptEmailAddressVerification({ code: clean });
-      } catch (err) {
-        // The address may already be verified (stale or double-submitted
-        // code): reload — if the signup is in fact complete, carry on.
-        const fresh = await signUp.reload().catch(() => undefined);
-        const done = fresh ?? signUp;
-        if (done.status === "complete") {
-          res = done;
-        } else {
-          setStatus(friendlySignupError(err, "something-went-wrong"));
-          return;
-        }
+      // Shortcut: already complete (double-tap, recovered session, retry).
+      // No Clerk calls needed — just finish signing in.
+      let res =
+        su.status === "complete" ? su : await attemptWithRecovery();
+      if (res.status !== "complete") {
+        // Verified but requirements still pending, or wrong code: one more
+        // reload round tells which before giving up.
+        const done = await reloadWithRetry(2);
+        if (done && done.status === "complete") res = done;
+        else
+          throw new Error(
+            "That code didn't match — use the newest email, then try again.",
+          );
       }
-      if (res.status !== "complete") throw new Error("That code didn't match — use the newest email, then try again.");
-      await setActive({ session: res.createdSessionId });
-      const profile = await fetch("/api/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nickname: nickname.trim(),
-          ageRange,
-          language: language.trim(),
-          agreementVersion: AGREEMENT_VERSION,
-        }),
-      });
-      const data = await profile.json().catch(() => null);
-      if (!profile.ok) {
-        // Signed in but profile not created (e.g. legacy email row): the
-        // Needs step finishes profile creation, so send them there.
-        if (profile.status === 400 || profile.status === 409 || profile.status === 500) {
-          router.push("/onboarding/needs");
-          return;
-        }
-        throw new Error(data?.error ?? "profile-failed");
-      }
-      router.push("/onboarding/needs");
+      await finishSignup(res.createdSessionId);
     } catch (e) {
       setStatus(friendlySignupError(e, "something-went-wrong"));
     } finally {
       setBusy(false);
+      workingRef.current = false;
     }
+  }
+
+  // One attempt plus already-verified recovery. Throws on real failure.
+  async function attemptWithRecovery() {
+    const su = signUp;
+    if (!su) throw new Error("something-went-wrong");
+    const clean = code.trim();
+    try {
+      return await su.attemptEmailAddressVerification({ code: clean });
+    } catch (err) {
+      // The address may already be verified (stale/double-submitted code or
+      // a lost response): reload — if the signup is complete, carry on.
+      const done = await reloadWithRetry(3);
+      if (done && done.status === "complete") return done;
+      throw err;
+    }
+  }
+
+  // Reload with backoff: mobile/flaky networks routinely fail the first try,
+  // and a single failed reload used to strand users in a dead loop.
+  async function reloadWithRetry(tries: number) {
+    const su = signUp;
+    if (!su) return null;
+    for (let i = 0; i < tries; i++) {
+      try {
+        const fresh = await su.reload();
+        if (fresh) return fresh;
+      } catch {
+        // fall through to backoff
+      }
+      await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    }
+    return null;
+  }
+
+  // Shared tail: activate the session, then create/link the local profile.
+  async function finishSignup(sessionId: string | null | undefined) {
+    if (!sessionId) throw new Error("Signed up but no session — tap Verify email again.");
+    const sa = setActive;
+    if (!sa) throw new Error("something-went-wrong");
+    await sa({ session: sessionId });
+    const profile = await fetch("/api/onboarding", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nickname: nickname.trim(),
+        ageRange,
+        language: language.trim(),
+        agreementVersion: AGREEMENT_VERSION,
+      }),
+    });
+    const data = await profile.json().catch(() => null);
+    if (!profile.ok) {
+      // Signed in but profile not created (e.g. legacy email row): the
+      // Needs step finishes profile creation, so send them there.
+      if (profile.status === 400 || profile.status === 409 || profile.status === 500) {
+        router.push("/onboarding/needs");
+        return;
+      }
+      throw new Error(data?.error ?? "profile-failed");
+    }
+    router.push("/onboarding/needs");
+  }
+
+  // Escape hatch: back to the form with values kept. Wrong email → Join
+  // creates a fresh signup; right email → Join routes to login, which can
+  // finish verification. No dead ends either way.
+  function startOver() {
+    setVerifying(false);
+    setCode("");
+    setStatus("Check the details above — fix the email if needed, then tap Join LiGN again.");
   }
 
   return (
@@ -206,19 +263,12 @@ export default function SignupPage() {
         Email
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
       </label>
-      <label className="ob-label">
-        Password (8+ chars)
-        <span className="ob-password">
-          <input
-            type={show ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="button" className="ob-show" onClick={() => setShow((s) => !s)} aria-pressed={show}>
-            {show ? "Hide" : "Show"}
-          </button>
-        </span>
-      </label>
+      <PasswordField
+        label={`Password (${MIN_PASSWORD_LENGTH}+ characters)`}
+        value={password}
+        onChange={setPassword}
+        autoComplete="new-password"
+      />
 
       <div className="ob-row">
         <label className="ob-label">
@@ -262,6 +312,11 @@ export default function SignupPage() {
           <p className="ob-alt">
             <button type="button" className="ob-show" disabled={busy || cooldown > 0} onClick={resend}>
               {cooldown > 0 ? `Resend code (${cooldown}s)` : "Resend code"}
+            </button>
+          </p>
+          <p className="ob-alt">
+            <button type="button" className="ob-show" disabled={busy} onClick={startOver}>
+              Start over (wrong email?)
             </button>
           </p>
         </>

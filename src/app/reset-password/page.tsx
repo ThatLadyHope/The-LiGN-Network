@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSignIn } from "@clerk/nextjs";
+import { MIN_PASSWORD_LENGTH } from "@/lib/password-policy";
+import PasswordField from "../password-field";
 import "../onboarding/onboarding.css";
 
 export default function ResetPasswordPage() {
@@ -10,7 +12,6 @@ export default function ResetPasswordPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
-  const [show, setShow] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -21,14 +22,23 @@ export default function ResetPasswordPage() {
     try {
       const res = await signIn.attemptFirstFactor({
         strategy: "reset_password_email_code",
-        code,
+        code: code.trim(),
         password,
       });
       if (res.status !== "complete") throw new Error("That code is invalid or expired — request a new one.");
       await setActive({ session: res.createdSessionId });
       router.push("/discover");
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : "something-went-wrong");
+      const err = (e as { errors?: { code?: string; message?: string }[] })?.errors?.[0];
+      if (err?.code === "form_password_length_too_short" || err?.code === "form_password_pwned") {
+        setStatus(
+          err.code === "form_password_pwned"
+            ? "That password has appeared in a data breach — choose a different one."
+            : `Use at least ${MIN_PASSWORD_LENGTH} characters.`,
+        );
+      } else {
+        setStatus(e instanceof Error ? e.message : "something-went-wrong");
+      }
     } finally {
       setBusy(false);
     }
@@ -45,21 +55,14 @@ export default function ResetPasswordPage() {
         Code from your email
         <input value={code} maxLength={6} onChange={(e) => setCode(e.target.value)} placeholder="123456" />
       </label>
-      <label className="ob-label">
-        New password (8+ chars)
-        <span className="ob-password">
-          <input
-            type={show ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="button" className="ob-show" onClick={() => setShow((s) => !s)} aria-pressed={show}>
-            {show ? "Hide" : "Show"}
-          </button>
-        </span>
-      </label>
+      <PasswordField
+        label={`New password (${MIN_PASSWORD_LENGTH}+ characters)`}
+        value={password}
+        onChange={setPassword}
+        autoComplete="new-password"
+      />
 
-      <button className="ob-go" disabled={code.trim().length < 4 || password.length < 8 || busy} onClick={submit}>
+      <button className="ob-go" disabled={code.trim().length < 4 || password.length < MIN_PASSWORD_LENGTH || busy} onClick={submit}>
         {busy ? "Saving…" : "Save new password"}
       </button>
       {status && (

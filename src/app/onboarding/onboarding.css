@@ -29,6 +29,7 @@
 .ob-password { display: flex; gap: 8px; align-items: stretch; }
 .ob-password input { flex: 1; }
 .ob-show { border: 2px solid var(--line); background: var(--card); border-radius: 12px; padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--ink); white-space: nowrap; }
+.ob-eye { display: inline-flex; align-items: center; padding: 0 12px; }
 .ob-alt { font-size: 14px; text-align: center; margin-top: 10px; }
 .pf-avatar-row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 12px; }
 .pf-avatar { width: 72px; height: 72px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; color: #fff; background-size: cover; background-position: center; flex-shrink: 0; }
