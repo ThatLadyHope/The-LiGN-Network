@@ -10,7 +10,8 @@ export default function SkipLink() {
         s.left = "12px";
         s.top = "12px";
         s.zIndex = "100";
-        s.background = "#fff";
+        s.background = "var(--card)";
+        s.color = "var(--ink)";
         s.padding = "8px 16px";
       }}
       onBlur={(e) => {

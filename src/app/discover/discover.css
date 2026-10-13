@@ -11,7 +11,7 @@
 .dc-card h2 { margin: 0 0 6px; font-size: 18px; }
 .dc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
 .dc-chip { font-size: 13px; padding: 4px 12px; border-radius: 999px; background: var(--sand); color: var(--ink); }
-.dc-chip.need { background: var(--sage); color: #fff; font-weight: 600; }
+.dc-chip.need { background: var(--sage); color: var(--on-sage); font-weight: 600; }
 .dc-go { border: 2px solid var(--clay); background: transparent; color: var(--clay); border-radius: 999px; padding: 10px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .dc-go:disabled { opacity: .5; cursor: default; border-color: var(--line); color: var(--muted); }
 .dc-empty { background: var(--sand); border: 1px solid var(--line); border-radius: 16px; padding: 28px; text-align: center; }
@@ -23,8 +23,8 @@
 .dc-act { border-radius: 999px; padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .dc-act.outline { border: 2px solid var(--clay); background: transparent; color: var(--clay); }
 .dc-act.quiet { border: none; background: transparent; color: var(--muted); text-decoration: underline; }
-.dc-act.solid-sage { border: 2px solid var(--sage); background: var(--sage); color: #fff; }
-.dc-act.solid-clay { border: 2px solid var(--clay); background: var(--clay); color: #fff; }
+.dc-act.solid-sage { border: 2px solid var(--sage); background: var(--sage); color: var(--on-sage); }
+.dc-act.solid-clay { border: 2px solid var(--clay); background: var(--clay); color: var(--on-clay); }
 .dc-act.outline-sage { border: 2px solid var(--sage); background: transparent; color: var(--ink); }
 .dc-space { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-top: 14px; padding: 18px; text-align: left; }
 .dc-space h3 { font-size: 15px; margin: 0 0 8px; }

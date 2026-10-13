@@ -4,18 +4,18 @@
 .ob-label input, .ob-label select { display: block; width: 100%; margin-top: 6px; padding: 12px 14px; font-size: 16px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); }
 .ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .ob-groups { display: grid; gap: 14px; margin: 20px 0 24px; }
-.ob-group { border: 1px solid var(--line); border-radius: 14px; padding: 14px; color: #fff; }
-.ob-group.g1 { background: var(--teal); border-color: var(--teal); }
-.ob-group.g2 { background: var(--indigo); border-color: var(--indigo); }
-.ob-group.g3 { background: var(--plum); border-color: var(--plum); }
+.ob-group { border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.ob-group.g1 { background: var(--teal); border-color: var(--teal); color: var(--on-teal); }
+.ob-group.g2 { background: var(--indigo); border-color: var(--indigo); color: var(--on-indigo); }
+.ob-group.g3 { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
 .ob-group h2 { font-size: 16px; margin: 0 0 10px; }
-.ob-group h2 small { display: block; font-weight: 400; color: rgba(255,255,255,.85); font-size: 13px; }
+.ob-group h2 small { display: block; font-weight: 400; color: color-mix(in srgb, currentColor 85%, transparent); font-size: 13px; }
 .ob-needs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.ob-needs button { border: 2px solid rgba(255,255,255,.5); background: transparent; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; color: #fff; }
-.ob-needs button:hover { border-color: #fff; }
-.ob-group.g1 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--teal); }
-.ob-group.g2 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--indigo); }
-.ob-group.g3 .ob-needs button.picked { background: var(--card); border-color: #fff; color: var(--plum); }
+.ob-needs button { border: 2px solid color-mix(in srgb, currentColor 50%, transparent); background: transparent; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; color: inherit; }
+.ob-needs button:hover { border-color: currentColor; }
+.ob-group.g1 .ob-needs button.picked { background: var(--card); border-color: currentColor; color: var(--teal); }
+.ob-group.g2 .ob-needs button.picked { background: var(--card); border-color: currentColor; color: var(--indigo); }
+.ob-group.g3 .ob-needs button.picked { background: var(--card); border-color: currentColor; color: var(--plum); }
 .ob-go { width: 100%; border: none; cursor: pointer; font-size: 16px; font-weight: 600; padding: 14px 28px; border-radius: 999px; background: linear-gradient(135deg, var(--clay), var(--clay-dark)); color: var(--on-clay); transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease; }
 .ob-go:hover:not(:disabled) { filter: brightness(1.06); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .ob-go:active:not(:disabled) { transform: translateY(1px); }
@@ -43,10 +43,13 @@
 .rp-flow { font-size: 13px; color: var(--muted); }
 .rp-flow .done { color: var(--ink); font-weight: 700; }
 .mem-door { border: 1px solid var(--line); border-radius: 14px; padding: 8px; }
-.mem-door button { display: block; width: 100%; text-align: left; background: transparent; border: 2px solid rgba(255,255,255,.45); border-radius: 10px; padding: 18px 20px; cursor: pointer; color: #fff; }
-.mem-door button:hover { border-color: #fff; background: rgba(0,0,0,.12); }
+.mem-door.tone-teal { background: var(--teal); border-color: var(--teal); color: var(--on-teal); }
+.mem-door.tone-plum { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
+.mem-door.tone-indigo { background: var(--indigo); border-color: var(--indigo); color: var(--on-indigo); }
+.mem-door button { display: block; width: 100%; text-align: left; background: transparent; border: 2px solid color-mix(in srgb, currentColor 45%, transparent); border-radius: 10px; padding: 18px 20px; cursor: pointer; color: inherit; }
+.mem-door button:hover { border-color: currentColor; background: rgba(0,0,0,.12); }
 .mem-title { display: block; font-family: Georgia, serif; font-size: 20px; font-weight: 400; letter-spacing: .3px; margin-bottom: 6px; }
-.mem-hint { display: block; font-size: 13.5px; font-weight: 400; color: rgba(255,255,255,.88); line-height: 1.5; }
+.mem-hint { display: block; font-size: 13.5px; font-weight: 400; color: color-mix(in srgb, currentColor 88%, transparent); line-height: 1.5; }
 .ob-agree-box {
   white-space: pre-wrap;
   max-height: 280px;

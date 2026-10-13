@@ -4,27 +4,27 @@ import { useRouter } from "next/navigation";
 import BackButton from "../back-button";
 import "../onboarding/onboarding.css";
 
-const ITEMS: { id: string; title: string; hint: string; href: string; color: string }[] = [
+const ITEMS: { id: string; title: string; hint: string; href: string; tone: "teal" | "plum" | "indigo" }[] = [
   {
     id: "g1",
     title: "Connection journal",
     hint: "Private notes, yours only",
     href: "/journal",
-    color: "#687765",
+    tone: "teal",
   },
   {
     id: "g3",
     title: "Shared memories",
     hint: "Kept only together",
     href: "/memories/shared",
-    color: "#76566D",
+    tone: "plum",
   },
   {
     id: "g2",
     title: "Shared activities",
     hint: "Do something together",
     href: "/activities",
-    color: "#59627F",
+    tone: "indigo",
   },
 ];
 
@@ -41,7 +41,7 @@ export default function MemoriesHubPage() {
 
       <div className="ob-groups">
         {ITEMS.map((item) => (
-          <section key={item.id} className="mem-door" style={{ background: item.color, borderColor: item.color }}>
+          <section key={item.id} className={`mem-door tone-${item.tone}`}>
             <button type="button" onClick={() => router.push(item.href)}>
               <span className="mem-title">{item.title}</span>
               <span className="mem-hint">{item.hint}</span>

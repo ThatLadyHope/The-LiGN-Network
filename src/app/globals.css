@@ -16,6 +16,9 @@
   --card: #FFFFFF;
   --on-clay: #FFFFFF;
   --on-sage: #FFFFFF;
+  --on-teal: #FFFFFF;
+  --on-indigo: #FFFFFF;
+  --on-plum: #FFFFFF;
 }
 
 [data-theme="dark"] {
@@ -35,6 +38,9 @@
   --card: #292524;
   --on-clay: #241611;
   --on-sage: #1C241A;
+  --on-teal: #1F2724;
+  --on-indigo: #222839;
+  --on-plum: #2C2129;
 }
 
 body {
