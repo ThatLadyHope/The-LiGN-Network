@@ -33,7 +33,7 @@
 .ui-btn:active { transform: translateY(1px); }
 .ui-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
 .ui-btn:focus-visible { outline: none; box-shadow: var(--ring); }
-.ui-btn-primary { background: var(--clay); color: #fff; box-shadow: var(--shadow-sm); }
+.ui-btn-primary { background: var(--clay); color: var(--on-clay); box-shadow: var(--shadow-sm); }
 .ui-btn-primary:hover:not(:disabled) { background: var(--clay-dark); box-shadow: var(--shadow-md); transform: translateY(-1px); }
 .ui-btn-outline { background: var(--card); color: var(--ink); border-color: var(--line); }
 .ui-btn-outline:hover:not(:disabled) { border-color: var(--clay); box-shadow: var(--shadow-sm); }
@@ -80,8 +80,8 @@
   background: var(--sand);
   color: var(--ink);
 }
-.ui-badge-accent { background: var(--clay); color: #fff; }
-.ui-badge-calm { background: var(--sage); color: #fff; }
+.ui-badge-accent { background: var(--clay); color: var(--on-clay); }
+.ui-badge-calm { background: var(--sage); color: var(--on-sage); }
 
 /* Skeleton loader */
 .ui-skeleton {
