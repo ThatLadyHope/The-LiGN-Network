@@ -31,3 +31,43 @@ export function freshStarter(previous: string[]): string {
   const unused = STARTER_SAMPLES.filter((s) => !previous.includes(s));
   return unused.length > 0 ? unused[0] : NOT_SURE_WHAT_TO_SAY;
 }
+
+// Read-receipt ticks. A message counts as seen only if the other person
+// opened the thread at/after it was sent. Anything else would be a lie, so
+// there are exactly two states: sent (✓) and seen (✓✓). No fake middle.
+export type MessageTick = "sent" | "seen";
+
+export function messageTick(
+  messageAt: string | Date,
+  otherSeenAt: string | Date | null | undefined,
+): MessageTick {
+  if (!otherSeenAt) return "sent";
+  return new Date(otherSeenAt).getTime() >= new Date(messageAt).getTime()
+    ? "seen"
+    : "sent";
+}
+
+// Day dividers: Today / Yesterday / "Monday, Jan 5".
+export function dayLabel(iso: string | Date, now: Date = new Date()): string {
+  const d = new Date(iso);
+  const startOfDay = (x: Date) => {
+    const c = new Date(x);
+    c.setHours(0, 0, 0, 0);
+    return c.getTime();
+  };
+  const days = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Yesterday";
+  return d.toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+export function timeLabel(iso: string | Date): string {
+  return new Date(iso).toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}

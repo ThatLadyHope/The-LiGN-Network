@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { io, type Socket } from "socket.io-client";
+import { dayLabel, messageTick, timeLabel } from "@/lib/messaging";
 import "./chat.css";
 
 interface Conversation {
@@ -32,6 +33,7 @@ export default function ChatPage() {
   const [incoming, setIncoming] = useState<IncomingRequest[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [otherSeenAt, setOtherSeenAt] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [typingName, setTypingName] = useState<string | null>(null);
@@ -51,6 +53,7 @@ export default function ChatPage() {
     const data = await res.json().catch(() => null);
     if (res.ok) {
       setMessages(data.messages ?? []);
+      setOtherSeenAt(data.otherSeenAt ?? null);
       if (data.state) setThreadState(data.state);
     }
   }, [router]);
@@ -133,6 +136,38 @@ export default function ChatPage() {
   }
 
   const activeConvo = conversations.find((c) => c.id === activeId) ?? null;
+
+  // One tick = stored on LiGN's server. Two ticks = the other person opened
+  // this thread after the message was sent. Nothing in between is claimed.
+  function Tick({ at }: { at: string }) {
+    const seen = messageTick(at, otherSeenAt) === "seen";
+    return (
+      <svg
+        className={seen ? "ch-tick seen" : "ch-tick"}
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2.2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        role="img"
+        aria-label={seen ? "Seen" : "Sent"}
+      >
+        {seen ? (
+          <>
+            <path d="m2.5 12.5 4.5 4.5L14.5 9.5" />
+            <path d="m10 14.5 1.5 1.5L21.5 6" />
+          </>
+        ) : (
+          <path d="m4.5 12.5 5 5L19.5 7" />
+        )}
+        <title>{seen ? "Seen" : "Sent"}</title>
+      </svg>
+    );
+  }
 
   async function pauseResume() {
     if (!activeConvo) return;
@@ -222,6 +257,9 @@ export default function ChatPage() {
           {!activeId && <p>Pick a conversation. Silence is normal here.</p>}
           {activeId && activeConvo && (
             <>
+              <div className="ch-head">
+                <b>{activeConvo.other?.nickname ?? "Someone"}</b>
+              </div>
               <div className="ch-safety">
                 <span className="ch-state">{threadState === "ACTIVE" ? "" : threadState === "PAUSED" ? "Paused — taking space." : "Ended."}</span>
                 {threadState !== "ENDED" && (
@@ -250,11 +288,36 @@ export default function ChatPage() {
                 )}
               </div>
               <div className="ch-msgs">
-                {messages.map((m) => (
-                  <div key={m.id} className="ch-msg">
-                    {m.content}
-                  </div>
-                ))}
+                {(() => {
+                  const rows: ReactNode[] = [];
+                  let lastDay = "";
+                  messages.forEach((m) => {
+                    const day = dayLabel(m.createdAt);
+                    if (day !== lastDay) {
+                      lastDay = day;
+                      rows.push(
+                        <div key={`day-${m.id}`} className="ch-day">
+                          <span>{day}</span>
+                        </div>,
+                      );
+                    }
+                    // Mine = anything not from the other side (no extra API
+                    // call: the thread only ever has two people).
+                    const mine = activeConvo.other ? m.senderId !== activeConvo.other.id : false;
+                    rows.push(
+                      <div key={m.id} className={mine ? "ch-row mine" : "ch-row theirs"}>
+                        <div className={mine ? "ch-bubble mine" : "ch-bubble theirs"}>
+                          <p>{m.content}</p>
+                          <span className="ch-meta">
+                            {timeLabel(m.createdAt)}
+                            {mine && <Tick at={m.createdAt} />}
+                          </span>
+                        </div>
+                      </div>,
+                    );
+                  });
+                  return rows;
+                })()}
               </div>
               <div className="ch-send">
                 <input
@@ -267,8 +330,26 @@ export default function ChatPage() {
                     if (e.key === "Enter") send();
                   }}
                 />
-                <button onClick={send} disabled={!draft.trim() || threadState !== "ACTIVE"}>
-                  Send
+                <button
+                  onClick={send}
+                  disabled={!draft.trim() || threadState !== "ACTIVE"}
+                  aria-label="Send message"
+                  title="Send"
+                  className="ch-sendbtn"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.8}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M6 12 3.269 3.125A59.768 59.768 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                  </svg>
                 </button>
               </div>
               {typingName && <p className="ch-typing">{typingName} is typing…</p>}

@@ -19,18 +19,49 @@ async function myConversation(userId: string, id: string) {
 }
 
 // GET — latest 100 messages, oldest first. Members only.
+// Also tracks my read position (only when something new arrived, so the 5s
+// poll doesn't write every tick) and reports the other side's, which drives
+// the honest ✓/✓✓ ticks.
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const userId = await localUserId();
   if (!userId) return NextResponse.json({ error: "sign-in-required" }, { status: 401 });
 
   const conversation = await myConversation(userId, params.id);
   if (!conversation) return NextResponse.json({ error: "not-found" }, { status: 404 });
+  const otherId =
+    conversation.connection.userAId === userId
+      ? conversation.connection.userBId
+      : conversation.connection.userAId;
   const messages = await db.message.findMany({
     where: { conversationId: params.id, deleted: false },
     orderBy: { createdAt: "asc" },
     take: 100,
   });
-  return NextResponse.json({ messages, state: conversation.connection.state });
+  const latestOtherAt = messages.reduce<Date | null>((acc, m) => {
+    if (m.senderId === userId) return acc;
+    const t = new Date(m.createdAt);
+    return !acc || t > acc ? t : acc;
+  }, null);
+  if (latestOtherAt) {
+    const myRead = await db.conversationRead.findUnique({
+      where: { conversationId_userId: { conversationId: params.id, userId } },
+    });
+    if (!myRead || latestOtherAt > new Date(myRead.seenAt)) {
+      await db.conversationRead.upsert({
+        where: { conversationId_userId: { conversationId: params.id, userId } },
+        create: { conversationId: params.id, userId, seenAt: new Date() },
+        update: { seenAt: new Date() },
+      });
+    }
+  }
+  const otherRead = await db.conversationRead.findUnique({
+    where: { conversationId_userId: { conversationId: params.id, userId: otherId } },
+  });
+  return NextResponse.json({
+    messages,
+    state: conversation.connection.state,
+    otherSeenAt: otherRead?.seenAt ? new Date(otherRead.seenAt).toISOString() : null,
+  });
 }
 
 // POST — text only, ACTIVE connections, members only.
