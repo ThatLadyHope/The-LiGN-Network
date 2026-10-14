@@ -27,7 +27,11 @@ export default function ResetPasswordPage() {
       });
       if (res.status !== "complete") throw new Error("That code is invalid or expired — request a new one.");
       await setActive({ session: res.createdSessionId });
-      router.push("/discover");
+      // Never-onboarded accounts go finish setup instead of landing blind.
+      const st = await fetch("/api/account/status").then((r) =>
+        r.ok ? r.json().catch(() => null) : null,
+      );
+      router.push(st?.status ? "/discover" : "/onboarding/needs");
     } catch (e) {
       const err = (e as { errors?: { code?: string; message?: string }[] })?.errors?.[0];
       if (err?.code === "form_password_length_too_short" || err?.code === "form_password_pwned") {
