@@ -50,7 +50,28 @@ export default function NeedsPage() {
   const [todayMood, setTodayMood] = useState<CheckinMood | null>(null);
   const [checkinGone, setCheckinGone] = useState(false);
   const [checkinLeaving, setCheckinLeaving] = useState(false);
+  // Once-daily prompt: the block appears only on the first encounter each
+  // calendar day (per device), then stays away until tomorrow.
+  const [checkinVisible, setCheckinVisible] = useState(false);
   const checkinTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const today = todayKey();
+    let shown: string | null = null;
+    try {
+      shown = localStorage.getItem("lign-arrival-shown");
+    } catch {
+      shown = today;
+    }
+    if (shown !== today) {
+      try {
+        localStorage.setItem("lign-arrival-shown", today);
+      } catch {
+        // private mode: show it this once, naturally gated next load
+      }
+      setCheckinVisible(true);
+    }
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -65,6 +86,7 @@ export default function NeedsPage() {
   };
 
   useEffect(() => {
+    if (!checkinVisible) return;
     fetch("/api/checkins")
       .then((r) => (r.ok ? r.json().catch(() => null) : null))
       .then((d) => {
@@ -74,7 +96,7 @@ export default function NeedsPage() {
         if (mine?.mood) setTodayMood(mine.mood);
       })
       .catch(() => null);
-  }, []);
+  }, [checkinVisible]);
 
   async function checkin(mood: CheckinMood) {
     const res = await fetch("/api/checkins", {
@@ -136,7 +158,7 @@ export default function NeedsPage() {
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
-      {!checkinGone && (
+      {!checkinGone && checkinVisible && (
       <section className={`dc-checkin${checkinLeaving ? " leaving" : ""}`} aria-label="Arrival check-in">
         <div>
           <h2>How are you arriving today?</h2>
