@@ -403,7 +403,6 @@ export default function GetStartedPage() {
 
       {stage === "gate" && (
         <>
-          <p className="ob-sub">One step first — new here or returning, it starts the same way.</p>
           <label className="ob-label">
             Email
             <input className="ui-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
