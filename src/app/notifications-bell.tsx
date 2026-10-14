@@ -172,7 +172,7 @@ export default function NotificationsBell() {
       {open && (
         <div className="dc-drawer ntf-panel" role="menu" aria-label="Notifications">
           {items.length === 0 && (
-            <p className="ntf-empty">All caught up. Quiet is good news here.</p>
+            <p className="ntf-empty">All caught up.</p>
           )}
           {items.map((it) => (
             <div key={it.id} className={`ntf-item tone-${it.tone}`}>

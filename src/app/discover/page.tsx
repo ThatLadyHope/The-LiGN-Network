@@ -217,16 +217,16 @@ export default function DiscoverPage() {
         <div className="ob-wordmark">
           The <em>LiGN</em> Network
         </div>
-        <NotificationsBell />
         <button
           type="button"
-          className="dc-menu-btn"
+          className="dc-menu-btn dc-mark-btn"
           aria-expanded={menuOpen}
           aria-label="Open menu"
           onClick={() => setMenuOpen((o) => !o)}
         >
           <ConnectionMark />
         </button>
+        <NotificationsBell />
         {menuOpen && (
           <nav className="dc-drawer" aria-label="Menu">
             <Link href="/profile" onClick={() => setMenuOpen(false)}>
