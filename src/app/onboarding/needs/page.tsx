@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AGREEMENT_VERSION } from "@/lib/agreement";
 import { CHECKIN_MOODS, MOOD_LABELS, todayKey, type CheckinMood } from "@/lib/checkins";
@@ -48,6 +48,15 @@ export default function NeedsPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [todayMood, setTodayMood] = useState<CheckinMood | null>(null);
+  const [checkinGone, setCheckinGone] = useState(false);
+  const [checkinLeaving, setCheckinLeaving] = useState(false);
+  const checkinTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (checkinTimer.current) clearTimeout(checkinTimer.current);
+    };
+  }, []);
 
   const MOOD_REASSURANCE: Record<CheckinMood, string> = {
     heavy: "Noted — be extra gentle with yourself today.",
@@ -73,7 +82,17 @@ export default function NeedsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mood, day: todayKey() }),
     });
-    if (res.ok) setTodayMood(mood);
+    if (!res.ok) return;
+    setTodayMood(mood);
+    // Feedback shows for 7 seconds, then the whole block gracefully leaves
+    // and the needs screen returns to its original shape.
+    if (checkinTimer.current) clearTimeout(checkinTimer.current);
+    setCheckinGone(false);
+    setCheckinLeaving(false);
+    checkinTimer.current = setTimeout(() => {
+      setCheckinLeaving(true);
+      checkinTimer.current = setTimeout(() => setCheckinGone(true), 450);
+    }, 7000);
   }
 
   function toggleNeed(v: string) {
@@ -117,7 +136,8 @@ export default function NeedsPage() {
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
-      <section className="dc-checkin" aria-label="Arrival check-in">
+      {!checkinGone && (
+      <section className={`dc-checkin${checkinLeaving ? " leaving" : ""}`} aria-label="Arrival check-in">
         <div>
           <h2>How are you arriving today?</h2>
           <p className="ob-hint">
@@ -140,6 +160,7 @@ export default function NeedsPage() {
           ))}
         </div>
       </section>
+      )}
       <h1>What kind of connection do you need right now?</h1>
       <p className="ob-sub">Pick your needs. You can change them anytime.</p>
 
