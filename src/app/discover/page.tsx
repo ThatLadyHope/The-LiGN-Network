@@ -150,13 +150,12 @@ export default function DiscoverPage() {
     });
     if (res.ok) {
       setSent((s) => [...s, id]);
-      // Requests become conversations in Chat once accepted — take them
-      // there so the wait happens in the right place.
-      router.push("/chat");
+      // Stay put: the row flips to Sent with a "Wait in Chat" link, so the
+      // wait happens in the right place without yanking the user away.
+      setStatus("Request sent — they'll see it in their Chat.");
     } else if (res.status === 409) {
       setSent((s) => [...s, id]);
-      setStatus("Request already pending — taking you to chat to wait there.");
-      setTimeout(() => router.push("/chat"), 1200);
+      setStatus("Request already pending — wait it out in Chat.");
     } else {
       setStatus("Could not send the request — they may no longer be available.");
     }
@@ -222,7 +221,12 @@ export default function DiscoverPage() {
       ) : candidates.length > 0 ? (
         <section className="dc-people" aria-label="Available connections">
           <div className="dc-people-head">
-            <h2>Available now</h2>
+            <div>
+              <h2>Available now</h2>
+              <p className="dc-people-sub">
+                Send a request. If they accept, your conversation opens in Chat — no rush either way.
+              </p>
+            </div>
             <span className="ui-badge">
               {candidates.length} {candidates.length === 1 ? "person" : "people"}
             </span>
@@ -232,7 +236,13 @@ export default function DiscoverPage() {
               const tones = ["teal", "indigo", "plum", "sage"] as const;
               const tone = tones[i % tones.length];
               const needs = c.sharedNeeds ?? [];
+              const labels = needs.slice(0, 2).map((n) => NEED_LABELS[n] ?? n);
               const extra = needs.length > 2 ? needs.length - 2 : 0;
+              const name = c.profile?.nickname ?? "Someone";
+              const matchLine =
+                labels.length > 0
+                  ? `You both want ${labels.join(" and ")}${extra > 0 ? `, +${extra} more` : ""}`
+                  : "A new face — no shared needs yet";
               const done = sent.includes(c.id);
               return (
                 <li key={c.id} className="dc-person">
@@ -240,7 +250,8 @@ export default function DiscoverPage() {
                     {(c.profile?.nickname ?? "?").trim().charAt(0).toUpperCase() || "?"}
                   </span>
                   <span className="dc-person-main">
-                    <b>{c.profile?.nickname ?? "Someone"}</b>
+                    <b>{name}</b>
+                    <span className="dc-match">{matchLine}</span>
                     <span className="dc-person-needs">
                       {needs.slice(0, 2).map((n) => (
                         <span key={n} className="dc-chip need">
@@ -249,15 +260,24 @@ export default function DiscoverPage() {
                       ))}
                       {extra > 0 && <span className="dc-chip">+{extra}</span>}
                     </span>
-                    {c.profile?.bio && <small>{c.profile.bio}</small>}
+                    {c.profile?.bio && <small className="dc-bio">“{c.profile.bio}”</small>}
                   </span>
-                  <button
-                    className={done ? "dc-act quiet" : "dc-act solid-clay"}
-                    disabled={done}
-                    onClick={() => sendRequest(c.id)}
-                  >
-                    {done ? "Sent" : "Send request"}
-                  </button>
+                  {done ? (
+                    <span className="dc-sent">
+                      <span className="dc-act quiet" aria-live="polite">Sent</span>
+                      <Link className="dc-chat-link" href="/chat">
+                        Wait in Chat
+                      </Link>
+                    </span>
+                  ) : (
+                    <button
+                      className="dc-act solid-clay"
+                      onClick={() => sendRequest(c.id)}
+                      aria-label={`Send a connection request to ${name}`}
+                    >
+                      Send request
+                    </button>
+                  )}
                 </li>
               );
             })}
@@ -268,7 +288,8 @@ export default function DiscoverPage() {
       {!loading && candidates.length === 0 && fallback && (
         <section className="dc-empty">
           <div className="eyebrow">While you wait</div>
-          <h2>No suitable person right now — honestly.</h2>
+          <h2>Nobody new right now — that's honest, not broken.</h2>
+          <p>Good connections are worth waiting an hour for. Meanwhile, pick one:</p>
           <div className="dc-actions">
             <button className="dc-act solid-sage" onClick={retry}>
               Retry connection
