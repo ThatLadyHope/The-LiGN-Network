@@ -27,19 +27,51 @@ const NEED_LABELS: Record<string, string> = {
   "need-someone": "I need someone",
 };
 
-// The Connection Mark: three softly curved discs leaning into one another —
-// connection, belonging, community. Token fills, no generic menu glyphs.
+// The Connection Mark: three open rings leaning into a shared center —
+// connection, belonging, community, with the gaps left open: room for more.
+// Token strokes, no generic menu glyphs.
 function ConnectionMark() {
   return (
     <svg
-      width="22"
-      height="22"
+      width="26"
+      height="26"
       viewBox="0 0 24 24"
+      fill="none"
       aria-hidden="true"
     >
-      <circle cx="9.4" cy="10" r="5.2" fill="var(--clay)" opacity="0.82" />
-      <circle cx="14.6" cy="10" r="5.2" fill="var(--sage)" opacity="0.82" />
-      <circle cx="12" cy="14.6" r="5.2" fill="var(--plum)" opacity="0.82" />
+      <circle
+        cx="9.4"
+        cy="10"
+        r="5.2"
+        stroke="var(--clay)"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeDasharray="27 5.7"
+        transform="rotate(62 9.4 10)"
+        opacity="0.9"
+      />
+      <circle
+        cx="14.6"
+        cy="10"
+        r="5.2"
+        stroke="var(--sage)"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeDasharray="27 5.7"
+        transform="rotate(181 14.6 10)"
+        opacity="0.9"
+      />
+      <circle
+        cx="12"
+        cy="14.6"
+        r="5.2"
+        stroke="var(--plum)"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeDasharray="27 5.7"
+        transform="rotate(301.5 12 14.6)"
+        opacity="0.9"
+      />
     </svg>
   );
 }
@@ -82,6 +114,12 @@ export default function DiscoverPage() {
     "If loneliness had a shape today, what would it look like?",
     "What is one small, honest thing you could share with someone new?",
   ];
+
+  const MOOD_REASSURANCE: Record<CheckinMood, string> = {
+    heavy: "Noted — be extra gentle with yourself today.",
+    okay: "Noted — an okay day still counts.",
+    light: "Lovely — carry a little of that in with you.",
+  };
 
   const load = useCallback(async () => {
     let d: Response;
@@ -251,7 +289,7 @@ export default function DiscoverPage() {
           <h2>How are you arriving today?</h2>
           <p className="ob-hint">
             {todayMood
-              ? `Arrived feeling ${MOOD_LABELS[todayMood].toLowerCase()}${streak > 1 ? ` · ${streak} gentle days in a row` : ""} — tap again to change it.`
+              ? MOOD_REASSURANCE[todayMood]
               : "One tap. Private — it shapes nothing except your own history."}
           </p>
         </div>
