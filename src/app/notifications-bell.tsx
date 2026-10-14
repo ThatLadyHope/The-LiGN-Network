@@ -139,7 +139,11 @@ export default function NotificationsBell() {
 
   useEffect(() => {
     load();
-    timer.current = setInterval(load, 15000);
+    // Gentle cadence + hidden-tab pause: the badge barely moves, idle tabs
+    // shouldn't burn pool connections.
+    timer.current = setInterval(() => {
+      if (!document.hidden) load();
+    }, 30000);
     return () => {
       if (timer.current) clearInterval(timer.current);
     };

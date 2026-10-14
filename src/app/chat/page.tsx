@@ -97,7 +97,10 @@ export default function ChatPage() {
   useEffect(() => {
     if (!activeId) return;
     loadMessages(activeId);
-    const t = setInterval(() => loadMessages(activeId), 5000);
+    // Background tabs don't poll: most production load is idle tabs.
+    const t = setInterval(() => {
+      if (!document.hidden) loadMessages(activeId);
+    }, 8000);
     const s = io("/chat");
     socketRef.current = s;
     s.emit("join", activeId);
