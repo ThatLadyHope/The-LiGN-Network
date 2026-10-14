@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
+import PwaInstallButton from "./pwa-install-button";
 import "./landing.css";
 
 export default function LandingPage() {
@@ -42,6 +43,7 @@ export default function LandingPage() {
         <Link className="ob-go ui-btn lg-cta-main" href="/onboarding">
           Get Started
         </Link>
+        <PwaInstallButton />
         <Link className="lg-signin" href="/login">
           I already belong — sign in
         </Link>
