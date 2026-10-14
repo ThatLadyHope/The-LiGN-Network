@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import BackButton from "../back-button";
+import { anotherPrompt, promptForDate } from "@/lib/journal-prompts";
 import "../onboarding/onboarding.css";
 
 interface Entry {
@@ -15,6 +16,7 @@ export default function JournalPage() {
   const router = useRouter();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [draft, setDraft] = useState("");
+  const [prompt, setPrompt] = useState<string>(() => promptForDate());
   const [status, setStatus] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -59,6 +61,15 @@ export default function JournalPage() {
       </div>
       <h1>Connection journal</h1>
       <p className="ob-sub">Private to you. Never shared, never shown to anyone.</p>
+
+      <section className="ob-group-page" aria-label="Today's reflection">
+        <p className="ob-hint">Today&apos;s reflection</p>
+        <p className="jr-prompt">“{prompt}”</p>
+        <button className="ob-btn half quiet" onClick={() => setPrompt((p) => anotherPrompt(p))}>
+          Another prompt
+        </button>
+        <p className="ob-hint">Or ignore it and write freely — the blank page never judges.</p>
+      </section>
 
       <label className="ob-label">
         New entry
