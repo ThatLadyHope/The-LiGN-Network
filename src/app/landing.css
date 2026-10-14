@@ -1,0 +1,24 @@
+/* Landing page: flat brand color, generous air, tonal trio. */
+.lg-wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 40px; text-align: center; }
+.lg-eyebrow { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--clay); font-weight: 700; margin: 0 0 12px; }
+.lg-wrap h1 { font-family: Georgia, serif; font-weight: 400; font-size: 44px; line-height: 1.15; margin: 0 0 16px; }
+.lg-sub { font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 560px; margin: 0 auto 28px; }
+.lg-cta { display: grid; gap: 12px; justify-items: center; margin-bottom: 44px; }
+.lg-cta-main { max-width: 320px; text-decoration: none; }
+.lg-signin { font-size: 14px; font-weight: 600; color: var(--clay); }
+.lg-trio { display: grid; gap: 12px; text-align: left; margin-bottom: 16px; }
+.lg-card { border-radius: 20px; padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--line); background: var(--card); }
+.lg-card h2 { font-family: Georgia, serif; font-weight: 400; font-size: 20px; margin: 0 0 6px; }
+.lg-card p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+.lg-card.tone-teal { border-top: 6px solid var(--teal); }
+.lg-card.tone-indigo { border-top: 6px solid var(--indigo); }
+.lg-card.tone-plum { border-top: 6px solid var(--plum); }
+.lg-safety { border: 1px dashed var(--line); border-radius: 20px; padding: 22px; margin-bottom: 28px; }
+.lg-safety h2 { font-family: Georgia, serif; font-weight: 400; font-size: 20px; margin: 0 0 8px; }
+.lg-safety p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--muted); }
+.lg-foot p { font-size: 13px; color: var(--muted); }
+@media (min-width: 640px) {
+  .lg-trio { grid-template-columns: repeat(3, 1fr); }
+  .lg-wrap h1 { font-size: 52px; }
+}
+@media (prefers-reduced-motion: reduce) { .lg-wrap { animation: none; } }

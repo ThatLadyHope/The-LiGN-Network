@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSignUp, useUser } from "@clerk/nextjs";
+import { useSignIn, useSignUp, useUser } from "@clerk/nextjs";
 import { AGREEMENT_VERSION } from "@/lib/agreement";
 import { DISPOSABLE_EMAIL_MESSAGE, isDisposableEmail } from "@/lib/email-policy";
 import { MIN_PASSWORD_LENGTH } from "@/lib/password-policy";
@@ -17,8 +17,7 @@ function friendlySignupError(e: unknown, fallback: string): string {
   if (!err) return e instanceof Error && e.message ? e.message : fallback;
   switch (err.code) {
     case "form_identifier_exists":
-    case "form_identifier_not_found":
-      return "This email already has an account — sign in instead.";
+      return "exists";
     case "form_code_incorrect":
       return "That code didn't match — use the newest email, then try again.";
     case "verification_expired":
@@ -37,27 +36,52 @@ function friendlySignupError(e: unknown, fallback: string): string {
   }
 }
 
-export default function SignupPage() {
+function friendlySigninError(e: unknown): string {
+  const err = (e as { errors?: { code?: string; message?: string }[] })?.errors?.[0];
+  if (!err) return e instanceof Error && e.message ? e.message : "something-went-wrong";
+  switch (err.code) {
+    case "form_password_incorrect":
+      return "Email or password did not match.";
+    case "form_identifier_not_found":
+      return "not-found";
+    case "form_code_incorrect":
+      return "That code didn't match — use the newest email, then try again.";
+    case "verification_expired":
+    case "form_code_expired":
+      return "That code expired — tap Resend code for a fresh one.";
+    case "session_exists":
+      return "You're already signed in — taking you in…";
+    default:
+      return err.message ? `${err.message} (${err.code ?? "unknown-code"})` : "something-went-wrong";
+  }
+}
+
+type Stage = "gate" | "register" | "verify";
+
+export default function GetStartedPage() {
   const router = useRouter();
-  const { isLoaded, signUp, setActive } = useSignUp();
+  const { isLoaded: upLoaded, signUp, setActive: setActiveUp } = useSignUp();
+  const { isLoaded: inLoaded, signIn, setActive: setActiveIn } = useSignIn();
+  const isLoaded = upLoaded && inLoaded;
+  const [stage, setStage] = useState<Stage>("gate");
+  const [mode, setMode] = useState<"signup" | "signin" | null>(null);
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [ageRange, setAgeRange] = useState("25-34");
   const [language, setLanguage] = useState("en");
   const [code, setCode] = useState("");
-  const [verifying, setVerifying] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [cooldown, setCooldown] = useState(0);
+  const [signinFactorId, setSigninFactorId] = useState<string | null>(null);
   const { isSignedIn } = useUser();
   // Ref guard: React state updates async, so two rapid taps could both pass
   // `busy`. The ref closes the double-submit hole that strands verifications.
   const workingRef = useRef(false);
 
-  // Signed-in users don't belong on the signup form (prevents session_exists
-  // dead-ends): send them into the app.
+  // Signed-in users don't belong here (prevents session_exists dead-ends).
   useEffect(() => {
     if (isSignedIn) router.push("/discover");
   }, [isSignedIn, router]);
@@ -93,36 +117,115 @@ export default function SignupPage() {
     ["zu", "Zulu"],
   ] as const;
 
-  const valid =
+  const gateValid = /.+@.+\..+/.test(email.trim()) && password.length > 0;
+  const registerValid =
     nickname.trim().length > 0 &&
     nickname.length <= 30 &&
-    /.+@.+\..+/.test(email) &&
     password.length >= MIN_PASSWORD_LENGTH &&
     language.trim().length >= 2 &&
     agreed;
 
-  async function submit() {
+  function goDiscoverSoon(msg: string) {
+    setStatus(msg);
+    setTimeout(() => router.push("/discover"), 1200);
+  }
+
+  // Step 1: email + password. Existing account → sign straight in (needs);
+  // unknown email → open the registration fields.
+  async function gate() {
     if (!isLoaded || workingRef.current) return;
+    const si = signIn;
+    if (!si) return;
+    const cleanEmail = email.trim();
+    if (!/.+@.+\..+/.test(cleanEmail)) {
+      setStatus("Enter a valid email address.");
+      return;
+    }
+    if (isDisposableEmail(cleanEmail)) {
+      setStatus(DISPOSABLE_EMAIL_MESSAGE);
+      return;
+    }
+    workingRef.current = true;
+    setBusy(true);
+    setStatus(null);
+    try {
+      const res = await si.create({ identifier: cleanEmail, password });
+      if (res.status === "complete") {
+        const sa = setActiveIn;
+        if (!sa) throw new Error("something-went-wrong");
+        await sa({ session: res.createdSessionId });
+        router.push("/onboarding/needs");
+        return;
+      }
+      // Password right but email unverified: finish with a code.
+      if (res.status === "needs_first_factor") {
+        const factor = (res.supportedFirstFactors ?? []).find(
+          (f) => f.strategy === "email_code",
+        );
+        if (factor && "emailAddressId" in factor && factor.emailAddressId) {
+          await si.prepareFirstFactor({
+            strategy: "email_code",
+            emailAddressId: factor.emailAddressId,
+          });
+          setSigninFactorId(factor.emailAddressId);
+          setMode("signin");
+          setStage("verify");
+          setCooldown(30);
+          setStatus("One quick check — enter the code we just emailed you.");
+          return;
+        }
+      }
+      throw new Error("Email or password did not match.");
+    } catch (e) {
+      const msg = friendlySigninError(e);
+      if (msg === "not-found") {
+        // New here: open the rest of the form, email and password kept.
+        setMode("signup");
+        setStage("register");
+        setStatus(null);
+        return;
+      }
+      if (/already signed in/i.test(msg)) {
+        goDiscoverSoon(msg);
+        return;
+      }
+      setStatus(msg);
+    } finally {
+      setBusy(false);
+      workingRef.current = false;
+    }
+  }
+
+  // Step 2 (new accounts): the rest of the form + agreement → Join.
+  async function join() {
+    if (!isLoaded || workingRef.current) return;
+    const su = signUp;
+    if (!su) return;
     workingRef.current = true;
     setBusy(true);
     setStatus(null);
     try {
       if (!agreed) throw new Error("Please read the agreement and tick the box to join.");
       if (isDisposableEmail(email)) throw new Error(DISPOSABLE_EMAIL_MESSAGE);
-      await signUp.create({ emailAddress: email, password });
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-      setVerifying(true);
+      if (password.length < MIN_PASSWORD_LENGTH) {
+        throw new Error(`Use at least ${MIN_PASSWORD_LENGTH} characters.`);
+      }
+      await su.create({ emailAddress: email.trim(), password });
+      await su.prepareEmailAddressVerification({ strategy: "email_code" });
+      setMode("signup");
+      setStage("verify");
       setCooldown(30);
     } catch (e) {
       const msg = friendlySignupError(e, "something-went-wrong");
-      if (/already signed in/i.test(msg)) {
-        setStatus(msg);
-        setTimeout(() => router.push("/discover"), 1200);
+      if (msg === "exists") {
+        // Raced or remembered wrong: fall back to signing in directly.
+        setStage("gate");
+        setStatus("That email already has an account — signing you in instead…");
+        setTimeout(() => gate(), 600);
         return;
       }
-      if (/already has an account/i.test(msg)) {
-        setStatus(`${msg} Taking you to sign in…`);
-        setTimeout(() => router.push("/login"), 1800);
+      if (/already signed in/i.test(msg)) {
+        goDiscoverSoon(msg);
         return;
       }
       setStatus(msg);
@@ -133,36 +236,60 @@ export default function SignupPage() {
   }
 
   async function resend() {
-    if (!isLoaded || cooldown > 0) return;
+    if (!isLoaded || cooldown > 0 || workingRef.current) return;
+    workingRef.current = true;
     setBusy(true);
     setStatus(null);
     try {
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      if (mode === "signin") {
+        const si = signIn;
+        if (!si || !signinFactorId) throw new Error("something-went-wrong");
+        await si.prepareFirstFactor({ strategy: "email_code", emailAddressId: signinFactorId });
+      } else {
+        const su = signUp;
+        if (!su) throw new Error("something-went-wrong");
+        await su.prepareEmailAddressVerification({ strategy: "email_code" });
+      }
       setCode("");
       setCooldown(30);
       setStatus("Fresh code sent — use the newest email, then enter it within a few minutes.");
     } catch (e) {
-      setStatus(friendlySignupError(e, "something-went-wrong"));
+      setStatus(
+        mode === "signin"
+          ? friendlySigninError(e)
+          : friendlySignupError(e, "something-went-wrong"),
+      );
     } finally {
       setBusy(false);
+      workingRef.current = false;
     }
   }
 
   async function verify() {
     if (!isLoaded || workingRef.current) return;
-    const su = signUp;
-    if (!su) return;
     workingRef.current = true;
     setBusy(true);
     setStatus(null);
     try {
+      if (mode === "signin") {
+        const si = signIn;
+        if (!si) throw new Error("something-went-wrong");
+        const res = await si.attemptFirstFactor({
+          strategy: "email_code",
+          code: code.trim(),
+        });
+        if (res.status !== "complete") throw new Error("That code didn't match — try again.");
+        const sa = setActiveIn;
+        if (!sa) throw new Error("something-went-wrong");
+        await sa({ session: res.createdSessionId });
+        router.push("/onboarding/needs");
+        return;
+      }
+      const su = signUp;
+      if (!su) throw new Error("something-went-wrong");
       // Shortcut: already complete (double-tap, recovered session, retry).
-      // No Clerk calls needed — just finish signing in.
-      let res =
-        su.status === "complete" ? su : await attemptWithRecovery();
+      let res = su.status === "complete" ? su : await attemptWithRecovery();
       if (res.status !== "complete") {
-        // Verified but requirements still pending, or wrong code: one more
-        // reload round tells which before giving up.
         const done = await reloadWithRetry(2);
         if (done && done.status === "complete") res = done;
         else
@@ -172,7 +299,11 @@ export default function SignupPage() {
       }
       await finishSignup(res.createdSessionId);
     } catch (e) {
-      setStatus(friendlySignupError(e, "something-went-wrong"));
+      setStatus(
+        mode === "signin"
+          ? friendlySigninError(e)
+          : friendlySignupError(e, "something-went-wrong"),
+      );
     } finally {
       setBusy(false);
       workingRef.current = false;
@@ -215,7 +346,7 @@ export default function SignupPage() {
   // Shared tail: activate the session, then create/link the local profile.
   async function finishSignup(sessionId: string | null | undefined) {
     if (!sessionId) throw new Error("Signed up but no session — tap Verify email again.");
-    const sa = setActive;
+    const sa = setActiveUp;
     if (!sa) throw new Error("something-went-wrong");
     await sa({ session: sessionId });
     const profile = await fetch("/api/onboarding", {
@@ -246,13 +377,13 @@ export default function SignupPage() {
     router.push("/onboarding/needs");
   }
 
-  // Escape hatch: back to the form with values kept. Wrong email → Join
-  // creates a fresh signup; right email → Join routes to login, which can
-  // finish verification. No dead ends either way.
+  // Escape hatch: back to email + password with values kept.
   function startOver() {
-    setVerifying(false);
+    setStage("gate");
+    setMode(null);
     setCode("");
-    setStatus("Check the details above — fix the email if needed, then tap Join LiGN again.");
+    setSigninFactorId(null);
+    setStatus("Check the details — fix the email if needed, then continue.");
   }
 
   return (
@@ -262,51 +393,66 @@ export default function SignupPage() {
       </div>
       <h1>Get started</h1>
 
-      <label className="ob-label">
-        Nickname
-        <input className="ui-input" value={nickname} maxLength={30} onChange={(e) => setNickname(e.target.value)} placeholder="e.g. Wren" />
-      </label>
-      <label className="ob-label">
-        Email
-        <input className="ui-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-      </label>
-      <PasswordField
-        label={`Password (${MIN_PASSWORD_LENGTH}+ characters)`}
-        value={password}
-        onChange={setPassword}
-        autoComplete="new-password"
-      />
+      {stage === "gate" && (
+        <>
+          <p className="ob-sub">One step first — new here or returning, it starts the same way.</p>
+          <label className="ob-label">
+            Email
+            <input className="ui-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+          </label>
+          <PasswordField
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+          />
+          <button className="ob-go ui-btn" disabled={!gateValid || busy} onClick={gate}>
+            {busy ? "Checking…" : "Continue"}
+          </button>
+        </>
+      )}
 
-      <div className="ob-row">
-        <label className="ob-label">
-          Age range
-          <select className="ui-input" value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
-            {AGES.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="ob-label">
-          Language
-          <select className="ui-input" value={language} onChange={(e) => setLanguage(e.target.value)}>
-            {LANGUAGES.map(([code, name]) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+      {stage === "register" && (
+        <>
+          <p className="ob-sub">
+            New here — almost done. <button type="button" className="ob-show" onClick={() => setStage("gate")}>← Back</button>
+          </p>
+          <label className="ob-label">
+            Nickname
+            <input className="ui-input" value={nickname} maxLength={30} onChange={(e) => setNickname(e.target.value)} placeholder="e.g. Wren" />
+          </label>
+          <div className="ob-row">
+            <label className="ob-label">
+              Age range
+              <select className="ui-input" value={ageRange} onChange={(e) => setAgeRange(e.target.value)}>
+                {AGES.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="ob-label">
+              Language
+              <select className="ui-input" value={language} onChange={(e) => setLanguage(e.target.value)}>
+                {LANGUAGES.map(([c, name]) => (
+                  <option key={c} value={c}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
 
-      <AgreementBox onAgreed={setAgreed} showTitle={false} showHelp={false} />
+          <AgreementBox onAgreed={setAgreed} showTitle={false} showHelp={false} />
 
-      {!verifying ? (
-        <button className="ob-go ui-btn" disabled={!valid || busy} onClick={submit}>
-          {busy ? "Joining…" : "Join LiGN"}
-        </button>
-      ) : (
+          <button className="ob-go ui-btn" disabled={!registerValid || busy} onClick={join}>
+            {busy ? "Joining…" : "Join LiGN"}
+          </button>
+        </>
+      )}
+
+      {stage === "verify" && (
         <>
           <p className="ob-sub">Check your inbox — enter the 6-digit code.</p>
           <label className="ob-label">

@@ -7,8 +7,8 @@ import "./globals.css";
 import "./ui.css";
 
 export const metadata: Metadata = {
-  title: "LiGN — Get started",
-  description: "Create your LiGN identity. Minimal setup, no pressure.",
+  title: "LiGN — Platonic human connection",
+  description: "Come as you are. Leave less alone. 1-on-1 connection, temporary spaces, and listener support.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
