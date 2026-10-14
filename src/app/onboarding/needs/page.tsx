@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AGREEMENT_VERSION } from "@/lib/agreement";
+import { CHECKIN_MOODS, MOOD_LABELS, todayKey, type CheckinMood } from "@/lib/checkins";
 import "../onboarding.css";
+import "../../discover/discover.css";
 import BackButton from "../../back-button";
 
 const GROUPS: { id: string; title: string; hint: string; needs: { value: string; label: string }[] }[] = [
@@ -45,6 +47,34 @@ export default function NeedsPage() {
   const [picked, setPicked] = useState<string[]>(["listening"]);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [todayMood, setTodayMood] = useState<CheckinMood | null>(null);
+
+  const MOOD_REASSURANCE: Record<CheckinMood, string> = {
+    heavy: "Noted — be extra gentle with yourself today.",
+    okay: "Noted — an okay day still counts.",
+    light: "Lovely — carry a little of that in with you.",
+  };
+
+  useEffect(() => {
+    fetch("/api/checkins")
+      .then((r) => (r.ok ? r.json().catch(() => null) : null))
+      .then((d) => {
+        const mine = (d?.checkins ?? []).find(
+          (c: { day: string }) => c.day === todayKey(),
+        );
+        if (mine?.mood) setTodayMood(mine.mood);
+      })
+      .catch(() => null);
+  }, []);
+
+  async function checkin(mood: CheckinMood) {
+    const res = await fetch("/api/checkins", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mood, day: todayKey() }),
+    });
+    if (res.ok) setTodayMood(mood);
+  }
 
   function toggleNeed(v: string) {
     setPicked((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
@@ -87,6 +117,29 @@ export default function NeedsPage() {
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
+      <section className="dc-checkin" aria-label="Arrival check-in">
+        <div>
+          <h2>How are you arriving today?</h2>
+          <p className="ob-hint">
+            {todayMood
+              ? MOOD_REASSURANCE[todayMood]
+              : "One tap. Private — it shapes nothing except your own history."}
+          </p>
+        </div>
+        <div className="dc-checkin-moods" role="group" aria-label="Arrival mood">
+          {CHECKIN_MOODS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              className={`dc-mood${todayMood === m ? " picked" : ""}`}
+              aria-pressed={todayMood === m}
+              onClick={() => checkin(m)}
+            >
+              {MOOD_LABELS[m]}
+            </button>
+          ))}
+        </div>
+      </section>
       <h1>What kind of connection do you need right now?</h1>
       <p className="ob-sub">Pick your needs. You can change them anytime.</p>
 
