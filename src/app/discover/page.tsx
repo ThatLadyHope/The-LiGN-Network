@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { CHECKIN_MOODS, MOOD_LABELS, gentleStreak, todayKey, type CheckinMood } from "@/lib/checkins";
 import "./discover.css";
 
 interface Candidate {
@@ -40,6 +41,8 @@ export default function DiscoverPage() {
   const [paused, setPaused] = useState(false);
   const [retryMsg, setRetryMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [todayMood, setTodayMood] = useState<CheckinMood | null>(null);
+  const [streak, setStreak] = useState(0);
   const { isLoaded: authLoaded, isSignedIn } = useUser();
   const unauthTries = useRef(0);
   const authRef = useRef({ loaded: false, signedIn: false });
@@ -66,8 +69,13 @@ export default function DiscoverPage() {
   const load = useCallback(async () => {
     let d: Response;
     let s: Response;
+    let k: Response | null = null;
     try {
-      [d, s] = await Promise.all([fetch("/api/discover"), fetch("/api/account/status")]);
+      [d, s, k] = await Promise.all([
+        fetch("/api/discover"),
+        fetch("/api/account/status"),
+        fetch("/api/checkins"),
+      ]);
     } catch {
       return { found: 0, failed: true as const };
     }
@@ -83,6 +91,13 @@ export default function DiscoverPage() {
     const st = await s.json().catch(() => null);
     setPaused(st?.status?.accountState === "PAUSED");
     if (st?.restored) setStatus("Welcome back — your account resumed automatically.");
+    const kd = await k?.json().catch(() => null);
+    if (kd) {
+      const today = todayKey();
+      const mine = (kd.checkins ?? []).find((c: { day: string }) => c.day === today);
+      setTodayMood(mine?.mood ?? null);
+      setStreak(gentleStreak((kd.checkins ?? []).map((c: { day: string }) => c.day)));
+    }
     return { found, failed: false as const };
   }, [router]);
 
@@ -142,6 +157,27 @@ export default function DiscoverPage() {
     setStatus("Could not open the space.");
   }
 
+  async function checkin(mood: CheckinMood) {
+    const res = await fetch("/api/checkins", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mood, day: todayKey() }),
+    });
+    if (res.ok) {
+      setTodayMood(mood);
+      load();
+      setStatus(
+        mood === "heavy"
+          ? "Noted — be extra gentle with yourself today."
+          : mood === "light"
+            ? "Lovely — carry a little of that in with you."
+            : "Noted — an okay day still counts.",
+      );
+    } else {
+      setStatus("Could not record that — try again.");
+    }
+  }
+
   async function sendRequest(id: string) {
     const res = await fetch("/api/requests", {
       method: "POST",
@@ -197,6 +233,30 @@ export default function DiscoverPage() {
         )}
       </div>
       <p className="ob-sub">Matched on your current need first.</p>
+
+      <section className="dc-checkin" aria-label="Arrival check-in">
+        <div>
+          <h2>How are you arriving today?</h2>
+          <p className="ob-hint">
+            {todayMood
+              ? `Arrived feeling ${MOOD_LABELS[todayMood].toLowerCase()}${streak > 1 ? ` · ${streak} gentle days in a row` : ""} — tap again to change it.`
+              : "One tap. Private — it shapes nothing except your own history."}
+          </p>
+        </div>
+        <div className="dc-checkin-moods" role="group" aria-label="Arrival mood">
+          {CHECKIN_MOODS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              className={`dc-mood tone-${m}${todayMood === m ? " picked" : ""}`}
+              aria-pressed={todayMood === m}
+              onClick={() => checkin(m)}
+            >
+              {MOOD_LABELS[m]}
+            </button>
+          ))}
+        </div>
+      </section>
 
       {paused && (
         <section className="dc-empty">

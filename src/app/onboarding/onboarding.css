@@ -46,6 +46,7 @@
 .mem-door.tone-teal { background: var(--teal); border-color: var(--teal); color: var(--on-teal); }
 .mem-door.tone-plum { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
 .mem-door.tone-indigo { background: var(--indigo); border-color: var(--indigo); color: var(--on-indigo); }
+.mem-door.tone-sage { background: var(--sage); border-color: var(--sage); color: var(--on-sage); }
 .mem-door button { display: block; width: 100%; text-align: left; background: transparent; border: 2px solid color-mix(in srgb, currentColor 45%, transparent); border-radius: 14px; padding: 18px 20px; cursor: pointer; color: inherit; }
 .mem-door button:hover { border-color: currentColor; background: rgba(0,0,0,.12); }
 .mem-title { display: block; font-family: Georgia, serif; font-size: 20px; font-weight: 400; letter-spacing: .3px; margin-bottom: 6px; }

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import BackButton from "../back-button";
 import "../onboarding/onboarding.css";
 
-const ITEMS: { id: string; title: string; hint: string; href: string; tone: "teal" | "plum" | "indigo" }[] = [
+const ITEMS: { id: string; title: string; hint: string; href: string; tone: "teal" | "plum" | "indigo" | "sage" }[] = [
   {
     id: "g1",
     title: "Connection journal",
@@ -25,6 +25,13 @@ const ITEMS: { id: string; title: string; hint: string; href: string; tone: "tea
     hint: "Do something together",
     href: "/activities",
     tone: "indigo",
+  },
+  {
+    id: "g4",
+    title: "Arrival check-ins",
+    hint: "How you arrived, day by day",
+    href: "/memories/checkins",
+    tone: "sage",
   },
 ];
 

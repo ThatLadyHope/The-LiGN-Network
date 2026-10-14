@@ -71,6 +71,7 @@ model User {
   verificationData String?
   createdAt        DateTime       @default(now())
   availability     Availability?
+  checkIns         CheckIn[]
 }
 
 model Availability {
@@ -120,7 +121,20 @@ model Conversation {
   reads        ConversationRead[]
 }
 
-// One row per (conversation, reader): when they last opened the thread.
+// One-tap arrival check-in: how the user arrived that day. One row per
+// user per calendar day (upsert) — history, never a score. Shown back in the
+// Memories hub; matching stays needs-based and never reads this table.
+model CheckIn {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  day       String // local calendar day, YYYY-MM-DD, supplied by the client
+  mood      String // heavy | okay | light
+  createdAt DateTime @default(now())
+
+  @@unique([userId, day])
+}
+
 // Drives honest ✓/✓✓ ticks — a message counts as seen only if the other
 // person opened the thread after it was sent. No device acks in MVP, so
 // there is deliberately no fake "delivered" middle state.
