@@ -73,7 +73,7 @@ export default function CheckinsPage() {
 
       {loaded &&
         rows.map((r) => (
-          <div key={r.day} className="dc-person">
+          <div key={r.day} className="dc-person ck-row">
             <span className={`dc-avatar tone-${MOOD_TONE[r.mood]}`} aria-hidden="true">
               {MOOD_LABELS[r.mood].charAt(0)}
             </span>
