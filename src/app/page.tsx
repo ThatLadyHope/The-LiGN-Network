@@ -24,6 +24,9 @@ export default function LandingPage() {
 
   return (
     <main className="lg-wrap anim-in">
+      <div className="ob-wordmark lg-brand">
+        The <em>LiGN</em> Network
+      </div>
       <p className="lg-eyebrow">Platonic human connection</p>
       <h1>
         Come as you are.
