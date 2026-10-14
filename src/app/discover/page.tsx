@@ -90,6 +90,8 @@ export default function DiscoverPage() {
   const [paused, setPaused] = useState(false);
   const [retryMsg, setRetryMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
+  const VISIBLE_COUNT = 3;
   const { isLoaded: authLoaded, isSignedIn } = useUser();
   const unauthTries = useRef(0);
   const authRef = useRef({ loaded: false, signedIn: false });
@@ -283,7 +285,7 @@ export default function DiscoverPage() {
             </span>
           </div>
           <ul>
-            {candidates.map((c, i) => {
+            {(showAll ? candidates : candidates.slice(0, VISIBLE_COUNT)).map((c, i) => {
               const tones = ["teal", "indigo", "plum", "sage"] as const;
               const tone = tones[i % tones.length];
               const needs = c.sharedNeeds ?? [];
@@ -333,6 +335,23 @@ export default function DiscoverPage() {
               );
             })}
           </ul>
+          {candidates.length > VISIBLE_COUNT && (
+            <button
+              type="button"
+              className="dc-seeall"
+              aria-expanded={showAll}
+              onClick={() => setShowAll((s) => !s)}
+            >
+              <span className="dc-seeall-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              {showAll
+                ? "Show less"
+                : `See all ${candidates.length} connections`}
+            </button>
+          )}
         </section>
       ) : null}
 

@@ -48,6 +48,7 @@ export default function NeedsPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [todayMood, setTodayMood] = useState<CheckinMood | null>(null);
+  const [knownName, setKnownName] = useState<string | null>(null);
   const [checkinGone, setCheckinGone] = useState(false);
   const [checkinLeaving, setCheckinLeaving] = useState(false);
   // Once-daily prompt: the block appears only on the first encounter each
@@ -84,6 +85,15 @@ export default function NeedsPage() {
     okay: "Noted — an okay day still counts.",
     light: "Lovely — carry a little of that in with you.",
   };
+
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((r) => (r.ok ? r.json().catch(() => null) : null))
+      .then((d) => {
+        if (d?.profile?.nickname) setKnownName(d.profile.nickname);
+      })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     if (!checkinVisible) return;
@@ -158,6 +168,7 @@ export default function NeedsPage() {
       <div className="ob-wordmark">
         The <em>LiGN</em> Network
       </div>
+      {knownName && <p className="nd-welcome">Welcome back, {knownName}.</p>}
       {!checkinGone && checkinVisible && (
       <section className={`dc-checkin${checkinLeaving ? " leaving" : ""}`} aria-label="Arrival check-in">
         <div>

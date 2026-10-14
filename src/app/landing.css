@@ -1,7 +1,7 @@
 /* Landing page: flat brand color, generous air, tonal trio. */
 .lg-wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 40px; text-align: center; }
 .lg-brand { font-weight: 700; font-size: 32px; margin-bottom: 10px; }
-.lg-eyebrow { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--clay); font-weight: 700; margin: 0 0 12px; }
+.lg-eyebrow { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: var(--link); font-weight: 700; margin: 0 0 12px; }
 .lg-wrap h1 { font-family: Georgia, serif; font-weight: 400; font-size: 44px; line-height: 1.15; margin: 0 0 16px; }
 .lg-sub { font-size: 17px; line-height: 1.65; color: var(--muted); max-width: 560px; margin: 0 auto 28px; }
 .lg-cta { display: grid; gap: 12px; justify-items: center; margin-bottom: 44px; }
@@ -9,7 +9,7 @@
 .lg-install { max-width: 320px; }
 .lg-install-ios { max-width: 360px; margin: 0 auto; text-align: left; }
 .lg-install-ios p { margin: 0 0 8px; font-size: 14px; }
-.lg-signin { font-size: 14px; font-weight: 600; color: var(--clay); }
+.lg-signin { font-size: 14px; font-weight: 600; color: var(--link); }
 .lg-trio { display: grid; gap: 12px; text-align: left; margin-bottom: 16px; }
 .lg-card { border-radius: 20px; padding: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--line); background: var(--card); }
 .lg-card h2 { font-family: Georgia, serif; font-weight: 400; font-size: 20px; margin: 0 0 6px; }

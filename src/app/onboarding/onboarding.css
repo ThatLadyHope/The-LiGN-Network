@@ -27,8 +27,9 @@
 .ob-btn { border-radius: 999px; padding: 12px 24px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .ob-btn.half { width: 50%; min-width: 200px; }
 .ob-btn.quiet { border: 2px solid var(--line); background: transparent; color: var(--ink); }
-.ob-btn.sage { border: 2px solid var(--sage); background: var(--sage); color: #fff; }
-.ob-btn.danger { border: 2px solid var(--clay); background: transparent; color: var(--clay); }
+.ob-btn.sage { border: 2px solid var(--sage-dark); background: var(--sage-dark); color: var(--on-sage); }
+.ob-btn.danger { border: 2px solid var(--clay); background: transparent; color: var(--clay-dark); }
+[data-theme="dark"] .ob-btn.danger { color: var(--clay); }
 .ob-password { display: flex; gap: 8px; align-items: stretch; }
 .ob-password input { flex: 1; }
 .ob-show { border: 2px solid var(--line); background: var(--card); border-radius: 12px; padding: 0 16px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--ink); white-space: nowrap; }
@@ -39,7 +40,7 @@
 .pf-colors { display: flex; gap: 8px; margin-top: 8px; }
 .pf-colors button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
 .pf-colors button.on { border-color: var(--ink); }
-.ob-alt a { color: var(--clay); font-weight: 600; }
+.ob-alt a { color: var(--link); font-weight: 600; }
 .rp-flow { font-size: 13px; color: var(--muted); }
 .rp-flow .done { color: var(--ink); font-weight: 700; }
 .mem-door { border: 1px solid var(--line); border-radius: 20px; padding: 10px; box-shadow: var(--shadow-sm); }
@@ -77,6 +78,8 @@
 .ob-agree-toggle.open { margin-bottom: 8px; }
 .ob-agree-caret { font-size: 18px; color: var(--clay); flex: none; }
 .ob-group-page { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow-sm); animation: ui-row-in 160ms ease-out; }
+/* Returning-user greeting on the needs page. */
+.nd-welcome { font-family: Georgia, serif; font-size: 19px; margin: 10px 0 0; color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .ob-group-page { animation: none; } }
 .ob-group-page h2 { font-size: 16px; margin: 0 0 6px; }
 .ob-group-page a { color: var(--clay); font-weight: 600; }
