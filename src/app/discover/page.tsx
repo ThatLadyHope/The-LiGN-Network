@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import NotificationsBell from "../notifications-bell";
 import "./discover.css";
 
 interface Candidate {
@@ -216,6 +217,7 @@ export default function DiscoverPage() {
         <div className="ob-wordmark">
           The <em>LiGN</em> Network
         </div>
+        <NotificationsBell />
         <button
           type="button"
           className="dc-menu-btn"
