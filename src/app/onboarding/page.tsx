@@ -175,7 +175,15 @@ export default function GetStartedPage() {
           return;
         }
       }
-      throw new Error("Email or password did not match.");
+      // Unknown email sometimes returns here instead of throwing,
+      // depending on instance settings — treat it as a new account.
+      if ((res.status as string) === "needs_identifier") {
+        setMode("signup");
+        setStage("register");
+        setStatus(null);
+        return;
+      }
+      throw new Error(`Email or password did not match. [status: ${res.status}]`);
     } catch (e) {
       const msg = friendlySigninError(e);
       if (msg === "not-found") {
@@ -409,6 +417,9 @@ export default function GetStartedPage() {
           <button className="ob-go ui-btn" disabled={!gateValid || busy} onClick={gate}>
             {busy ? "Checking…" : "Continue"}
           </button>
+          <p className="ob-alt">
+            <a href="/forgot-password">Forgot password?</a>
+          </p>
         </>
       )}
 
