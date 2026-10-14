@@ -18,13 +18,19 @@ interface Profile {
   currentNeeds: string[];
 }
 
-const AVATAR_COLORS = ["#687765", "#59627F", "#76566D", "#C96F4A", "#7D8C6F"];
+const AVATAR_COLORS = [
+  { value: "#687765", name: "Sage green" },
+  { value: "#59627F", name: "Quiet indigo" },
+  { value: "#76566D", name: "Soft plum" },
+  { value: "#C96F4A", name: "Warm clay" },
+  { value: "#7D8C6F", name: "Moss" },
+];
 
 export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [avatarKind, setAvatarKind] = useState("none");
-  const [avatarColor, setAvatarColor] = useState(AVATAR_COLORS[0]);
+  const [avatarColor, setAvatarColor] = useState(AVATAR_COLORS[0].value);
   const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
   const [interests, setInterests] = useState("");
@@ -41,7 +47,7 @@ export default function ProfilePage() {
     if (res.ok && data?.profile) {
       setProfile(data.profile);
       setAvatarKind(data.profile.avatarKind ?? "none");
-      setAvatarColor(data.profile.avatarColor ?? AVATAR_COLORS[0]);
+      setAvatarColor(data.profile.avatarColor ?? AVATAR_COLORS[0].value);
       setBio(data.profile.bio ?? "");
       setCountry(data.profile.country ?? "");
       setInterests((data.profile.interests ?? []).join(", "));
@@ -102,7 +108,10 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <main className="ob-wrap">
-        <p>Loading profile…</p>
+        <div className="ui-skeleton" style={{ height: 72, width: 72, borderRadius: "50%" }} />
+        <div className="ui-skeleton" style={{ height: 28, marginTop: 12 }} />
+        <div className="ui-skeleton" style={{ height: 52, marginTop: 8 }} />
+        <div className="ui-skeleton" style={{ height: 52, marginTop: 8 }} />
         {status && (
           <p className="ob-status" role="status">
             {status}
@@ -137,7 +146,7 @@ export default function ProfilePage() {
         <div>
           <label className="ob-label">
             Avatar (optional)
-            <select value={avatarKind} onChange={(e) => setAvatarKind(e.target.value)}>
+            <select className="ui-input" value={avatarKind} onChange={(e) => setAvatarKind(e.target.value)}>
               <option value="none">None</option>
               <option value="avatar">Initial</option>
               <option value="illustration">Illustration color</option>
@@ -148,12 +157,13 @@ export default function ProfilePage() {
             <div className="pf-colors">
               {AVATAR_COLORS.map((c) => (
                 <button
-                  key={c}
+                  key={c.value}
                   type="button"
-                  aria-label={`Avatar color ${c}`}
-                  className={avatarColor === c ? "on" : ""}
-                  style={{ background: c }}
-                  onClick={() => setAvatarColor(c)}
+                  aria-label={`Avatar color ${c.name}`}
+                  aria-pressed={avatarColor === c.value}
+                  className={avatarColor === c.value ? "on" : ""}
+                  style={{ background: c.value }}
+                  onClick={() => setAvatarColor(c.value)}
                 />
               ))}
             </div>
@@ -176,22 +186,23 @@ export default function ProfilePage() {
 
       <label className="ob-label">
         Short bio
-        <input value={bio} maxLength={500} onChange={(e) => setBio(e.target.value)} placeholder="Who are you, and how can we connect?" />
+        <input className="ui-input" value={bio} maxLength={500} onChange={(e) => setBio(e.target.value)} placeholder="Who are you, and how can we connect?" />
       </label>
       <label className="ob-label">
         Country / region
-        <input value={country} maxLength={60} onChange={(e) => setCountry(e.target.value)} placeholder="Optional" />
+        <input className="ui-input" value={country} maxLength={60} onChange={(e) => setCountry(e.target.value)} placeholder="Optional" />
       </label>
       <label className="ob-label">
         Interests (comma separated)
         <input
+          className="ui-input"
           value={interests}
           onChange={(e) => setInterests(e.target.value)}
           placeholder="e.g. books, night walks, tea"
         />
       </label>
 
-      <button className="ob-go" disabled={busy} onClick={save}>
+      <button className="ob-go ui-btn" disabled={busy} onClick={save}>
         {busy ? "Saving…" : "Save profile"}
       </button>
       {status && (

@@ -73,7 +73,8 @@
 .ob-agree-toggle span small { color: var(--muted); font-weight: 400; }
 .ob-agree-toggle.open { margin-bottom: 8px; }
 .ob-agree-caret { font-size: 18px; color: var(--clay); flex: none; }
-.ob-group-page { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+.ob-group-page { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 20px; margin-bottom: 14px; box-shadow: var(--shadow-sm); animation: ui-row-in 160ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .ob-group-page { animation: none; } }
 .ob-group-page h2 { font-size: 16px; margin: 0 0 6px; }
 .ob-group-page a { color: var(--clay); font-weight: 600; }
 .ob-theme-row { display: flex; gap: 8px; }

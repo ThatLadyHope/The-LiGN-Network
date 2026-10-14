@@ -87,7 +87,7 @@ export default function MemoriesPage() {
         <h2>New shared memory</h2>
         <label className="ob-label">
           With
-          <select value={otherId} onChange={(e) => setOtherId(e.target.value)}>
+          <select className="ui-input" value={otherId} onChange={(e) => setOtherId(e.target.value)}>
             <option value="">Choose a connection…</option>
             {people.map((p) => (
               <option key={p.id} value={p.id}>
@@ -99,6 +99,7 @@ export default function MemoriesPage() {
         <label className="ob-label">
           The memory
           <input
+            className="ui-input"
             value={content}
             maxLength={2000}
             onChange={(e) => setContent(e.target.value)}
@@ -121,7 +122,11 @@ export default function MemoriesPage() {
               Accept
             </button>
           )}{" "}
-          <button className="ob-btn half quiet" onClick={() => act(m.id, "withdraw")}>
+          <button
+            className="ob-btn half quiet"
+            onClick={() => act(m.id, "withdraw")}
+            aria-label={`Step away from shared memory with ${m.otherNickname}`}
+          >
             Step away
           </button>
         </div>

@@ -63,6 +63,7 @@ export default function JournalPage() {
       <label className="ob-label">
         New entry
         <input
+          className="ui-input"
           value={draft}
           maxLength={2000}
           onChange={(e) => setDraft(e.target.value)}
@@ -72,7 +73,7 @@ export default function JournalPage() {
           }}
         />
       </label>
-      <button className="ob-go" disabled={!draft.trim()} onClick={save}>
+      <button className="ob-go ui-btn" disabled={!draft.trim()} onClick={save}>
         Save entry
       </button>
 
@@ -80,7 +81,11 @@ export default function JournalPage() {
         <div key={e.id} className="ob-group-page">
           <p>{e.content}</p>
           <p className="ob-hint">{new Date(e.createdAt).toLocaleString()}</p>
-          <button className="ob-btn half quiet" onClick={() => remove(e.id)}>
+          <button
+            className="ob-btn half quiet"
+            onClick={() => remove(e.id)}
+            aria-label={`Delete journal entry from ${new Date(e.createdAt).toLocaleDateString()}`}
+          >
             Delete
           </button>
         </div>

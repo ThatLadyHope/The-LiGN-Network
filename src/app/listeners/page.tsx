@@ -89,7 +89,11 @@ export default function ListenersPage() {
             <div key={w.token} className="ob-group-page">
               <b>Someone needs: {w.need}</b>
               <p className="ob-hint">waiting {w.waitedMin} min · anonymous until you take it</p>
-              <button className="ob-btn half sage" onClick={() => claim(w.token)}>
+              <button
+                className="ob-btn half sage"
+                onClick={() => claim(w.token)}
+                aria-label={`Listen to someone who needs ${w.need}, waiting ${w.waitedMin} minutes`}
+              >
                 Listen
               </button>
             </div>

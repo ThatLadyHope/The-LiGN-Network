@@ -68,13 +68,13 @@ export default function AdminPage() {
 
       <label className="ob-label">
         Admin token
-        <input type="password" value={token} onChange={(e) => setToken(e.target.value)} />
+        <input className="ui-input" type="password" value={token} onChange={(e) => setToken(e.target.value)} />
       </label>
       <label className="ob-label">
         User ID
-        <input value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="cuid…" />
+        <input className="ui-input" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="cuid…" />
       </label>
-      <button className="ob-go" disabled={!token || !userId} onClick={lookup}>
+      <button className="ob-go ui-btn" disabled={!token || !userId} onClick={lookup}>
         Look up
       </button>
 
@@ -91,7 +91,7 @@ export default function AdminPage() {
       ))}
 
       <h1>Open appeals</h1>
-      <button className="ob-go" disabled={!token} onClick={loadAppeals}>
+      <button className="ob-go ui-btn" disabled={!token} onClick={loadAppeals}>
         Load open appeals
       </button>
       {appeals.map((a) => (

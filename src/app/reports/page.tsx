@@ -79,7 +79,11 @@ export default function ReportsPage() {
         {r.appeal && <p className="ob-hint">Your appeal: {r.appeal}</p>}
         <p className="ob-hint">{new Date(r.createdAt).toLocaleString()}</p>
         {appealable && appealing !== r.id && (
-          <button className="ob-btn half quiet" onClick={() => setAppealing(r.id)}>
+          <button
+            className="ob-btn half quiet"
+            onClick={() => setAppealing(r.id)}
+            aria-label={`Appeal report about ${r.otherNickname}`}
+          >
             Appeal
           </button>
         )}
@@ -87,7 +91,7 @@ export default function ReportsPage() {
           <>
             <label className="ob-label">
               Why should this be looked at again? (optional)
-              <input value={message} maxLength={2000} onChange={(e) => setMessage(e.target.value)} />
+              <input className="ui-input" value={message} maxLength={2000} onChange={(e) => setMessage(e.target.value)} />
             </label>
             <button className="ob-btn half sage" onClick={() => appeal(r.id)}>
               Send appeal

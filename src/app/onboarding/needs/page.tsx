@@ -103,6 +103,7 @@ export default function NeedsPage() {
                   type="button"
                   className={picked.includes(n.value) ? "picked" : ""}
                   onClick={() => toggleNeed(n.value)}
+                  aria-pressed={picked.includes(n.value)}
                 >
                   {n.label}
                 </button>
@@ -112,7 +113,7 @@ export default function NeedsPage() {
         ))}
       </div>
 
-      <button className="ob-go" disabled={picked.length === 0 || busy} onClick={submit}>
+      <button className="ob-go ui-btn" disabled={picked.length === 0 || busy} onClick={submit}>
         {busy ? "Saving…" : "Continue"}
       </button>
       {status && (

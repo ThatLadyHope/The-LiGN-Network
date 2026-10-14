@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import BackButton from "../../back-button";
+import { timeLabel } from "@/lib/messaging";
 import "../../chat/chat.css";
 
 interface Member {
@@ -23,6 +24,7 @@ interface Message {
   id: string;
   senderId: string;
   content: string;
+  createdAt: string;
 }
 
 const CATEGORIES = [
@@ -202,7 +204,8 @@ export default function SpacePage({ params }: { params: { id: string } }) {
   if (!space) {
     return (
       <main className="ch-wrap">
-        <p>Loading space…</p>
+        <div className="ui-skeleton" style={{ height: 28, width: "60%" }} />
+        <div className="ui-skeleton" style={{ height: 220, marginTop: 12 }} />
         {status && <p className="ob-status">{status}</p>}
       </main>
     );
@@ -241,12 +244,20 @@ export default function SpacePage({ params }: { params: { id: string } }) {
       {open ? (
         <section className="ch-thread">
           <div className="ch-msgs">
-            {messages.map((m) => (
-              <div key={m.id} className="ch-msg">
-                <b>{m.senderId === mine ? "You" : (names.get(m.senderId) ?? "Someone")}: </b>
-                {m.content}
-              </div>
-            ))}
+            {messages.map((m) => {
+              const own = m.senderId === mine;
+              return (
+                <div key={m.id} className={own ? "ch-row mine" : "ch-row theirs"}>
+                  <div className={own ? "ch-bubble mine" : "ch-bubble theirs"}>
+                    <p>
+                      <b>{own ? "You" : (names.get(m.senderId) ?? "Someone")}: </b>
+                      {m.content}
+                    </p>
+                    <span className="ch-meta">{timeLabel(m.createdAt)}</span>
+                  </div>
+                </div>
+              );
+            })}
             {messages.length === 0 && <p>Say hello — no rush.</p>}
           </div>
           <div className="ch-send">
@@ -259,8 +270,26 @@ export default function SpacePage({ params }: { params: { id: string } }) {
                 if (e.key === "Enter") send();
               }}
             />
-            <button onClick={send} disabled={!draft.trim()}>
-              Send
+            <button
+              onClick={send}
+              disabled={!draft.trim()}
+              aria-label="Send message"
+              title="Send"
+              className="ch-sendbtn"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 12 3.269 3.125A59.768 59.768 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+              </svg>
             </button>
           </div>
           {typingName && <p className="ch-typing">{typingName}</p>}
@@ -274,7 +303,11 @@ export default function SpacePage({ params }: { params: { id: string } }) {
             .map((m) => (
               <div key={m.id} className="ch-req">
                 <b>{m.nickname}</b>{" "}
-                <button onClick={() => talkAgain(m.id)} disabled={wished.includes(m.id)}>
+                <button
+                  onClick={() => talkAgain(m.id)}
+                  disabled={wished.includes(m.id)}
+                  aria-label={`Wish to talk again with ${m.nickname}`}
+                >
                   {wished.includes(m.id) ? "Wished" : "I'd talk again"}
                 </button>
               </div>

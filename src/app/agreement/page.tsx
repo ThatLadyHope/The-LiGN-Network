@@ -38,7 +38,7 @@ export default function AgreementPage() {
       <h1>Updated agreement</h1>
       <p className="ob-sub">Our agreement changed. Please read and accept to continue.</p>
       <AgreementBox onAgreed={setAgreed} />
-      <button className="ob-go" disabled={!agreed || busy} onClick={submit}>
+      <button className="ob-go ui-btn" disabled={!agreed || busy} onClick={submit}>
         {busy ? "Recording…" : "Accept and continue"}
       </button>
       {status && (

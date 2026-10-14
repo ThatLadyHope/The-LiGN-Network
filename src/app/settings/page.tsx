@@ -194,7 +194,7 @@ export default function SettingsPage() {
             <>
               <label className="ob-label">
                 Back on (optional)
-                <select value={returnChoice} onChange={(e) => setReturnChoice(e.target.value)}>
+                <select className="ui-input" value={returnChoice} onChange={(e) => setReturnChoice(e.target.value)}>
                   <option value="none">No date — I will resume myself</option>
                   <option value="day">In 1 day</option>
                   <option value="week">In 1 week</option>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
             <p>Sorry to see you go. Why are you leaving?</p>
             <label className="ob-label">
               Reason
-              <select value={leaveReason} onChange={(e) => setLeaveReason(e.target.value)}>
+              <select className="ui-input" value={leaveReason} onChange={(e) => setLeaveReason(e.target.value)}>
                 <option value="need-space">I need space</option>
                 <option value="not-a-fit">Not a good fit</option>
                 <option value="boundary-issue">A boundary issue</option>
@@ -231,6 +231,7 @@ export default function SettingsPage() {
             <label className="ob-label">
               Anything more? (optional)
               <input
+                className="ui-input"
                 value={leaveMessage}
                 maxLength={2000}
                 onChange={(e) => setLeaveMessage(e.target.value)}

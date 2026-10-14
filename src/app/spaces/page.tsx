@@ -72,18 +72,26 @@ export default function SpacesPage() {
         The <em>LiGN</em> Network
       </div>
       <h1>Your spaces</h1>
+      <p className="ob-sub">Small rooms (3–8), never permanent. Join one to step inside.</p>
 
       <section className="dc-space">
         <h3>Open spaces to join</h3>
         <p className="ob-hint">Small rooms (3–8) from people around LiGN. Faces stay inside.</p>
         {joinable.length === 0 && <p className="ob-hint">None open right now — start one from Discover.</p>}
         {joinable.map((s) => (
-          <p key={s.id}>
-            <b>{s.purpose}</b> <small>· {s.seats} seats left</small>{" "}
-            <button className="dc-act outline" onClick={() => join(s.id)}>
+          <div key={s.id} className="dc-person">
+            <span className="dc-person-main">
+              <b>{s.purpose}</b>
+              <span className="dc-match">{s.seats} {s.seats === 1 ? "seat" : "seats"} left</span>
+            </span>
+            <button
+              className="dc-act outline"
+              onClick={() => join(s.id)}
+              aria-label={`Join space: ${s.purpose}`}
+            >
               Join
             </button>
-          </p>
+          </div>
         ))}
       </section>
 
