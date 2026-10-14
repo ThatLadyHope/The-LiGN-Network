@@ -27,6 +27,23 @@ const NEED_LABELS: Record<string, string> = {
   "need-someone": "I need someone",
 };
 
+// The Connection Mark: three softly curved discs leaning into one another —
+// connection, belonging, community. Token fills, no generic menu glyphs.
+function ConnectionMark() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <circle cx="9.4" cy="10" r="5.2" fill="var(--clay)" opacity="0.82" />
+      <circle cx="14.6" cy="10" r="5.2" fill="var(--sage)" opacity="0.82" />
+      <circle cx="12" cy="14.6" r="5.2" fill="var(--plum)" opacity="0.82" />
+    </svg>
+  );
+}
+
 export default function DiscoverPage() {
   const router = useRouter();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
@@ -166,13 +183,8 @@ export default function DiscoverPage() {
     if (res.ok) {
       setTodayMood(mood);
       load();
-      setStatus(
-        mood === "heavy"
-          ? "Noted — be extra gentle with yourself today."
-          : mood === "light"
-            ? "Lovely — carry a little of that in with you."
-            : "Noted — an okay day still counts.",
-      );
+      // No bottom toast: the card's own hint line already confirms the
+      // arrival ("Arrived feeling … — tap again to change it").
     } else {
       setStatus("Could not record that — try again.");
     }
@@ -210,7 +222,7 @@ export default function DiscoverPage() {
           aria-label="Open menu"
           onClick={() => setMenuOpen((o) => !o)}
         >
-          ☰
+          <ConnectionMark />
         </button>
         {menuOpen && (
           <nav className="dc-drawer" aria-label="Menu">
