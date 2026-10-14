@@ -264,7 +264,7 @@ export default function DiscoverPage() {
                   </span>
                   {done ? (
                     <span className="dc-sent">
-                      <span className="dc-act quiet" aria-live="polite">Sent</span>
+                      <span className="dc-act quiet" aria-live="polite">Sent –</span>
                       <Link className="dc-chat-link" href="/chat">
                         Wait in Chat
                       </Link>

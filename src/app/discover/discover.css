@@ -49,6 +49,7 @@
 .dc-person-main small { display: block; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .dc-person .dc-act { flex: none; }
 .dc-sent { flex: none; display: grid; gap: 4px; justify-items: center; }
+.dc-sent .dc-act.quiet { text-decoration: none; }
 .dc-chat-link { font-size: 13px; font-weight: 600; color: var(--clay); }
 .dc-people .ui-skeleton { height: 66px; border-radius: 16px; margin: 0 10px 8px; }
 .dc-people .ui-skeleton:last-child { margin-bottom: 12px; }
