@@ -25,7 +25,37 @@ export default function NotificationsBell() {
   const [items, setItems] = useState<BellItem[]>([]);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  // Seen tracking: opening the panel marks everything currently listed as
+  // seen (persisted per device). Only genuinely new arrivals relight the badge.
+  const [seen, setSeen] = useState<Set<string>>(() => {
+    try {
+      if (typeof window === "undefined") return new Set<string>();
+      const raw = window.localStorage.getItem("lign-ntf-seen");
+      const arr = raw ? (JSON.parse(raw) as unknown) : [];
+      return new Set(Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : []);
+    } catch {
+      return new Set<string>();
+    }
+  });
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const unseen = items.filter((i) => !seen.has(i.id)).length;
+
+  function markSeen(list: BellItem[]) {
+    setSeen((prev) => {
+      const next = new Set(prev);
+      for (const it of list) next.add(it.id);
+      const trimmed = [...next].slice(-100);
+      try {
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem("lign-ntf-seen", JSON.stringify(trimmed));
+        }
+      } catch {
+        // private mode: in-memory only, still correct for this visit
+      }
+      return new Set(trimmed);
+    });
+  }
 
   const load = useCallback(async () => {
     const [rq, rp, st] = await Promise.all([
@@ -142,8 +172,9 @@ export default function NotificationsBell() {
         type="button"
         className="dc-menu-btn ntf-bell"
         aria-expanded={open}
-        aria-label={items.length > 0 ? `Notifications, ${items.length} unread` : "Notifications, all caught up"}
+        aria-label={unseen > 0 ? `Notifications, ${unseen} unread` : "Notifications, all caught up"}
         onClick={() => {
+          if (!open) markSeen(items);
           setOpen((o) => !o);
           setNote(null);
           load();
@@ -163,9 +194,9 @@ export default function NotificationsBell() {
           <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
-        {items.length > 0 && (
+        {unseen > 0 && (
           <span className="ntf-badge" aria-hidden="true">
-            {items.length > 9 ? "9+" : items.length}
+            {unseen > 9 ? "9+" : unseen}
           </span>
         )}
       </button>
