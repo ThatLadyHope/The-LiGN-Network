@@ -54,9 +54,9 @@
 .dc-checkin { background: var(--card); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-sm); padding: 16px 18px; margin-bottom: 16px; display: grid; gap: 10px; }
 .dc-checkin h2 { margin: 0; font-size: 17px; font-family: Georgia, serif; font-weight: 400; }
 .dc-checkin-moods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.dc-mood { border-radius: 14px; padding: 12px 8px; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--clay-dark); border: 2px solid transparent; color: var(--on-clay); transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease; }
+.dc-mood { border-radius: 14px; padding: 12px 8px; font-size: 14px; font-weight: 700; cursor: pointer; background: color-mix(in srgb, var(--sage) 16%, var(--card)); border: 2px solid color-mix(in srgb, var(--sage) 45%, transparent); color: var(--ink); transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease; }
 .dc-mood:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
-.dc-mood.picked { filter: brightness(.93); box-shadow: var(--ring); }
+.dc-mood.picked { background: var(--sage); border-color: var(--sage); color: var(--on-sage); box-shadow: var(--ring); }
 @media (prefers-reduced-motion: reduce) { .dc-mood { transition: none; } .dc-mood:hover { transform: none; } }
 .dc-sent { flex: none; display: grid; gap: 4px; justify-items: center; }
 .dc-sent .dc-act.quiet { text-decoration: none; }
