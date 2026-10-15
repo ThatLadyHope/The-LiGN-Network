@@ -7,3 +7,9 @@ db/backups/
 db/dev.db
 uploads/*
 !uploads/.gitkeep
+
+# Android release signing — NEVER commit the key or passwords
+android/*.keystore
+android/*.jks
+android/keystore.properties
+

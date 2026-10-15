@@ -1,0 +1,24 @@
+{
+  "packageId": "com.thelignnetwork.app",
+  "host": "thelignnetwork.netlify.app",
+  "name": "The LiGN Network",
+  "launcherName": "LiGN",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#FAF7F2",
+  "navigationColor": "#FAF7F2",
+  "backgroundColor": "#FAF7F2",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://thelignnetwork.netlify.app/icons/icon-512.png",
+  "maskableIconUrl": "https://thelignnetwork.netlify.app/icons/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "signingKey": {
+    "path": "./lign-release.keystore",
+    "alias": "lign"
+  },
+  "fullScopeUrl": "https://thelignnetwork.netlify.app/",
+  "minSdkVersion": 24
+}
